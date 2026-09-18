@@ -1,0 +1,67 @@
+---
+title: Contribute a Reproducible Learning Lab
+description: Turn a planned lesson into reviewed instruction without weakening its checks.
+---
+
+## 1. Choose one planned outcome
+
+Use the catalog and `PLAN-DETAILS.md` to find the owning unit, stable lesson ID,
+engineering action, and expected learner evidence. Keep the current task narrower
+than its unit outcome. Do not turn all 101 outlines into thin published pages.
+
+The source layout keeps QMD under `docs/courses/agentic-ai-engineering/`, reusable
+Python under `src/freecampus_agents/`, and tests under `tests/`. This adapts the draft
+plan's illustrative nested layout to the existing repository's package structure.
+
+## 2. Make the task runnable without a paid provider
+
+Supply synthetic or openly licensed fixtures, a deterministic fake boundary, and
+machine-checkable ordinary and failure cases. Keep tool permissions and budgets
+explicit. Record observable events and concise rationales, not private reasoning.
+Never redistribute secrets, private data, or unlicensed recorded responses.
+
+## 3. Author the lesson, not just its summary
+
+Include a concrete task, 3–5 opening questions, a measurable outcome, active-time
+estimate, explanations, predictions, controlled changes, and debugging practice.
+Use three small checkpoints for concept, evidence, and failure diagnosis; give
+plausible distractors and explanations. Finish with a checked lab and primary
+references. Overviews stay quiz-free; planned project outlines are not assessments.
+
+Unit challenges take 90–180 minutes and include a contract, progressive checks,
+three hint levels, injected failures, a hidden solution, and an evidence record.
+The templates are scaffolds outside the rendered course, not publishable lessons.
+
+## 4. Keep publication records synchronized
+
+When a lesson is genuinely available, update its catalog status, front matter,
+course progress IDs, available counts, outcome map, and sidebar together. Add the
+Colab include and a unique notebook path. Never link a planned path that does not
+exist. Do not enable whole-course completion until the completion contract is ready.
+
+## 5. Check from a clean environment
+
+The current migration has not generated `uv.lock`: registry access was unavailable.
+Run `uv lock`, inspect and version the lockfile, then use `uv sync --locked` for
+reproducible installations. Until that step, dependency resolution is not pinned
+transitively. Do not describe the scaffold as a fully reproducible release.
+
+```bash
+uv sync --all-extras --group docs
+uv run pytest -q
+uv run ruff check src tests scripts
+uv run ruff format --check src tests scripts
+uv run mypy src
+uv build
+uv run makim docs.build
+git diff --check
+uv run makim clean.tmp
+```
+
+The build renders HTML, exports notebooks, and verifies expected output files.
+Open at least one desktop and narrow-screen quiz when browser tooling is available.
+Restart the smoke notebook and run from the top. Report skipped checks and external
+limitations rather than treating unrun checks as passing.
+
+Use the [repository contribution guidance](https://github.com/freecampus/agentic-ai-engineering/blob/main/AGENTS.md)
+and [uv project guide](https://docs.astral.sh/uv/guides/projects/) for further detail.

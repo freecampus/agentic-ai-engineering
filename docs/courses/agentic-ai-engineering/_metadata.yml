@@ -1,0 +1,10 @@
+course_id: agentic-ai-engineering
+course_title: Agentic AI Engineering
+course_home: /courses/agentic-ai-engineering/
+course_status: in-development
+curriculum_version: 1
+completion_rule_version: 1
+completion_enabled: false
+completion_lesson_ids: []
+completion_challenge_ids: []
+content_status: planned

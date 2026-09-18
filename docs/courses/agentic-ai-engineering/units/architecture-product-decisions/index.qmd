@@ -1,0 +1,82 @@
+---
+title: Make Defensible Architecture and Product Decisions Overview
+description: Evaluate total cost, sustainability, human effort, legal/open-source constraints,
+  and product value; simplify or reject agent deployments when evidence demands it.
+content_kind: unit-overview
+content_status: planned
+order: 0
+categories:
+- agentic-ai-engineering
+- architecture-product-decisions
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/architecture-product-decisions/index.ipynb
+---
+
+::: {.callout-important}
+## Curriculum preview—not a released unit
+The 4 lessons and challenge below are planned. This overview is available
+for orientation; it does not award course progress. The notebook is an orientation
+copy, not a completed instructional lab.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What you will be able to do
+
+Evaluate total cost, sustainability, human effort, legal/open-source constraints, and product value; simplify or reject agent deployments when evidence demands it.
+
+**Phase:** VI. Production  
+**Overview:** 20–40 minutes  
+**Planned unit effort:** 8–14 hours, including typing, experiments,
+checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
+
+## 2. Before you begin
+
+Complete the preceding unit, [Release, Monitor, and Recover Agent Systems](../release-and-recovery/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
+
+Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
+shared package. Work in a clean Colab/Jupyter notebook or a pinned local `uv`
+environment. The core route will not require provider keys or paid inference.
+Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
+
+## 3. Planned lesson sequence
+
+| Lesson | Evidence you will preserve |
+|---|---|
+| 1. Measure Total Cost per Successful Task | Cost model tied to evaluation outcomes. |
+| 2. Balance Quality, Latency, Cost, and Energy | Tradeoff visualization and selected operating point. |
+| 3. Review Licensing, Privacy, Governance, and Build-or-Buy | Adoption checklist and dependency exit strategy. |
+| 4. Decide Not to Deploy—or Remove the Agent | Go/simplify/no-go decision memo. |
+
+### 1. Measure Total Cost per Successful Task
+
+Include model calls, retrieval, tools, retries, evaluation, infrastructure, failures, and human review. Distinguish marginal demo cost from operated-system cost.
+
+### 2. Balance Quality, Latency, Cost, and Energy
+
+Construct Pareto frontiers and scenario-specific budgets. Use compute and energy proxies honestly when direct measurement is unavailable.
+
+### 3. Review Licensing, Privacy, Governance, and Build-or-Buy
+
+Examine model/data/code licenses, personal data, retention, vendor dependencies, open-source maintenance, and exit plans. Identify restrictions before architecture is locked.
+
+### 4. Decide Not to Deploy—or Remove the Agent
+
+Compare the agent with a rule, search interface, workflow, and human process. Recognize insufficient value, evidence, control, or operational readiness.
+
+## 4. Challenge preview: Present a Production Candidate
+
+Deliver an open-source-first agent service with durable execution, local-model support, observability, security controls, CI gates, SLOs, cost model, and rollback. Defend why each autonomous decision remains necessary.
+
+The complete challenge contract, starting fixtures, progressive checks, three-level
+hint ladder, and solution path are not authored yet. Do not interpret this outline
+as an executable assessment. A successful-looking output alone will not establish
+reliability: preserve the inputs, limits, observed behavior, and failed cases too.
+
+## 5. Suggested stopping points
+
+Plan one session per lesson. Before changing an implementation, write a prediction;
+after each session, record what ran, what failed, what changed, and what remains
+unverified. Save a clean run and an architecture note before attempting the challenge.
+Finish with a retrospective on quality, failures, latency, cost, and safety.
+
+[Preview the capstone](../../capstone/index.qmd) or [return to the complete course map](../../index.qmd).

@@ -1,0 +1,82 @@
+---
+title: Engineer Context Instead of Concatenating Prompts Overview
+description: Assemble a bounded, provenance-aware context from instructions, state, data,
+  and tool results while managing conflicts, trust, and compression.
+content_kind: unit-overview
+content_status: planned
+order: 0
+categories:
+- agentic-ai-engineering
+- context-engineering
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/context-engineering/index.ipynb
+---
+
+::: {.callout-important}
+## Curriculum preview—not a released unit
+The 4 lessons and challenge below are planned. This overview is available
+for orientation; it does not award course progress. The notebook is an orientation
+copy, not a completed instructional lab.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What you will be able to do
+
+Assemble a bounded, provenance-aware context from instructions, state, data, and tool results while managing conflicts, trust, and compression.
+
+**Phase:** II. Tools and knowledge  
+**Overview:** 20–40 minutes  
+**Planned unit effort:** 8–14 hours, including typing, experiments,
+checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
+
+## 2. Before you begin
+
+Complete the preceding unit, [Design Tools as Capability Boundaries](../tool-capability-boundaries/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
+
+Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
+shared package. Work in a clean Colab/Jupyter notebook or a pinned local `uv`
+environment. The core route will not require provider keys or paid inference.
+Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
+
+## 3. Planned lesson sequence
+
+| Lesson | Evidence you will preserve |
+|---|---|
+| 1. Classify Context by Purpose and Trust | Context manifest with source and trust labels. |
+| 2. Select and Order the Working Set | Context-selection evaluation. |
+| 3. Compress Without Inventing State | Compression fidelity tests. |
+| 4. Detect Conflict, Contamination, and Context Rot | Adversarial context suite. |
+
+### 1. Classify Context by Purpose and Trust
+
+Separate system policy, developer instruction, user request, retrieved data, tool output, memory, and generated scratch artifacts. Resolve priority without treating untrusted content as instruction.
+
+### 2. Select and Order the Working Set
+
+Implement relevance, recency, authority, diversity, and token-budget rules. Test lost-in-the-middle behavior and ordering sensitivity.
+
+### 3. Compress Without Inventing State
+
+Compare truncation, extractive selection, structured summaries, and hierarchical compression. Preserve decisions, unresolved questions, provenance, and constraints across compression.
+
+### 4. Detect Conflict, Contamination, and Context Rot
+
+Introduce conflicting instructions, stale records, and malicious retrieved text. Build policies for exclusion, quarantine, user clarification, and source-aware disagreement.
+
+## 4. Challenge preview: Rescue an Overloaded Context Window
+
+Reduce an oversized, contradictory context while maintaining task success and citations. Demonstrate lower token usage and equal or better held-out performance.
+
+The complete challenge contract, starting fixtures, progressive checks, three-level
+hint ladder, and solution path are not authored yet. Do not interpret this outline
+as an executable assessment. A successful-looking output alone will not establish
+reliability: preserve the inputs, limits, observed behavior, and failed cases too.
+
+## 5. Suggested stopping points
+
+Plan one session per lesson. Before changing an implementation, write a prediction;
+after each session, record what ran, what failed, what changed, and what remains
+unverified. Save a clean run and an architecture note before attempting the challenge.
+Finish with a retrospective on quality, failures, latency, cost, and safety.
+
+[Preview Unit 7: Build Grounded Retrieval and Research Agents](../grounded-retrieval/index.qmd) or [return to the complete course map](../../index.qmd).

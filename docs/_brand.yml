@@ -1,0 +1,60 @@
+meta:
+  name:
+    full: FreeCampus Agentic AI Engineering
+    short: FreeCampus
+  link:
+    home: https://freecampus.github.io/agentic-ai-engineering/
+    github: https://github.com/freecampus/agentic-ai-engineering
+
+logo:
+  images:
+    mark: assets/freecampus-mark.svg
+  small: mark
+  medium: mark
+  large: mark
+
+color:
+  palette:
+    ink: "#172033"
+    paper: "#fbfaf7"
+    violet: "#5753d9"
+    cyan: "#0d91a6"
+    night: "#0d111b"
+  foreground:
+    light: ink
+    dark: "#e8ebf4"
+  background:
+    light: paper
+    dark: night
+  primary:
+    light: violet
+    dark: "#a8a5ff"
+  secondary:
+    light: "#697386"
+    dark: "#a3adbf"
+  success:
+    light: "#15825d"
+    dark: "#62d6a9"
+  danger:
+    light: "#c83b45"
+    dark: "#ff8b94"
+
+typography:
+  fonts:
+    - family: Inter
+      source: system
+    - family: Inter Display
+      source: system
+    - family: SFMono-Regular
+      source: system
+  base:
+    family: Inter
+    size: 1rem
+    line-height: 1.68
+  headings:
+    family: Inter Display
+    weight: 700
+    line-height: 1.12
+  monospace:
+    family: SFMono-Regular
+    size: 0.9em

@@ -1,0 +1,58 @@
+---
+title: Ship a Defensible Agentic System
+content_kind: capstone-outline
+content_status: planned
+colab_notebook: notebooks/courses/agentic-ai-engineering/capstone/index.ipynb
+---
+
+::: {.callout-important}
+The capstone is planned. These stages describe the intended work; submission,
+assessment rubrics, reviewers, and certification are not available.
+:::
+
+{{< include ../../../_includes/colab-link.qmd >}}
+
+**Planned effort:** 40–70 hours. Begin only after the cumulative unit challenges and
+milestone work. Use a safe, self-contained domain with licensed, non-sensitive data.
+
+## C1. Select the Problem and Establish the Baseline
+
+Choose a safe, consequential, multi-step task; identify stakeholders and harms; build the simplest non-agentic baseline; and define success, budgets, and forbidden actions.
+
+## C2. Design Architecture, Evaluation, and Threat Model
+
+Submit system/data-flow diagrams, architecture decisions, evaluation data plan, metric definitions, threat model, autonomy policy, and open-source license review before implementation expands.
+
+## C3. Build the Vertical Slice
+
+Complete one end-to-end task through API, agent runtime, model, tool, state, trace, and evaluation. Demonstrate local/open-model execution and deterministic fixture mode.
+
+## C4. Add Reliability and Security
+
+Implement persistence, recovery, idempotency, budgets, sandboxing, scoped credentials, adversarial tests, human intervention, and telemetry redaction.
+
+## C5. Evaluate and Simplify
+
+Run held-out quality, robustness, safety, latency, cost, and human-effort evaluations. Remove any agent, memory, planning, or protocol layer that does not improve the declared frontier.
+
+## C6. Release and Defend
+
+Perform a canary or simulated release, respond to one injected incident, submit the system card/runbook/rollback plan, and demonstrate previously unseen tasks to reviewers.
+
+## Evidence to preserve
+
+- problem and stakeholder statement;
+- task contract and non-agentic baseline;
+- architecture and decision records;
+- open-source repository and reproducible environment;
+- local/open-model path and deterministic fixtures;
+- versioned evaluation dataset and graders;
+- quality, safety, robustness, latency, cost, and uncertainty report;
+- threat model, adversarial report, and mitigations;
+- traces, operational views, SLOs, and alert rationale;
+- human-control design;
+- system card, runbook, incident record, and rollback plan;
+- explicit limitations and rejected architecture choices.
+
+
+[Return to the course map](../index.qmd).

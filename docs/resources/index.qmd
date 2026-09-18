@@ -1,0 +1,12 @@
+---
+title: Engineering Resources
+description: Workspace checks, evidence records, and course authoring guidance.
+---
+
+- [Offline smoke lab](agent-lab.qmd): inspect the deterministic runtime and its limits.
+- [Readiness guide](../courses/agentic-ai-engineering/readiness.qmd): check prerequisite Python.
+- [Engineering journal](engineering-journal.qmd): preserve contracts, runs, failures, and decisions.
+- [Course FAQ](faq.qmd): availability, costs, notebooks, and local progress.
+- [Contributing](contributing.qmd): authoring standards and reproducible validation.
+
+These support resources are not additional course-completion lessons.

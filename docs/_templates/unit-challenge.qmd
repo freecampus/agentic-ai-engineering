@@ -1,0 +1,92 @@
+---
+title: Replace with the Challenge Artifact
+challenge_id: unit-id.challenge
+assessment_type: unit-challenge
+challenge_format: guided-programming
+assessment_version: 1
+estimated_time: 90–180 minutes
+content_kind: challenge
+content_status: draft
+categories: [agentic-ai-engineering, unit-id, unit-challenge]
+order: 90
+course_id: agentic-ai-engineering
+unit_id: unit-id
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/unit-id/challenge.ipynb
+---
+
+<!-- Unpublished authoring scaffold. Replace every instruction with a self-contained
+scenario, then satisfy the course definition of done before setting available. -->
+
+::: {.lesson-meta .challenge-meta}
+- **Level:** State prerequisite engineering skills.
+- **Estimated time:** 90–180 minutes.
+- **Outcome assessed:** One measurable integrated behavior.
+- **Evidence:** Contract, baseline, checks, trace, failure record, and decision.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+<!-- fcagentic-unit-challenge: practical -->
+
+## 1. Define the scenario and outcome
+
+Give a self-contained interesting goal and explain what the learner will produce.
+
+## 2. Predict an ordinary run
+
+Supply example inputs, outputs, and an observable trajectory. Name success,
+termination, budgets, allowed tools, and forbidden actions.
+
+## 3. Start from the contract
+
+Provide the public signatures, schema, synthetic data, or partial structure needed
+to start without revealing the central decisions. Include a non-agentic baseline.
+
+## 4. Build in small stages
+
+Stage ordinary behavior, the important boundary, and injected failure recovery.
+Ask for one controlled change and its expected downstream effects.
+
+## 5. Run progressive assertions
+
+Supply executable independent assertions. Separate deterministic contract checks
+from repeated model evaluation. Do not require a network service or paid account.
+
+## 6. Use the hint ladder only when needed
+
+<details>
+<summary>Hint 1: locate the failing boundary</summary>
+Replace with a question that focuses attention without giving the answer.
+</details>
+
+<details>
+<summary>Hint 2: compare state before and after the action</summary>
+Replace with a direction grounded in the actual scenario.
+</details>
+
+<details>
+<summary>Hint 3: complete a partial scaffold</summary>
+Supply the smallest useful partial implementation.
+</details>
+
+## 7. Keep debugging evidence
+
+Record expected versus actual behavior, the earliest failure, one change, the
+regression check, and a limitation. Keep secrets and private reasoning out.
+
+<details>
+<summary>One solution path and its trade-offs</summary>
+Supply a complete tested solution with ordinary, boundary, and injected-fault checks.
+</details>
+
+<!-- Add an artifact-specific JSON quiz and OJS include here before publication. -->
+
+## 8. Record your retrospective
+
+Explain whether the agent improved on its baseline. Preserve measured quality,
+latency/cost where applicable, failed assumptions, and an architecture decision.
+
+<button type="button" class="fc-complete-button" data-fc-challenge-complete aria-pressed="false" hidden>Record challenge complete</button>
+
+This control is local and self-reported, not verified assessment. It remains hidden
+until the challenge is published and included in the course's available activity IDs.

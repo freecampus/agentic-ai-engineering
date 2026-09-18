@@ -1,0 +1,66 @@
+/*-- scss:defaults --*/
+
+$primary: #5753d9;
+$secondary: #667085;
+$success: #15825d;
+$info: #0878a4;
+$warning: #a15c08;
+$danger: #c83b45;
+$light: #f7f5f0;
+$dark: #182230;
+
+$body-bg: #fbfaf7;
+$body-color: #293243;
+$headings-color: #172033;
+$link-color: #4f4bc7;
+$link-hover-color: #3733a5;
+$border-color: #e5e1da;
+$code-color: #9d2f73;
+$code-bg: #f0efff;
+
+$font-family-sans-serif:
+  Inter,
+  ui-sans-serif,
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  sans-serif;
+$headings-font-family: "Inter Display", Inter, ui-sans-serif, system-ui,
+  sans-serif;
+$font-family-monospace: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+$font-size-root: 17px;
+$line-height-base: 1.68;
+$headings-font-weight: 760;
+$headings-line-height: 1.18;
+$border-radius: 0.75rem;
+$border-radius-lg: 1rem;
+$btn-font-weight: 700;
+$grid-body-width: 820px;
+$grid-sidebar-width: 270px;
+$grid-margin-width: 260px;
+
+/*-- scss:rules --*/
+
+:root {
+  --fc-bg: #fbfaf7;
+  --fc-surface: #ffffff;
+  --fc-surface-soft: #f3f1ec;
+  --fc-surface-tint: #eeedff;
+  --fc-text: #293243;
+  --fc-heading: #172033;
+  --fc-muted: #697386;
+  --fc-border: #e5e1da;
+  --fc-border-strong: #cec8bd;
+  --fc-brand: #5753d9;
+  --fc-brand-strong: #403cb5;
+  --fc-brand-soft: rgba(87, 83, 217, 0.1);
+  --fc-accent: #0d91a6;
+  --fc-code-bg: #171b2b;
+  --fc-code-text: #e8ebf4;
+  --fc-success: #15825d;
+  --fc-warning: #a15c08;
+  --fc-danger: #c83b45;
+  --fc-shadow-sm: 0 1px 2px rgba(23, 32, 51, 0.04),
+    0 8px 24px rgba(23, 32, 51, 0.05);
+  --fc-shadow-lg: 0 24px 64px rgba(33, 41, 75, 0.11);
+}

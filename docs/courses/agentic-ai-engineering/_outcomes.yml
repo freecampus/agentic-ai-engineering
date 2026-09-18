@@ -1,0 +1,340 @@
+schema_version: 1
+curriculum_version: 1
+course_id: agentic-ai-engineering
+graduate_outcomes:
+  architecture:
+    Choose the simplest adequate architecture using a non-agentic baseline and
+    task contract.
+  runtime: Build bounded, typed runtimes with explicit state, tools, budgets, and termination.
+  knowledge:
+    Ground context, retrieval, and memory in provenance, consent, and verifiable
+    evidence.
+  interoperability:
+    Compare patterns, frameworks, protocols, and coordination without hiding
+    their costs.
+  evaluation:
+    Evaluate repeated behavior with representative fixtures, graders, traces, and
+    uncertainty.
+  safety:
+    Enforce trust boundaries, least privilege, data protection, and meaningful human
+    control.
+  reliability: Build recoverable specialist agents and services with controlled side effects.
+  operations: Release, observe, recover, and justify an operated system and its limitations.
+units:
+  - id: launch-agent-lab
+    outcome:
+      Run, inspect, and modify a small deterministic agent in Colab; reproduce it locally;
+      keep secrets out of artifacts; and distinguish model, runtime, tool, environment, and
+      trace evidence.
+    graduate_outcome_ids:
+      - runtime
+      - evaluation
+      - safety
+    lesson_ids:
+      - launch-agent-lab.meet-a-tiny-agent
+      - launch-agent-lab.learn-with-evidence
+      - launch-agent-lab.use-ai-responsibly
+      - launch-agent-lab.work-in-notebooks
+      - launch-agent-lab.build-local-workspace
+    challenge_id: launch-agent-lab.challenge
+  - id: choose-agent-architecture
+    outcome:
+      Distinguish programs, workflows, agents, and multi-agent systems; define degrees
+      of autonomy; and select the simplest adequate architecture from evidence.
+    graduate_outcome_ids:
+      - architecture
+    lesson_ids:
+      - choose-agent-architecture.separate-automation-workflows-and-agents
+      - choose-agent-architecture.model-the-agent-environment-loop
+      - choose-agent-architecture.bound-autonomy-with-task-contracts
+      - choose-agent-architecture.choose-the-simplest-adequate-architecture
+    challenge_id: choose-agent-architecture.challenge
+  - id: probabilistic-models
+    outcome:
+      Explain how messages become model outputs, enforce structured responses, measure
+      nondeterminism, and select models by evidence and license.
+    graduate_outcome_ids:
+      - evaluation
+      - runtime
+    lesson_ids:
+      - probabilistic-models.follow-tokens-messages-and-context
+      - probabilistic-models.control-sampling-and-nondeterminism
+      - probabilistic-models.make-outputs-machine-checkable
+      - probabilistic-models.compare-open-models-responsibly
+    challenge_id: probabilistic-models.challenge
+  - id: minimal-agent-runtime
+    outcome:
+      Implement a framework-free, typed agent loop with explicit state, events, budgets,
+      termination, and deterministic tests.
+    graduate_outcome_ids:
+      - runtime
+    lesson_ids:
+      - minimal-agent-runtime.represent-state-and-events-explicitly
+      - minimal-agent-runtime.implement-the-decide-act-observe-loop
+      - minimal-agent-runtime.make-termination-and-budgets-enforceable
+      - minimal-agent-runtime.stream-cancel-and-handle-async-work
+    challenge_id: minimal-agent-runtime.challenge
+  - id: reason-plan-verify
+    outcome:
+      Compare direct response, ReAct-style interaction, planning, reflection, and search;
+      then choose a strategy using quality, latency, and cost evidence.
+    graduate_outcome_ids:
+      - architecture
+      - evaluation
+    lesson_ids:
+      - reason-plan-verify.connect-agent-reasoning-to-search-and-decision-processes
+      - reason-plan-verify.interleave-reasoning-and-acting
+      - reason-plan-verify.separate-planning-from-execution
+      - reason-plan-verify.add-reflection-and-search-only-when-they-help
+    challenge_id: reason-plan-verify.challenge
+  - id: tool-capability-boundaries
+    outcome:
+      Create typed, least-privilege tools with clear semantics for validation, errors,
+      retries, idempotency, side effects, and authorization.
+    graduate_outcome_ids:
+      - runtime
+      - safety
+    lesson_ids:
+      - tool-capability-boundaries.write-tool-contracts-models-can-use
+      - tool-capability-boundaries.normalize-errors-timeouts-and-cancellation
+      - tool-capability-boundaries.make-retries-and-side-effects-safe
+      - tool-capability-boundaries.enforce-least-privilege-and-approval
+    challenge_id: tool-capability-boundaries.challenge
+  - id: context-engineering
+    outcome:
+      Assemble a bounded, provenance-aware context from instructions, state, data, and
+      tool results while managing conflicts, trust, and compression.
+    graduate_outcome_ids:
+      - knowledge
+      - safety
+    lesson_ids:
+      - context-engineering.classify-context-by-purpose-and-trust
+      - context-engineering.select-and-order-the-working-set
+      - context-engineering.compress-without-inventing-state
+      - context-engineering.detect-conflict-contamination-and-context-rot
+    challenge_id: context-engineering.challenge
+  - id: grounded-retrieval
+    outcome:
+      Build and evaluate hybrid retrieval, reranking, multi-hop research, provenance,
+      citation verification, freshness, and abstention.
+    graduate_outcome_ids:
+      - knowledge
+      - evaluation
+    lesson_ids:
+      - grounded-retrieval.build-lexical-dense-and-hybrid-retrieval
+      - grounded-retrieval.chunk-filter-and-rerank-deliberately
+      - grounded-retrieval.plan-multi-hop-and-structured-research
+      - grounded-retrieval.verify-claims-citations-freshness-and-abstention
+    challenge_id: grounded-retrieval.challenge
+  - id: agent-memory
+    outcome:
+      Design working, episodic, semantic, and procedural memory with controlled writes,
+      retrieval, consolidation, privacy, deletion, and poisoning defenses.
+    graduate_outcome_ids:
+      - knowledge
+      - safety
+    lesson_ids:
+      - agent-memory.separate-memory-types-and-lifecycles
+      - agent-memory.decide-what-may-be-written
+      - agent-memory.retrieve-consolidate-and-resolve-contradictions
+      - agent-memory.protect-inspect-correct-and-delete-memory
+    challenge_id: agent-memory.challenge
+  - id: agentic-design-patterns
+    outcome:
+      Implement and compare chaining, routing, parallelization, orchestrator–worker,
+      evaluator–optimizer, reflection, and state-machine patterns.
+    graduate_outcome_ids:
+      - interoperability
+    lesson_ids:
+      - agentic-design-patterns.chain-and-route-predictably
+      - agentic-design-patterns.parallelize-independent-work
+      - agentic-design-patterns.orchestrate-workers-and-evaluators
+      - agentic-design-patterns.encode-control-in-state-machines-and-graphs
+    challenge_id: agentic-design-patterns.challenge
+  - id: framework-adapters
+    outcome:
+      Explain what agent frameworks provide, migrate a stable application through adapters,
+      and quantify abstraction benefits and costs.
+    graduate_outcome_ids:
+      - interoperability
+    lesson_ids:
+      - framework-adapters.inspect-what-a-framework-does-for-you
+      - framework-adapters.define-ports-for-models-tools-state-and-tracing
+      - framework-adapters.rebuild-with-a-state-graph-framework
+      - framework-adapters.compare-a-lightweight-alternative
+    challenge_id: framework-adapters.challenge
+  - id: open-protocols
+    outcome:
+      Explain and implement MCP and agent-to-agent interfaces with authentication, lifecycle
+      management, versioning, and hostile-component defenses.
+    graduate_outcome_ids:
+      - interoperability
+      - safety
+    lesson_ids:
+      - open-protocols.separate-protocol-transport-runtime-and-framework
+      - open-protocols.build-and-inspect-an-mcp-server
+      - open-protocols.consume-mcp-with-explicit-trust
+      - open-protocols.exchange-tasks-between-agents
+    challenge_id: open-protocols.challenge
+  - id: multi-agent-coordination
+    outcome:
+      Design specialization, delegation, shared state, communication, and conflict resolution
+      while measuring whether multiple agents outperform a single-agent baseline.
+    graduate_outcome_ids:
+      - interoperability
+      - evaluation
+    lesson_ids:
+      - multi-agent-coordination.justify-decomposition-and-specialization
+      - multi-agent-coordination.choose-a-coordination-topology
+      - multi-agent-coordination.share-state-and-resolve-conflict
+      - multi-agent-coordination.detect-deadlock-livelock-correlated-error-and-runaway-cost
+    challenge_id: multi-agent-coordination.challenge
+  - id: agent-evaluation
+    outcome:
+      Create representative datasets, layered graders, uncertainty estimates, and regression
+      gates for task, trajectory, tool, grounding, safety, latency, and cost.
+    graduate_outcome_ids:
+      - evaluation
+    lesson_ids:
+      - agent-evaluation.define-metrics-from-the-task-contract
+      - agent-evaluation.build-representative-evaluation-data
+      - agent-evaluation.combine-deterministic-model-and-human-graders
+      - agent-evaluation.compare-systems-with-uncertainty
+    challenge_id: agent-evaluation.challenge
+  - id: observability-debugging
+    outcome:
+      Instrument portable traces, metrics, logs, and artifacts; redact sensitive data;
+      replay failures; and diagnose causality across model and tool calls.
+    graduate_outcome_ids:
+      - evaluation
+    lesson_ids:
+      - observability-debugging.model-runs-as-traces-and-spans
+      - observability-debugging.record-useful-events-without-leaking-data
+      - observability-debugging.replay-failures-with-controlled-fixtures
+      - observability-debugging.build-operational-quality-views
+    challenge_id: observability-debugging.challenge
+  - id: agent-security
+    outcome:
+      Threat-model an agent and defend against injection, poisoning, exfiltration, confused-deputy
+      behavior, command/URL attacks, excessive agency, and supply-chain compromise.
+    graduate_outcome_ids:
+      - safety
+    lesson_ids:
+      - agent-security.draw-assets-actors-trust-boundaries-and-data-flows
+      - agent-security.defend-against-prompt-injection-and-data-exfiltration
+      - agent-security.sandbox-code-browsing-and-network-access
+      - agent-security.protect-identity-secrets-tenants-and-dependencies
+    challenge_id: agent-security.challenge
+  - id: human-control
+    outcome:
+      Create approval, escalation, explanation, intervention, and governance mechanisms
+      matched to uncertainty, consequence, reversibility, and operator workload.
+    graduate_outcome_ids:
+      - safety
+    lesson_ids:
+      - human-control.calibrate-autonomy-to-risk
+      - human-control.ask-for-approval-with-decision-relevant-evidence
+      - human-control.communicate-uncertainty-provenance-and-limits
+      - human-control.escalate-interrupt-appeal-and-audit
+    challenge_id: human-control.challenge
+  - id: coding-agents
+    outcome:
+      Build a repository-scale coding agent that searches, plans, edits, tests, reviews,
+      and rolls back inside an isolated, least-privilege environment.
+    graduate_outcome_ids:
+      - reliability
+      - safety
+    lesson_ids:
+      - coding-agents.explore-a-repository-before-editing
+      - coding-agents.turn-an-issue-into-a-verifiable-plan
+      - coding-agents.edit-test-and-review-in-isolation
+      - coding-agents.evaluate-coding-agents-beyond-passing-tests
+    challenge_id: coding-agents.challenge
+  - id: browser-multimodal-agents
+    outcome:
+      Compare API, DOM, accessibility-tree, and visual control; ground multimodal observations;
+      and constrain dynamic user-interface actions.
+    graduate_outcome_ids:
+      - reliability
+      - safety
+    lesson_ids:
+      - browser-multimodal-agents.prefer-stable-interfaces-before-pixels
+      - browser-multimodal-agents.ground-visual-observations-and-actions
+      - browser-multimodal-agents.handle-dynamic-pages-authentication-and-downloads
+      - browser-multimodal-agents.defend-against-visual-injection-and-unsafe-ui-actions
+    challenge_id: browser-multimodal-agents.challenge
+  - id: durable-execution
+    outcome:
+      Preserve progress across crashes, retries, duplicates, delays, and changing external
+      state without repeating irreversible actions.
+    graduate_outcome_ids:
+      - reliability
+    lesson_ids:
+      - durable-execution.checkpoint-serializable-state-and-artifacts
+      - durable-execution.use-leases-heartbeats-deadlines-and-cancellation
+      - durable-execution.survive-duplicate-delivery-and-partial-effects
+      - durable-execution.wait-for-humans-and-external-events
+    challenge_id: durable-execution.challenge
+  - id: agent-improvement
+    outcome:
+      Optimize prompts, policies, and small models with train/validation/test separation
+      while detecting overfitting, leakage, reward hacking, and unsafe self-modification.
+    graduate_outcome_ids:
+      - evaluation
+      - safety
+    lesson_ids:
+      - agent-improvement.optimize-prompts-and-programs-on-training-data
+      - agent-improvement.learn-routing-and-selection-policies
+      - agent-improvement.fine-tune-structured-tool-use
+      - agent-improvement.detect-reward-hacking-and-unsafe-self-improvement
+    challenge_id: agent-improvement.challenge
+  - id: open-model-inference
+    outcome:
+      Select, serve, quantize, batch, route, and cache open models using measured quality,
+      license, memory, throughput, latency, privacy, and energy tradeoffs.
+    graduate_outcome_ids:
+      - operations
+    lesson_ids:
+      - open-model-inference.match-models-and-licenses-to-tasks
+      - open-model-inference.run-quantized-models-locally
+      - open-model-inference.serve-models-for-throughput
+      - open-model-inference.route-cache-and-fall-back-deliberately
+    challenge_id: open-model-inference.challenge
+  - id: agent-services
+    outcome:
+      Package agents behind clear APIs and workers with persistent state, queues, concurrency
+      control, idempotency, streaming progress, and tenant isolation.
+    graduate_outcome_ids:
+      - reliability
+      - operations
+    lesson_ids:
+      - agent-services.define-service-and-task-apis
+      - agent-services.separate-api-workflow-worker-and-storage-roles
+      - agent-services.control-concurrency-backpressure-and-failure-cascades
+      - agent-services.isolate-tenants-tasks-and-resources
+    challenge_id: agent-services.challenge
+  - id: release-and-recovery
+    outcome:
+      Version every behavior-shaping artifact, enforce CI gates, release gradually, monitor
+      SLOs and drift, and respond to incidents with rollback and learning.
+    graduate_outcome_ids:
+      - operations
+    lesson_ids:
+      - release-and-recovery.version-models-prompts-tools-policies-and-data
+      - release-and-recovery.build-ci-evaluation-and-security-gates
+      - release-and-recovery.release-with-shadows-canaries-flags-and-rollback
+      - release-and-recovery.define-slos-alerts-runbooks-and-postmortems
+    challenge_id: release-and-recovery.challenge
+  - id: architecture-product-decisions
+    outcome:
+      Evaluate total cost, sustainability, human effort, legal/open-source constraints,
+      and product value; simplify or reject agent deployments when evidence demands it.
+    graduate_outcome_ids:
+      - architecture
+      - operations
+    lesson_ids:
+      - architecture-product-decisions.measure-total-cost-per-successful-task
+      - architecture-product-decisions.balance-quality-latency-cost-and-energy
+      - architecture-product-decisions.review-licensing-privacy-governance-and-build-or-buy
+      - architecture-product-decisions.decide-not-to-deploy-or-remove-the-agent
+    challenge_id: architecture-product-decisions.challenge

@@ -1,0 +1,56 @@
+---
+name: Feature Request
+description: Suggest a course, documentation, tooling, or package improvement
+labels: ["enhancement", "needs-triage"]
+
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Thank you for suggesting an improvement for FreeCampus Agentic AI Engineering.
+
+  - type: textarea
+    attributes:
+      label: Summary
+      description: Describe the feature or improvement you would like.
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Area
+      description: Which part of the project would this improve?
+      options:
+        - Agent engineering curriculum
+        - Exercises or quizzes
+        - Debugging material
+        - Evaluation, safety, or production labs
+        - Documentation website
+        - Python helper package
+        - CI / developer tooling
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Learning or user benefit
+      description: Explain who this helps and why.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional Information
+      description: Add examples, references, mockups, or design notes if useful.
+      value: |
+        <!-- Add any extra context here. -->
+    validations:
+      required: false
+
+  - type: checkboxes
+    attributes:
+      label: Community guidelines
+      options:
+        - label: I agree to interact respectfully and constructively.
+          required: true

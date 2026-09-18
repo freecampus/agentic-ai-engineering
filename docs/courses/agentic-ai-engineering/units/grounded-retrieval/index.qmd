@@ -1,0 +1,82 @@
+---
+title: Build Grounded Retrieval and Research Agents Overview
+description: Build and evaluate hybrid retrieval, reranking, multi-hop research, provenance,
+  citation verification, freshness, and abstention.
+content_kind: unit-overview
+content_status: planned
+order: 0
+categories:
+- agentic-ai-engineering
+- grounded-retrieval
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/grounded-retrieval/index.ipynb
+---
+
+::: {.callout-important}
+## Curriculum preview—not a released unit
+The 4 lessons and challenge below are planned. This overview is available
+for orientation; it does not award course progress. The notebook is an orientation
+copy, not a completed instructional lab.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What you will be able to do
+
+Build and evaluate hybrid retrieval, reranking, multi-hop research, provenance, citation verification, freshness, and abstention.
+
+**Phase:** II. Tools and knowledge  
+**Overview:** 20–40 minutes  
+**Planned unit effort:** 8–14 hours, including typing, experiments,
+checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
+
+## 2. Before you begin
+
+Complete the preceding unit, [Engineer Context Instead of Concatenating Prompts](../context-engineering/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
+
+Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
+shared package. Work in a clean Colab/Jupyter notebook or a pinned local `uv`
+environment. The core route will not require provider keys or paid inference.
+Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
+
+## 3. Planned lesson sequence
+
+| Lesson | Evidence you will preserve |
+|---|---|
+| 1. Build Lexical, Dense, and Hybrid Retrieval | Retrieval metrics and per-query error analysis. |
+| 2. Chunk, Filter, and Rerank Deliberately | Ablation table. |
+| 3. Plan Multi-Hop and Structured Research | Research-plan trace with gap status. |
+| 4. Verify Claims, Citations, Freshness, and Abstention | Claim-level citation audit. |
+
+### 1. Build Lexical, Dense, and Hybrid Retrieval
+
+Index an openly licensed corpus and compare BM25-style lexical, dense vector, and hybrid retrieval. Diagnose semantic similarity that ignores an exact critical term.
+
+### 2. Chunk, Filter, and Rerank Deliberately
+
+Test chunk boundaries, metadata filters, parent/child retrieval, and reranking. Link each design choice to answerability rather than generic similarity.
+
+### 3. Plan Multi-Hop and Structured Research
+
+Combine document retrieval with SQL or another structured-data tool. Track subquestions, evidence gaps, and stopping conditions without endlessly searching.
+
+### 4. Verify Claims, Citations, Freshness, and Abstention
+
+Separate citation presence from citation support. Check claim entailment, source authority, dates, conflicting evidence, and insufficient evidence.
+
+## 4. Challenge preview: Produce an Auditable Research Brief
+
+Answer a multi-source question with hybrid retrieval, structured data, claim-level provenance, freshness checks, and justified abstention. Hidden tests include misleading and contradictory sources.
+
+The complete challenge contract, starting fixtures, progressive checks, three-level
+hint ladder, and solution path are not authored yet. Do not interpret this outline
+as an executable assessment. A successful-looking output alone will not establish
+reliability: preserve the inputs, limits, observed behavior, and failed cases too.
+
+## 5. Suggested stopping points
+
+Plan one session per lesson. Before changing an implementation, write a prediction;
+after each session, record what ran, what failed, what changed, and what remains
+unverified. Save a clean run and an architecture note before attempting the challenge.
+Finish with a retrospective on quality, failures, latency, cost, and safety.
+
+[Preview Unit 8: Build Memory That Earns Its Cost](../agent-memory/index.qmd) or [return to the complete course map](../../index.qmd).

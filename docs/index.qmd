@@ -1,0 +1,65 @@
+---
+title: FreeCampus Agentic AI Engineering
+description: Build agents you can inspect, evaluate, defend, and operate.
+page-layout: full
+body-classes: landing-page
+sidebar: false
+toc: false
+---
+
+```{=html}
+<section class="hero" aria-labelledby="course-invitation">
+  <div class="hero-copy">
+    <p class="hero-kicker">FreeCampus · Agentic AI Engineering</p>
+    <h1 id="course-invitation">Build agents.<br>Demand evidence.</h1>
+    <p>Build the simplest system that earns its autonomy. A project-driven course
+      from deterministic fixtures to evaluation, safety, and reliable operations.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="courses/agentic-ai-engineering/index.qmd">Explore the curriculum</a>
+      <a class="btn btn-outline-primary" href="resources/agent-lab.qmd">Try the offline lab</a>
+    </div>
+    <p>Project-ready Python · No paid inference required · In development</p>
+  </div>
+  <div class="hero-demo">
+    <div class="fc-demo-window">
+      <div class="fc-demo-toolbar">
+        <span class="fc-demo-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>offline fixture</span>
+        <span class="fc-demo-status"><i aria-hidden="true"></i>deterministic</span>
+      </div>
+      <pre aria-label="A recorded run from the smoke lab"><code>task         Add 7 and 5
+tool_call    add
+observation  12
+final        12</code></pre>
+    </div>
+    <p>Two decisions. One allowed tool. A trace you can check.</p>
+  </div>
+</section>
+```
+
+::: {.callout-important}
+## The course is in development
+The roadmap contains **25 units, 101 lessons, 25 unit challenges, four numbered
+milestone projects, and a six-stage capstone**. Lessons and challenges are not yet
+released. Unit previews, readiness guidance, project outlines, and the smoke lab
+are available now; previews do not count as completed lessons.
+:::
+
+## What makes the engineering visible?
+
+- **Specify before running:** state success, budgets, permissions, and forbidden actions.
+- **Start offline:** use deterministic fixtures before introducing model variability.
+- **Inspect the run:** preserve tool calls, state transitions, errors, and resource use.
+- **Compare with a baseline:** keep agents only when they improve the measured result.
+- **Make failures teachable:** test boundaries, attacks, cancellation, and recovery.
+- **Defend the decision:** explain limits and trade-offs, including when not to deploy.
+
+## Choose your starting point
+
+[Check your Python readiness](courses/agentic-ai-engineering/readiness.qmd),
+[preview Unit 0](courses/agentic-ai-engineering/units/launch-agent-lab/index.qmd),
+or [read the contributor guide](resources/contributing.qmd).
+
+Core work is designed for Colab/Jupyter and a pinned local environment, without
+paid services. Browser progress, when lessons are released, is local and
+self-reported—not a verified assessment or certificate.

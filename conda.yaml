@@ -1,0 +1,9 @@
+# Optional bootstrap only; uv manages the project environment and dependencies.
+name: fc-agentic
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.12
+  - uv>=0.8.11
+  - nodejs

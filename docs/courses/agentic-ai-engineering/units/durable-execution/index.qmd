@@ -1,0 +1,82 @@
+---
+title: Make Long-Running Agents Durable Overview
+description: Preserve progress across crashes, retries, duplicates, delays, and changing external
+  state without repeating irreversible actions.
+content_kind: unit-overview
+content_status: planned
+order: 0
+categories:
+- agentic-ai-engineering
+- durable-execution
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/durable-execution/index.ipynb
+---
+
+::: {.callout-important}
+## Curriculum preview—not a released unit
+The 4 lessons and challenge below are planned. This overview is available
+for orientation; it does not award course progress. The notebook is an orientation
+copy, not a completed instructional lab.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What you will be able to do
+
+Preserve progress across crashes, retries, duplicates, delays, and changing external state without repeating irreversible actions.
+
+**Phase:** V. Advanced capabilities  
+**Overview:** 20–40 minutes  
+**Planned unit effort:** 8–14 hours, including typing, experiments,
+checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
+
+## 2. Before you begin
+
+Complete the preceding unit, [Build Browser, Computer-Use, and Multimodal Agents](../browser-multimodal-agents/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
+
+Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
+shared package. Work in a clean Colab/Jupyter notebook or a pinned local `uv`
+environment. The core route will not require provider keys or paid inference.
+Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
+
+## 3. Planned lesson sequence
+
+| Lesson | Evidence you will preserve |
+|---|---|
+| 1. Checkpoint Serializable State and Artifacts | Stop/restart parity test. |
+| 2. Use Leases, Heartbeats, Deadlines, and Cancellation | Worker-failure simulation. |
+| 3. Survive Duplicate Delivery and Partial Effects | Fault-injection invariant tests. |
+| 4. Wait for Humans and External Events | Delayed-event simulation. |
+
+### 1. Checkpoint Serializable State and Artifacts
+
+Define checkpoint boundaries, event history, artifact references, schema versions, and resume semantics. Detect non-serializable hidden framework state.
+
+### 2. Use Leases, Heartbeats, Deadlines, and Cancellation
+
+Coordinate ownership of long work, detect abandoned workers, renew leases, propagate deadlines, and cancel nested operations safely.
+
+### 3. Survive Duplicate Delivery and Partial Effects
+
+Apply idempotency, deduplication, transactional outbox, saga, and compensation concepts. Recover from a crash between an external side effect and local checkpoint.
+
+### 4. Wait for Humans and External Events
+
+Pause without consuming a worker, resume after hours or days, validate stale approvals, and recompute assumptions when the environment changes.
+
+## 4. Challenge preview: Finish a Task Across Three Failures
+
+Complete a multi-stage task despite process restart, duplicate message, tool outage, and delayed approval. The system must not lose progress or repeat a protected action.
+
+The complete challenge contract, starting fixtures, progressive checks, three-level
+hint ladder, and solution path are not authored yet. Do not interpret this outline
+as an executable assessment. A successful-looking output alone will not establish
+reliability: preserve the inputs, limits, observed behavior, and failed cases too.
+
+## 5. Suggested stopping points
+
+Plan one session per lesson. Before changing an implementation, write a prediction;
+after each session, record what ran, what failed, what changed, and what remains
+unverified. Save a clean run and an architecture note before attempting the challenge.
+Finish with a retrospective on quality, failures, latency, cost, and safety.
+
+[Preview Unit 20: Improve Agents Without Fooling Yourself](../agent-improvement/index.qmd) or [return to the complete course map](../../index.qmd).

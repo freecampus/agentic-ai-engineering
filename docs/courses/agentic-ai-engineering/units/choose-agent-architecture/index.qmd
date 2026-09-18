@@ -1,0 +1,82 @@
+---
+title: Decide Whether a Problem Needs an Agent Overview
+description: Distinguish programs, workflows, agents, and multi-agent systems; define degrees
+  of autonomy; and select the simplest adequate architecture from evidence.
+content_kind: unit-overview
+content_status: planned
+order: 0
+categories:
+- agentic-ai-engineering
+- choose-agent-architecture
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-architecture/index.ipynb
+---
+
+::: {.callout-important}
+## Curriculum preview—not a released unit
+The 4 lessons and challenge below are planned. This overview is available
+for orientation; it does not award course progress. The notebook is an orientation
+copy, not a completed instructional lab.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What you will be able to do
+
+Distinguish programs, workflows, agents, and multi-agent systems; define degrees of autonomy; and select the simplest adequate architecture from evidence.
+
+**Phase:** I. Foundations  
+**Overview:** 20–40 minutes  
+**Planned unit effort:** 8–14 hours, including typing, experiments,
+checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
+
+## 2. Before you begin
+
+Complete the preceding unit, [Launch a Reproducible Agent Engineering Lab](../launch-agent-lab/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
+
+Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
+shared package. Work in a clean Colab/Jupyter notebook or a pinned local `uv`
+environment. The core route will not require provider keys or paid inference.
+Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
+
+## 3. Planned lesson sequence
+
+| Lesson | Evidence you will preserve |
+|---|---|
+| 1. Separate Automation, Workflows, and Agents | Classification table with disputed cases and defended criteria. |
+| 2. Model the Agent–Environment Loop | State-transition trace and diagram. |
+| 3. Bound Autonomy with Task Contracts | Validated task-contract schema and examples. |
+| 4. Choose the Simplest Adequate Architecture | Architecture decision record with rejection reasons. |
+
+### 1. Separate Automation, Workflows, and Agents
+
+Compare deterministic scripts, DAGs, state machines, LLM workflows, and feedback-driven agents. Classify systems by who chooses the next action, what feedback is available, and how termination is controlled.
+
+### 2. Model the Agent–Environment Loop
+
+Represent observations, internal state, actions, environment transitions, objectives, costs, and terminal states. Trace a small grid-world and a tool-using assistant through the same conceptual loop.
+
+### 3. Bound Autonomy with Task Contracts
+
+Translate user intent into measurable success, permissions, budgets, deadlines, approval gates, escalation, and forbidden outcomes. Identify underspecified contracts that invite unsafe or wasteful behavior.
+
+### 4. Choose the Simplest Adequate Architecture
+
+Compare a rule, retrieval query, workflow, single agent, and multi-agent system for the same scenario. Calculate the additional failure surface introduced by each level of autonomy.
+
+## 4. Challenge preview: De-Agentify an Overbuilt System
+
+Simplify a fictional five-agent customer-request system while preserving required behavior. The solution must demonstrate fewer model decisions, lower expected cost, and equal or better test performance.
+
+The complete challenge contract, starting fixtures, progressive checks, three-level
+hint ladder, and solution path are not authored yet. Do not interpret this outline
+as an executable assessment. A successful-looking output alone will not establish
+reliability: preserve the inputs, limits, observed behavior, and failed cases too.
+
+## 5. Suggested stopping points
+
+Plan one session per lesson. Before changing an implementation, write a prediction;
+after each session, record what ran, what failed, what changed, and what remains
+unverified. Save a clean run and an architecture note before attempting the challenge.
+Finish with a retrospective on quality, failures, latency, cost, and safety.
+
+[Preview Unit 2: Treat Language Models as Probabilistic Components](../probabilistic-models/index.qmd) or [return to the complete course map](../../index.qmd).

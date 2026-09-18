@@ -1,0 +1,68 @@
+---
+title: Replace with a Concrete Engineering Action
+lesson_id: unit-id.lesson-slug
+lesson_order: 10
+description: Replace with one measurable outcome.
+content_kind: lesson
+content_status: draft
+execute:
+  echo: true
+categories: [agentic-ai-engineering, unit-id, topic]
+order: 10
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/unit-id/lesson-slug.ipynb
+course_id: agentic-ai-engineering
+unit_id: unit-id
+unit_number: 0
+notebook_package: true
+---
+
+<!-- Authoring scaffold: copy to its catalog path, replace every placeholder,
+review against AGENTS.md, and set available only after validation. -->
+
+::: {.lesson-meta}
+- **Level:** Project-ready Python; name the new engineering layer.
+- **Estimated time:** 1.5–2.5 hours, calibrated against active work.
+- **Prerequisites:** Name earlier lessons and exact skills.
+- **You will learn:** One measurable engineering outcome.
+- **Practice in:** Colab, JupyterLab, or a pinned local environment.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+State the task contract and three to five concrete learner questions. Use specific
+numbered headings named for the artifact, behavior, or failure being investigated.
+
+<!-- Author distinct concept, trace/evidence, and failure-diagnosis sections.
+Before each important run: ask for a prediction, provide runnable code and expected
+evidence, explain the boundary, then make one controlled change. Include a baseline,
+ordinary and adversarial fixtures, budget enforcement, and one realistic repair.
+Do not silently depend on later concepts. -->
+
+<!-- Place each valid JSON quiz immediately after the concepts it assesses,
+followed by the OJS include. Use unique quiz/question IDs and rotate answer_index.
+A sample shape follows; replace it rather than publishing this placeholder. -->
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{"id":"replace-checkpoint-id","title":"Replace with a specific checkpoint","instructions":"Choose the best answer.","questions":[{"id":"replace-question-id","prompt":"Replace with code or evidence to interpret.","options":["Plausible option A","Plausible option B","Plausible option C","Plausible option D"],"answer_index":0,"explanation":"Explain why the answer follows from the preceding evidence."}]}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+<!-- Author two additional short checkpoints in their relevant sections. -->
+
+## Build and check the finished artifact
+
+Replace this heading with the lab's actual task. Supply inputs, a baseline, limits,
+and independent acceptance assertions. Include a boundary and an injected failure.
+
+<details>
+<summary>Hint: identify the earliest failing contract</summary>
+
+Replace with task-specific guidance and a hidden solution path.
+
+</details>
+
+## Key points
+
+Summarize observable behavior, limitations, and one defensible architecture decision.
+Finish with descriptive links to reviewed primary references. Preserve an engineering
+journal entry with versions, inputs, predictions, traces, failures, and checks.

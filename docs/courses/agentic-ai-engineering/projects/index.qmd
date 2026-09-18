@@ -1,0 +1,50 @@
+---
+title: Milestone Project Outlines
+content_kind: project-outline
+content_status: planned
+colab_notebook: notebooks/courses/agentic-ai-engineering/projects/index.ipynb
+---
+
+::: {.callout-important}
+These are project outlines, not released assessments. Starting code, rubrics, and
+acceptance gates will be authored with their units.
+:::
+
+{{< include ../../../_includes/colab-link.qmd >}}
+
+## Four numbered milestones
+
+Milestones extend unit challenges rather than adding four more challenges to the
+course total. Allow a provisional 6–12 hours for each refinement, subject to piloting.
+
+## 1. Ship a Transparent Research Assistant {#milestone-1}
+
+Build a framework-free assistant with two read-only tools, typed state, citations, budgets, tests, traces, and a deterministic baseline. Submit an evaluation showing whether agentic control adds value.
+
+[Preview Unit 4](../units/reason-plan-verify/index.qmd). Preserve a reproducible environment, baseline, tests, traces, measured trade-offs, and limitations.
+
+## 2. Ship a Grounded Knowledge Worker {#milestone-2}
+
+Extend the research assistant with evaluated hybrid retrieval, bounded memory, provenance, and user-controlled deletion. Show that memory improves a longitudinal task without harming privacy or contradiction handling.
+
+[Preview Unit 8](../units/agent-memory/index.qmd). Preserve a reproducible environment, baseline, tests, traces, measured trade-offs, and limitations.
+
+## 3. Deliver a Defended Agent {#milestone-3}
+
+Take the grounded knowledge worker through evaluation, observability, threat modeling, red-team testing, and human-control review. Repair the highest-risk failure and demonstrate the regression gate.
+
+[Preview Unit 16](../units/human-control/index.qmd). Preserve a reproducible environment, baseline, tests, traces, measured trade-offs, and limitations.
+
+## 4. Present a Production Candidate {#milestone-4}
+
+Deliver an open-source-first agent service with durable execution, local-model support, observability, security controls, CI gates, SLOs, cost model, and rollback. Defend why each autonomous decision remains necessary.
+
+[Preview Unit 24](../units/architecture-product-decisions/index.qmd). Preserve a reproducible environment, baseline, tests, traces, measured trade-offs, and limitations.
+
+## Architecture and advanced checkpoints
+
+Unit 12 asks you to defend a single- or multi-agent design; Unit 20 asks you to build
+a durable specialist. These are additional integration checkpoints, not numbered
+milestone projects. Cumulative reviews follow Units 4, 8, 12, 16, 20, and 24.
+
+Continue to the [capstone outline](../capstone/index.qmd).

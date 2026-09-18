@@ -1,0 +1,43 @@
+---
+title: Course FAQ
+description: What is available, what you need, and what progress means.
+---
+
+## Is the complete course available?
+
+No. The curriculum is in development. The [course map](../courses/agentic-ai-engineering/index.qmd)
+labels the 101 lessons and 25 challenges as planned. The smoke lab and unit outlines
+are useful preparation, not substitutes for the future lessons.
+
+## Do I need to know Python?
+
+Yes: project-ready Python or equivalent readiness. Check functions, collections,
+modules, exceptions, virtual environments, and tests in the
+[readiness guide](../courses/agentic-ai-engineering/readiness.qmd).
+This course does not re-teach beginner Python as an agent curriculum.
+
+## Must I buy API credits or have a GPU?
+
+No paid service is required for the core route. The current smoke lab uses a
+standard-library fake model, without inference or network calls. Later lessons will
+provide deterministic fixtures alongside documented open-model/free execution paths.
+Optional provider comparisons must disclose costs and keep keys out of artifacts.
+
+## How do the notebooks work?
+
+The website's QMD pages are canonical. The build exports notebook copies to the
+published site; Colab links work after that branch is deployed. Overview notebooks
+contain orientation only. The smoke notebook bundles the small course package so its
+Python examples can execute offline without installing a package from a registry.
+
+## Is browser completion a qualification?
+
+No. It is a local convenience, not verified assessment, identity, or certification.
+It does not sync between devices and can disappear when storage is cleared.
+Completion controls remain disabled for planned material. No certificate is offered.
+
+## Where should I report a problem?
+
+Use the [repository issue tracker](https://github.com/freecampus/agentic-ai-engineering/issues).
+Include the page, environment, smallest reproduction, expected and actual behavior,
+and a redacted trace. Never include provider keys, personal data, or private prompts.

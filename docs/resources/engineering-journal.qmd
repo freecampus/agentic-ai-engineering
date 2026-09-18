@@ -1,0 +1,41 @@
+---
+title: Keep an Engineering Journal
+description: Record enough evidence to reproduce a decision without collecting secrets.
+content_kind: reference
+colab_notebook: notebooks/resources/engineering-journal.ipynb
+---
+
+{{< include ../_includes/colab-link.qmd >}}
+
+## One record per controlled change
+
+Copy this outline into a notebook Markdown cell or a text file beside your project.
+Do not treat a confident explanation as a substitute for a recorded test.
+
+| Field | What to record |
+|---|---|
+| Task contract | Input, success, stop condition, budget, permission, forbidden actions |
+| Baseline | The simplest non-agentic solution and the same test inputs |
+| Prediction | Expected output or failure before you run |
+| Run manifest | Code revision, environment, fixture/model configuration, command |
+| Observation | Output, state, tool calls, latency/cost where measured |
+| Failure | Expected versus actual, smallest reproducer, earliest failing boundary |
+| Change | One controlled edit and its rationale |
+| Evaluation | Ordinary, boundary, and adversarial cases; repeated trials where relevant |
+| Decision | Keep, simplify, reject, or investigate; explain the limitation |
+
+## Preserve a useful failure
+
+For the smoke lab, try a one-decision budget. Record that addition executes but a
+final answer does not: the second decision is forbidden by the limit. Do not
+rewrite the expected status simply to make a test pass. Contrast this with a normal
+two-decision run and explain which behavior is part of the runtime contract.
+
+## Keep the record safe
+
+Use synthetic data. Record concise observable action rationales, not private
+chain-of-thought. Redact credentials, personal data, authenticated page contents,
+and sensitive tool payloads. A recorded fixture is redistributed data: check its
+license and permission before adding it to the repository.
+
+[Run the smoke lab](agent-lab.qmd) or [preview the capstone evidence](../courses/agentic-ai-engineering/capstone/index.qmd).

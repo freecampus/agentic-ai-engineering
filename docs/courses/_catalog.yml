@@ -1,0 +1,1629 @@
+schema_version: 1
+curriculum_version: 1
+courses:
+  - id: agentic-ai-engineering
+    title: Agentic AI Engineering
+    status: in-development
+    curriculum_version: 1
+    home: courses/agentic-ai-engineering/index.qmd
+    prerequisite: Project-ready Python or equivalent readiness assessment
+    estimated_effort: 240–360 hours plus optional extensions (draft estimate)
+    planned_unit_count: 25
+    planned_lesson_count: 101
+    planned_challenge_count: 25
+    available_lesson_count: 0
+    available_challenge_count: 0
+    completion:
+      enabled: false
+      recognition: local-self-reported
+      rule_version: 1
+      lesson_ids: []
+      challenge_ids: []
+    units:
+      - number: 0
+        id: launch-agent-lab
+        title: Launch a Reproducible Agent Engineering Lab
+        phase: Orientation
+        status: planned
+        overview: courses/agentic-ai-engineering/units/launch-agent-lab/index.qmd
+        prerequisite_unit_ids: []
+        outcome:
+          Run, inspect, and modify a small deterministic agent in Colab; reproduce it locally;
+          keep secrets out of artifacts; and distinguish model, runtime, tool, environment, and
+          trace evidence.
+        estimated_effort: 10–16 hours
+        lessons:
+          - id: launch-agent-lab.meet-a-tiny-agent
+            title: Meet an Agent Through a Tiny Complete Run
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/launch-agent-lab/meet-a-tiny-agent.qmd
+            summary:
+              Run a three-step deterministic agent that reads a task, chooses a calculator
+              tool, and returns a result. Learners map every source object to the visible trajectory,
+              predict one controlled edit, and repair a malformed tool result.
+            evidence:
+              annotated event log connecting task, model decision, tool call, observation,
+              and final answer.
+          - id: launch-agent-lab.learn-with-evidence
+            title: Learn with Specifications and Evidence
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/launch-agent-lab/learn-with-evidence.qmd
+            summary:
+              Turn a vague request into a task contract containing success, stop, budget,
+              escalation, and forbidden-action rules. Compare a convincing demo with a reproducible
+              test and learn why one successful run is not evidence of reliability.
+            evidence: task contract plus a prediction/run/explanation record.
+          - id: launch-agent-lab.use-ai-responsibly
+            title: Use AI Assistance Without Outsourcing Judgment
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/launch-agent-lab/use-ai-responsibly.qmd
+            summary:
+              "Establish a responsible assistance protocol for course work: disclose assistance,
+              protect data and credentials, verify generated claims and code, and preserve the learner’s
+              own reasoning. Diagnose a confident but unsafe suggested tool implementation."
+            evidence: verification checklist and corrected implementation rationale.
+          - id: launch-agent-lab.work-in-notebooks
+            title: Work Reliably in Colab and Jupyter
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/launch-agent-lab/work-in-notebooks.qmd
+            summary:
+              Inspect notebook state, execution order, package installation, files, runtime
+              resets, and reproducibility. Recover a notebook whose apparent success depends on
+              stale variables and an unrecorded package version.
+            evidence: clean restart-and-run transcript.
+          - id: launch-agent-lab.build-local-workspace
+            title: Build a Dependable Local Workspace
+            order: 50
+            status: planned
+            path: courses/agentic-ai-engineering/units/launch-agent-lab/build-local-workspace.qmd
+            summary:
+              Create the course environment with Git, `uv`, Python, pytest, Ruff, type checking,
+              and environment-variable configuration on Windows, macOS, or Linux. Run the same smoke
+              test locally and in Colab.
+            evidence: environment report and passing cross-environment smoke test.
+        challenge:
+          id: launch-agent-lab.challenge
+          title: Prove the Lab Is Ready
+          status: planned
+          path: courses/agentic-ai-engineering/units/launch-agent-lab/challenge.qmd
+          summary:
+            Repair a deliberately stale notebook and broken local project, run the tiny
+            agent from clean state, reject an unsafe AI-generated fix, and submit a launch card
+            containing versions, commands, outputs, and unresolved limitations.
+          estimated_time: 90–180 minutes
+      - number: 1
+        id: choose-agent-architecture
+        title: Decide Whether a Problem Needs an Agent
+        phase: I. Foundations
+        status: planned
+        overview: courses/agentic-ai-engineering/units/choose-agent-architecture/index.qmd
+        prerequisite_unit_ids:
+          - launch-agent-lab
+        outcome:
+          Distinguish programs, workflows, agents, and multi-agent systems; define degrees
+          of autonomy; and select the simplest adequate architecture from evidence.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: choose-agent-architecture.separate-automation-workflows-and-agents
+            title: Separate Automation, Workflows, and Agents
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/choose-agent-architecture/separate-automation-workflows-and-agents.qmd
+            summary:
+              Compare deterministic scripts, DAGs, state machines, LLM workflows, and feedback-driven
+              agents. Classify systems by who chooses the next action, what feedback is available,
+              and how termination is controlled.
+            evidence: classification table with disputed cases and defended criteria.
+          - id: choose-agent-architecture.model-the-agent-environment-loop
+            title: Model the Agent–Environment Loop
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/choose-agent-architecture/model-the-agent-environment-loop.qmd
+            summary:
+              Represent observations, internal state, actions, environment transitions, objectives,
+              costs, and terminal states. Trace a small grid-world and a tool-using assistant through
+              the same conceptual loop.
+            evidence: state-transition trace and diagram.
+          - id: choose-agent-architecture.bound-autonomy-with-task-contracts
+            title: Bound Autonomy with Task Contracts
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/choose-agent-architecture/bound-autonomy-with-task-contracts.qmd
+            summary:
+              Translate user intent into measurable success, permissions, budgets, deadlines,
+              approval gates, escalation, and forbidden outcomes. Identify underspecified contracts
+              that invite unsafe or wasteful behavior.
+            evidence: validated task-contract schema and examples.
+          - id: choose-agent-architecture.choose-the-simplest-adequate-architecture
+            title: Choose the Simplest Adequate Architecture
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/choose-agent-architecture/choose-the-simplest-adequate-architecture.qmd
+            summary:
+              Compare a rule, retrieval query, workflow, single agent, and multi-agent system
+              for the same scenario. Calculate the additional failure surface introduced by each
+              level of autonomy.
+            evidence: architecture decision record with rejection reasons.
+        challenge:
+          id: choose-agent-architecture.challenge
+          title: De-Agentify an Overbuilt System
+          status: planned
+          path: courses/agentic-ai-engineering/units/choose-agent-architecture/challenge.qmd
+          summary:
+            Simplify a fictional five-agent customer-request system while preserving required
+            behavior. The solution must demonstrate fewer model decisions, lower expected cost,
+            and equal or better test performance.
+          estimated_time: 90–180 minutes
+      - number: 2
+        id: probabilistic-models
+        title: Treat Language Models as Probabilistic Components
+        phase: I. Foundations
+        status: planned
+        overview: courses/agentic-ai-engineering/units/probabilistic-models/index.qmd
+        prerequisite_unit_ids:
+          - choose-agent-architecture
+        outcome:
+          Explain how messages become model outputs, enforce structured responses, measure
+          nondeterminism, and select models by evidence and license.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: probabilistic-models.follow-tokens-messages-and-context
+            title: Follow Tokens, Messages, and Context
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/probabilistic-models/follow-tokens-messages-and-context.qmd
+            summary:
+              Inspect tokenization, chat templates, roles, special tokens, and context limits.
+              Predict how message ordering and truncation change the model-visible input.
+            evidence: rendered prompt/context report without hidden reasoning collection.
+          - id: probabilistic-models.control-sampling-and-nondeterminism
+            title: Control Sampling and Nondeterminism
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/probabilistic-models/control-sampling-and-nondeterminism.qmd
+            summary:
+              Experiment with temperature, top-p, seeds, and repeated runs. Separate reproducibility
+              of code and inputs from reproducibility of hosted model outputs.
+            evidence: distribution of outcomes across repeated trials.
+          - id: probabilistic-models.make-outputs-machine-checkable
+            title: Make Outputs Machine-Checkable
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/probabilistic-models/make-outputs-machine-checkable.qmd
+            summary:
+              Move from prose parsing to JSON Schema, typed validation, constrained decoding,
+              and repair or rejection policies. Test malformed, partial, and semantically invalid
+              outputs.
+            evidence: schema-validation suite and failure taxonomy.
+          - id: probabilistic-models.compare-open-models-responsibly
+            title: Compare Open Models Responsibly
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/probabilistic-models/compare-open-models-responsibly.qmd
+            summary:
+              Distinguish open weights, source, data, and licenses; inspect model cards;
+              and evaluate small models on a narrow course task. Avoid choosing from benchmark headlines
+              alone.
+            evidence: model-selection card containing license, hardware, quality, latency, and limitations.
+        challenge:
+          id: probabilistic-models.challenge
+          title: Build a Reliable Decision Component
+          status: planned
+          path: courses/agentic-ai-engineering/units/probabilistic-models/challenge.qmd
+          summary:
+            Create a typed routing component backed by a fake model and at least one open
+            model. It must reject invalid outputs, expose uncertainty through observable signals,
+            and pass a repeated-run evaluation.
+          estimated_time: 90–180 minutes
+      - number: 3
+        id: minimal-agent-runtime
+        title: Build a Minimal Agent Runtime
+        phase: I. Foundations
+        status: planned
+        overview: courses/agentic-ai-engineering/units/minimal-agent-runtime/index.qmd
+        prerequisite_unit_ids:
+          - probabilistic-models
+        outcome:
+          Implement a framework-free, typed agent loop with explicit state, events, budgets,
+          termination, and deterministic tests.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: minimal-agent-runtime.represent-state-and-events-explicitly
+            title: Represent State and Events Explicitly
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/minimal-agent-runtime/represent-state-and-events-explicitly.qmd
+            summary:
+              Design typed task, message, tool-call, observation, budget, and result records.
+              Compare mutable hidden state with an append-only event history and derived state.
+            evidence: serialized trajectory that can be inspected and replayed.
+          - id: minimal-agent-runtime.implement-the-decide-act-observe-loop
+            title: Implement the Decide–Act–Observe Loop
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/minimal-agent-runtime/implement-the-decide-act-observe-loop.qmd
+            summary:
+              Write the smallest complete agent loop in plain Python. Trace normal execution,
+              a tool error, and a model request for an unavailable capability.
+            evidence: tested runtime with fake model and tool ports.
+          - id: minimal-agent-runtime.make-termination-and-budgets-enforceable
+            title: Make Termination and Budgets Enforceable
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/minimal-agent-runtime/make-termination-and-budgets-enforceable.qmd
+            summary:
+              Add maximum steps, time, tokens, cost, repeated-action detection, and explicit
+              success/failure states. Diagnose loops that merely ask the model to stop itself.
+            evidence: tests proving every budget terminates execution.
+          - id: minimal-agent-runtime.stream-cancel-and-handle-async-work
+            title: Stream, Cancel, and Handle Async Work
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/minimal-agent-runtime/stream-cancel-and-handle-async-work.qmd
+            summary:
+              Introduce async model/tool calls, progress events, cancellation, deadlines,
+              and cleanup. Repair a runtime that leaks a task after cancellation.
+            evidence: cancellation and timeout integration tests.
+        challenge:
+          id: minimal-agent-runtime.challenge
+          title: Complete the Transparent Runtime
+          status: planned
+          path: courses/agentic-ai-engineering/units/minimal-agent-runtime/challenge.qmd
+          summary:
+            Extend a partial runtime to survive malformed decisions, tool timeouts, repeated
+            actions, cancellation, and budget exhaustion while preserving a complete event log.
+          estimated_time: 90–180 minutes
+      - number: 4
+        id: reason-plan-verify
+        title: Reason, Search, Plan, and Verify
+        phase: I. Foundations
+        status: planned
+        overview: courses/agentic-ai-engineering/units/reason-plan-verify/index.qmd
+        prerequisite_unit_ids:
+          - minimal-agent-runtime
+        outcome:
+          Compare direct response, ReAct-style interaction, planning, reflection, and search;
+          then choose a strategy using quality, latency, and cost evidence.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: reason-plan-verify.connect-agent-reasoning-to-search-and-decision-processes
+            title: Connect Agent Reasoning to Search and Decision Processes
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/reason-plan-verify/connect-agent-reasoning-to-search-and-decision-processes.qmd
+            summary:
+              Use state spaces, actions, transition uncertainty, heuristics, and partial
+              observability to explain agent behavior. Relate MDP/POMDP ideas to tool-using systems
+              without requiring a full formal treatment.
+            evidence: formalized small task and search tree.
+          - id: reason-plan-verify.interleave-reasoning-and-acting
+            title: Interleave Reasoning and Acting
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/reason-plan-verify/interleave-reasoning-and-acting.qmd
+            summary:
+              Implement a ReAct-like loop using concise external action rationales rather
+              than collecting private chain-of-thought. Detect action drift and unsupported conclusions.
+            evidence: trajectory grader for action relevance and observation use.
+          - id: reason-plan-verify.separate-planning-from-execution
+            title: Separate Planning from Execution
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/reason-plan-verify/separate-planning-from-execution.qmd
+            summary:
+              Build planner–executor behavior with plan validation, revision, and state updates.
+              Test plans against unavailable tools, hidden dependencies, and changing observations.
+            evidence: plan schema and revision tests.
+          - id: reason-plan-verify.add-reflection-and-search-only-when-they-help
+            title: Add Reflection and Search Only When They Help
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/reason-plan-verify/add-reflection-and-search-only-when-they-help.qmd
+            summary:
+              Compare critique/revision, verifier loops, best-of-N, and tree search. Measure
+              cases where extra inference increases confidence, latency, or correlated error without
+              improving success.
+            evidence: quality–latency–cost comparison.
+        challenge:
+          id: reason-plan-verify.challenge
+          title: Ship a Transparent Research Assistant
+          status: planned
+          path: courses/agentic-ai-engineering/units/reason-plan-verify/challenge.qmd
+          summary:
+            Build a framework-free assistant with two read-only tools, typed state, citations,
+            budgets, tests, traces, and a deterministic baseline. Submit an evaluation showing
+            whether agentic control adds value.
+          estimated_time: 90–180 minutes
+      - number: 5
+        id: tool-capability-boundaries
+        title: Design Tools as Capability Boundaries
+        phase: II. Tools and knowledge
+        status: planned
+        overview: courses/agentic-ai-engineering/units/tool-capability-boundaries/index.qmd
+        prerequisite_unit_ids:
+          - reason-plan-verify
+        outcome:
+          Create typed, least-privilege tools with clear semantics for validation, errors,
+          retries, idempotency, side effects, and authorization.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: tool-capability-boundaries.write-tool-contracts-models-can-use
+            title: Write Tool Contracts Models Can Use
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/tool-capability-boundaries/write-tool-contracts-models-can-use.qmd
+            summary:
+              Design names, descriptions, schemas, examples, preconditions, and postconditions
+              that separate model-facing affordances from implementation details. Measure how ambiguous
+              schemas affect tool selection.
+            evidence: contract tests and selection evaluation.
+          - id: tool-capability-boundaries.normalize-errors-timeouts-and-cancellation
+            title: Normalize Errors, Timeouts, and Cancellation
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/tool-capability-boundaries/normalize-errors-timeouts-and-cancellation.qmd
+            summary:
+              Create a tool-result envelope distinguishing invalid input, denied action,
+              transient failure, permanent failure, partial result, timeout, and cancellation. Prevent
+              raw stack traces or secrets from entering model context.
+            evidence: error-mapping test matrix.
+          - id: tool-capability-boundaries.make-retries-and-side-effects-safe
+            title: Make Retries and Side Effects Safe
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/tool-capability-boundaries/make-retries-and-side-effects-safe.qmd
+            summary:
+              Separate queries from commands; introduce idempotency keys, deduplication,
+              retry policies, and compensation. Diagnose a duplicate-charge scenario caused by naive
+              retry.
+            evidence: proof that repeated delivery causes one intended effect.
+          - id: tool-capability-boundaries.enforce-least-privilege-and-approval
+            title: Enforce Least Privilege and Approval
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/tool-capability-boundaries/enforce-least-privilege-and-approval.qmd
+            summary:
+              Scope credentials and tools by task, resource, action, and time. Add policy
+              checks and human confirmation for high-impact, irreversible, or externally visible
+              operations.
+            evidence: authorization table and denied-action traces.
+        challenge:
+          id: tool-capability-boundaries.challenge
+          title: Harden a Ticketing Toolset
+          status: planned
+          path: courses/agentic-ai-engineering/units/tool-capability-boundaries/challenge.qmd
+          summary:
+            Repair tools that expose secrets, retry unsafe actions, mix errors with data,
+            and grant excessive access. Pass contract, fault-injection, and authorization tests.
+          estimated_time: 90–180 minutes
+      - number: 6
+        id: context-engineering
+        title: Engineer Context Instead of Concatenating Prompts
+        phase: II. Tools and knowledge
+        status: planned
+        overview: courses/agentic-ai-engineering/units/context-engineering/index.qmd
+        prerequisite_unit_ids:
+          - tool-capability-boundaries
+        outcome:
+          Assemble a bounded, provenance-aware context from instructions, state, data,
+          and tool results while managing conflicts, trust, and compression.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: context-engineering.classify-context-by-purpose-and-trust
+            title: Classify Context by Purpose and Trust
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/context-engineering/classify-context-by-purpose-and-trust.qmd
+            summary:
+              Separate system policy, developer instruction, user request, retrieved data,
+              tool output, memory, and generated scratch artifacts. Resolve priority without treating
+              untrusted content as instruction.
+            evidence: context manifest with source and trust labels.
+          - id: context-engineering.select-and-order-the-working-set
+            title: Select and Order the Working Set
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/context-engineering/select-and-order-the-working-set.qmd
+            summary:
+              Implement relevance, recency, authority, diversity, and token-budget rules.
+              Test lost-in-the-middle behavior and ordering sensitivity.
+            evidence: context-selection evaluation.
+          - id: context-engineering.compress-without-inventing-state
+            title: Compress Without Inventing State
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/context-engineering/compress-without-inventing-state.qmd
+            summary:
+              Compare truncation, extractive selection, structured summaries, and hierarchical
+              compression. Preserve decisions, unresolved questions, provenance, and constraints
+              across compression.
+            evidence: compression fidelity tests.
+          - id: context-engineering.detect-conflict-contamination-and-context-rot
+            title: Detect Conflict, Contamination, and Context Rot
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/context-engineering/detect-conflict-contamination-and-context-rot.qmd
+            summary:
+              Introduce conflicting instructions, stale records, and malicious retrieved
+              text. Build policies for exclusion, quarantine, user clarification, and source-aware
+              disagreement.
+            evidence: adversarial context suite.
+        challenge:
+          id: context-engineering.challenge
+          title: Rescue an Overloaded Context Window
+          status: planned
+          path: courses/agentic-ai-engineering/units/context-engineering/challenge.qmd
+          summary:
+            Reduce an oversized, contradictory context while maintaining task success and
+            citations. Demonstrate lower token usage and equal or better held-out performance.
+          estimated_time: 90–180 minutes
+      - number: 7
+        id: grounded-retrieval
+        title: Build Grounded Retrieval and Research Agents
+        phase: II. Tools and knowledge
+        status: planned
+        overview: courses/agentic-ai-engineering/units/grounded-retrieval/index.qmd
+        prerequisite_unit_ids:
+          - context-engineering
+        outcome:
+          Build and evaluate hybrid retrieval, reranking, multi-hop research, provenance,
+          citation verification, freshness, and abstention.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: grounded-retrieval.build-lexical-dense-and-hybrid-retrieval
+            title: Build Lexical, Dense, and Hybrid Retrieval
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/grounded-retrieval/build-lexical-dense-and-hybrid-retrieval.qmd
+            summary:
+              Index an openly licensed corpus and compare BM25-style lexical, dense vector,
+              and hybrid retrieval. Diagnose semantic similarity that ignores an exact critical
+              term.
+            evidence: retrieval metrics and per-query error analysis.
+          - id: grounded-retrieval.chunk-filter-and-rerank-deliberately
+            title: Chunk, Filter, and Rerank Deliberately
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/grounded-retrieval/chunk-filter-and-rerank-deliberately.qmd
+            summary:
+              Test chunk boundaries, metadata filters, parent/child retrieval, and reranking.
+              Link each design choice to answerability rather than generic similarity.
+            evidence: ablation table.
+          - id: grounded-retrieval.plan-multi-hop-and-structured-research
+            title: Plan Multi-Hop and Structured Research
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/grounded-retrieval/plan-multi-hop-and-structured-research.qmd
+            summary:
+              Combine document retrieval with SQL or another structured-data tool. Track
+              subquestions, evidence gaps, and stopping conditions without endlessly searching.
+            evidence: research-plan trace with gap status.
+          - id: grounded-retrieval.verify-claims-citations-freshness-and-abstention
+            title: Verify Claims, Citations, Freshness, and Abstention
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/grounded-retrieval/verify-claims-citations-freshness-and-abstention.qmd
+            summary:
+              Separate citation presence from citation support. Check claim entailment, source
+              authority, dates, conflicting evidence, and insufficient evidence.
+            evidence: claim-level citation audit.
+        challenge:
+          id: grounded-retrieval.challenge
+          title: Produce an Auditable Research Brief
+          status: planned
+          path: courses/agentic-ai-engineering/units/grounded-retrieval/challenge.qmd
+          summary:
+            Answer a multi-source question with hybrid retrieval, structured data, claim-level
+            provenance, freshness checks, and justified abstention. Hidden tests include misleading
+            and contradictory sources.
+          estimated_time: 90–180 minutes
+      - number: 8
+        id: agent-memory
+        title: Build Memory That Earns Its Cost
+        phase: II. Tools and knowledge
+        status: planned
+        overview: courses/agentic-ai-engineering/units/agent-memory/index.qmd
+        prerequisite_unit_ids:
+          - grounded-retrieval
+        outcome:
+          Design working, episodic, semantic, and procedural memory with controlled writes,
+          retrieval, consolidation, privacy, deletion, and poisoning defenses.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: agent-memory.separate-memory-types-and-lifecycles
+            title: Separate Memory Types and Lifecycles
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-memory/separate-memory-types-and-lifecycles.qmd
+            summary:
+              Map working state, event history, user facts, learned procedures, and cached
+              artifacts to distinct stores and lifetimes. Avoid treating the entire transcript as
+              memory.
+            evidence: memory architecture and retention table.
+          - id: agent-memory.decide-what-may-be-written
+            title: Decide What May Be Written
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-memory/decide-what-may-be-written.qmd
+            summary:
+              Implement consent, validation, salience, confidence, source, TTL, and sensitivity
+              policies. Reject speculative or sensitive facts from automatic long-term storage.
+            evidence: memory-write policy tests.
+          - id: agent-memory.retrieve-consolidate-and-resolve-contradictions
+            title: Retrieve, Consolidate, and Resolve Contradictions
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-memory/retrieve-consolidate-and-resolve-contradictions.qmd
+            summary:
+              Rank memories by relevance, authority, recency, and confidence; consolidate
+              duplicates; surface conflicts. Compare synchronous and background consolidation.
+            evidence: longitudinal memory benchmark.
+          - id: agent-memory.protect-inspect-correct-and-delete-memory
+            title: Protect, Inspect, Correct, and Delete Memory
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-memory/protect-inspect-correct-and-delete-memory.qmd
+            summary:
+              Add user inspection, correction, export, deletion, and poisoning detection.
+              Verify deletion across indexes, caches, and summaries.
+            evidence: deletion and poisoning audit.
+        challenge:
+          id: agent-memory.challenge
+          title: Ship a Grounded Knowledge Worker
+          status: planned
+          path: courses/agentic-ai-engineering/units/agent-memory/challenge.qmd
+          summary:
+            Extend the research assistant with evaluated hybrid retrieval, bounded memory,
+            provenance, and user-controlled deletion. Show that memory improves a longitudinal
+            task without harming privacy or contradiction handling.
+          estimated_time: 90–180 minutes
+      - number: 9
+        id: agentic-design-patterns
+        title: Compose Agentic Design Patterns
+        phase: III. Architecture
+        status: planned
+        overview: courses/agentic-ai-engineering/units/agentic-design-patterns/index.qmd
+        prerequisite_unit_ids:
+          - agent-memory
+        outcome:
+          Implement and compare chaining, routing, parallelization, orchestrator–worker,
+          evaluator–optimizer, reflection, and state-machine patterns.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: agentic-design-patterns.chain-and-route-predictably
+            title: Chain and Route Predictably
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/agentic-design-patterns/chain-and-route-predictably.qmd
+            summary:
+              Build typed prompt chains and routers with explicit fallbacks. Measure error
+              propagation and routing confusion against a single-call baseline.
+            evidence: routing matrix and chain failure trace.
+          - id: agentic-design-patterns.parallelize-independent-work
+            title: Parallelize Independent Work
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/agentic-design-patterns/parallelize-independent-work.qmd
+            summary:
+              Use concurrency for independent tasks, then merge results with conflict and
+              timeout policies. Distinguish wall-clock improvement from increased total compute.
+            evidence: latency/cost experiment.
+          - id: agentic-design-patterns.orchestrate-workers-and-evaluators
+            title: Orchestrate Workers and Evaluators
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/agentic-design-patterns/orchestrate-workers-and-evaluators.qmd
+            summary:
+              Implement orchestrator–worker and evaluator–optimizer loops with bounded retries.
+              Prevent a model evaluator from becoming an unquestioned source of truth.
+            evidence: stopping and disagreement tests.
+          - id: agentic-design-patterns.encode-control-in-state-machines-and-graphs
+            title: Encode Control in State Machines and Graphs
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/agentic-design-patterns/encode-control-in-state-machines-and-graphs.qmd
+            summary:
+              Represent branches, cycles, interrupts, and terminal states explicitly. Compare
+              code-controlled and model-controlled transitions.
+            evidence: executable state graph and invariant checks.
+        challenge:
+          id: agentic-design-patterns.challenge
+          title: Implement One Task Four Ways
+          status: planned
+          path: courses/agentic-ai-engineering/units/agentic-design-patterns/challenge.qmd
+          summary:
+            Build deterministic, chained, graph, and agent versions of one task. Recommend
+            one using held-out quality, latency, cost, observability, and security evidence.
+          estimated_time: 90–180 minutes
+      - number: 10
+        id: framework-adapters
+        title: Understand Frameworks Without Becoming Dependent on Them
+        phase: III. Architecture
+        status: planned
+        overview: courses/agentic-ai-engineering/units/framework-adapters/index.qmd
+        prerequisite_unit_ids:
+          - agentic-design-patterns
+        outcome:
+          Explain what agent frameworks provide, migrate a stable application through adapters,
+          and quantify abstraction benefits and costs.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: framework-adapters.inspect-what-a-framework-does-for-you
+            title: Inspect What a Framework Does for You
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/framework-adapters/inspect-what-a-framework-does-for-you.qmd
+            summary:
+              Trace model messages, state serialization, tool dispatch, retries, callbacks,
+              and persistence through a framework. Identify defaults that alter behavior.
+            evidence: framework execution map.
+          - id: framework-adapters.define-ports-for-models-tools-state-and-tracing
+            title: Define Ports for Models, Tools, State, and Tracing
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/framework-adapters/define-ports-for-models-tools-state-and-tracing.qmd
+            summary:
+              Refactor the plain runtime into stable domain interfaces and infrastructure
+              adapters. Keep provider objects out of core logic.
+            evidence: contract test suite used by multiple adapters.
+          - id: framework-adapters.rebuild-with-a-state-graph-framework
+            title: Rebuild with a State-Graph Framework
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/framework-adapters/rebuild-with-a-state-graph-framework.qmd
+            summary:
+              Implement a course task with LangGraph or a current equivalent, using typed
+              state, checkpoints, interrupts, and explicit terminal nodes.
+            evidence: parity tests against the reference runtime.
+          - id: framework-adapters.compare-a-lightweight-alternative
+            title: Compare a Lightweight Alternative
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/framework-adapters/compare-a-lightweight-alternative.qmd
+            summary:
+              Implement the same task with smolagents, PydanticAI, LlamaIndex, Haystack,
+              or another approved open framework. Compare code volume, clarity, portability, runtime
+              behavior, and lock-in.
+            evidence: framework decision record.
+        challenge:
+          id: framework-adapters.challenge
+          title: Migrate Without Changing the Contract
+          status: planned
+          path: courses/agentic-ai-engineering/units/framework-adapters/challenge.qmd
+          summary:
+            Move an agent between frameworks while preserving task interface, tool contracts,
+            serialized state, eval dataset, and acceptance gates. Document unavoidable semantic
+            differences.
+          estimated_time: 90–180 minutes
+      - number: 11
+        id: open-protocols
+        title: Connect Agents Through Open Protocols
+        phase: III. Architecture
+        status: planned
+        overview: courses/agentic-ai-engineering/units/open-protocols/index.qmd
+        prerequisite_unit_ids:
+          - framework-adapters
+        outcome:
+          Explain and implement MCP and agent-to-agent interfaces with authentication,
+          lifecycle management, versioning, and hostile-component defenses.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: open-protocols.separate-protocol-transport-runtime-and-framework
+            title: Separate Protocol, Transport, Runtime, and Framework
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/open-protocols/separate-protocol-transport-runtime-and-framework.qmd
+            summary:
+              Map OpenAPI, JSON Schema, MCP, A2A, HTTP, stdio, and event transport roles.
+              Diagnose integration diagrams that confuse discovery with execution or authentication.
+            evidence: layered interoperability diagram.
+          - id: open-protocols.build-and-inspect-an-mcp-server
+            title: Build and Inspect an MCP Server
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/open-protocols/build-and-inspect-an-mcp-server.qmd
+            summary:
+              Expose a read-only tool and resource through a local MCP server. Inspect initialization,
+              capability negotiation, schemas, calls, results, errors, and shutdown.
+            evidence: protocol transcript and conformance tests.
+          - id: open-protocols.consume-mcp-with-explicit-trust
+            title: Consume MCP with Explicit Trust
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/open-protocols/consume-mcp-with-explicit-trust.qmd
+            summary:
+              Build a client that validates server identity, capabilities, schemas, outputs,
+              and permissions. Test tool-description poisoning and untrusted content.
+            evidence: malicious-server test suite.
+          - id: open-protocols.exchange-tasks-between-agents
+            title: Exchange Tasks Between Agents
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/open-protocols/exchange-tasks-between-agents.qmd
+            summary:
+              Implement discovery, task submission, progress, artifacts, cancellation, and
+              terminal status through an A2A-style interface. Preserve caller identity and authorization
+              context.
+            evidence: cross-agent lifecycle trace.
+        challenge:
+          id: open-protocols.challenge
+          title: Build a Secure Interoperability Boundary
+          status: planned
+          path: courses/agentic-ai-engineering/units/open-protocols/challenge.qmd
+          summary:
+            Connect a course agent to one local MCP server and one remote-style agent interface.
+            Pass version mismatch, authentication failure, poisoned description, cancellation,
+            and rate-limit tests.
+          estimated_time: 90–180 minutes
+      - number: 12
+        id: multi-agent-coordination
+        title: Coordinate Multiple Agents Only with Evidence
+        phase: III. Architecture
+        status: planned
+        overview: courses/agentic-ai-engineering/units/multi-agent-coordination/index.qmd
+        prerequisite_unit_ids:
+          - open-protocols
+        outcome:
+          Design specialization, delegation, shared state, communication, and conflict
+          resolution while measuring whether multiple agents outperform a single-agent baseline.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: multi-agent-coordination.justify-decomposition-and-specialization
+            title: Justify Decomposition and Specialization
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/multi-agent-coordination/justify-decomposition-and-specialization.qmd
+            summary:
+              Identify tasks with separable expertise, contexts, permissions, or parallel
+              work. Reject role-play decompositions that merely duplicate the same model and information.
+            evidence: decomposition hypothesis and baseline.
+          - id: multi-agent-coordination.choose-a-coordination-topology
+            title: Choose a Coordination Topology
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/multi-agent-coordination/choose-a-coordination-topology.qmd
+            summary:
+              Compare supervisor, hierarchy, peer-to-peer, blackboard, and market-like coordination.
+              Trace information loss and bottlenecks through each topology.
+            evidence: topology tradeoff matrix.
+          - id: multi-agent-coordination.share-state-and-resolve-conflict
+            title: Share State and Resolve Conflict
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/multi-agent-coordination/share-state-and-resolve-conflict.qmd
+            summary:
+              Design message and artifact schemas, ownership, concurrency control, and disagreement
+              procedures. Diagnose stale shared state, circular delegation, and overwritten work.
+            evidence: concurrency and conflict tests.
+          - id: multi-agent-coordination.detect-deadlock-livelock-correlated-error-and-runaway-cost
+            title: Detect Deadlock, Livelock, Correlated Error, and Runaway Cost
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/multi-agent-coordination/detect-deadlock-livelock-correlated-error-and-runaway-cost.qmd
+            summary:
+              Instrument delegation depth, repeated messages, unresolved dependencies, and
+              correlated judgments. Add budgets and a safe collapse-to-single-agent path.
+            evidence: coordination fault-injection report.
+        challenge:
+          id: multi-agent-coordination.challenge
+          title: Defend Single or Multi-Agent Design
+          status: planned
+          path: courses/agentic-ai-engineering/units/multi-agent-coordination/challenge.qmd
+          summary:
+            Implement one single-agent and one multi-agent version of a task. Keep the
+            multi-agent design only if it improves the declared Pareto frontier; otherwise submit
+            the evidence-backed simpler design.
+          estimated_time: 90–180 minutes
+      - number: 13
+        id: agent-evaluation
+        title: Evaluate Agent Behavior Scientifically
+        phase: IV. Evaluation and safety
+        status: planned
+        overview: courses/agentic-ai-engineering/units/agent-evaluation/index.qmd
+        prerequisite_unit_ids:
+          - multi-agent-coordination
+        outcome:
+          Create representative datasets, layered graders, uncertainty estimates, and regression
+          gates for task, trajectory, tool, grounding, safety, latency, and cost.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: agent-evaluation.define-metrics-from-the-task-contract
+            title: Define Metrics from the Task Contract
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-evaluation/define-metrics-from-the-task-contract.qmd
+            summary:
+              Translate success and harm into observable measures. Separate final-answer
+              quality from trajectory correctness, policy compliance, and resource use.
+            evidence: metric specification with gaming risks.
+          - id: agent-evaluation.build-representative-evaluation-data
+            title: Build Representative Evaluation Data
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-evaluation/build-representative-evaluation-data.qmd
+            summary:
+              Create normal, boundary, adversarial, temporal, and abstention cases; prevent
+              leakage; version fixtures and splits. Analyze whose tasks and failures are missing.
+            evidence: dataset card and coverage matrix.
+          - id: agent-evaluation.combine-deterministic-model-and-human-graders
+            title: Combine Deterministic, Model, and Human Graders
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-evaluation/combine-deterministic-model-and-human-graders.qmd
+            summary:
+              Prefer exact and executable checks where possible; design rubrics and blinded
+              pairwise judgments where needed. Calibrate model judges against human labels.
+            evidence: grader agreement and disagreement analysis.
+          - id: agent-evaluation.compare-systems-with-uncertainty
+            title: Compare Systems with Uncertainty
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-evaluation/compare-systems-with-uncertainty.qmd
+            summary:
+              Run repeated trials, estimate confidence intervals, analyze paired differences,
+              and avoid declaring tiny noisy gains. Construct quality–latency–cost frontiers.
+            evidence: reproducible comparison report.
+        challenge:
+          id: agent-evaluation.challenge
+          title: Build an Evaluation Harness Before Improving the Agent
+          status: planned
+          path: courses/agentic-ai-engineering/units/agent-evaluation/challenge.qmd
+          summary:
+            Given two plausible agents, design data and graders that reveal their real
+            tradeoffs. Hidden cases test leakage, judge bias, variance, and misleading aggregate
+            scores.
+          estimated_time: 90–180 minutes
+      - number: 14
+        id: observability-debugging
+        title: Observe and Debug Nondeterministic Systems
+        phase: IV. Evaluation and safety
+        status: planned
+        overview: courses/agentic-ai-engineering/units/observability-debugging/index.qmd
+        prerequisite_unit_ids:
+          - agent-evaluation
+        outcome:
+          Instrument portable traces, metrics, logs, and artifacts; redact sensitive data;
+          replay failures; and diagnose causality across model and tool calls.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: observability-debugging.model-runs-as-traces-and-spans
+            title: Model Runs as Traces and Spans
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/observability-debugging/model-runs-as-traces-and-spans.qmd
+            summary:
+              Instrument task, agent step, model call, retrieval, tool, and approval spans
+              with OpenTelemetry concepts. Propagate correlation and causation identifiers.
+            evidence: complete trace for a multi-step task.
+          - id: observability-debugging.record-useful-events-without-leaking-data
+            title: Record Useful Events Without Leaking Data
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/observability-debugging/record-useful-events-without-leaking-data.qmd
+            summary:
+              Define what belongs in attributes, events, metrics, logs, and artifacts. Apply
+              redaction, hashing, sampling, access control, and retention policies.
+            evidence: telemetry privacy test.
+          - id: observability-debugging.replay-failures-with-controlled-fixtures
+            title: Replay Failures with Controlled Fixtures
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/observability-debugging/replay-failures-with-controlled-fixtures.qmd
+            summary:
+              Capture model/tool boundaries as approved fixtures, replay deterministic portions,
+              and distinguish state bugs from model variance or external drift.
+            evidence: reproduced failure and minimized case.
+          - id: observability-debugging.build-operational-quality-views
+            title: Build Operational Quality Views
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/observability-debugging/build-operational-quality-views.qmd
+            summary:
+              Create dashboards for success, latency, tokens, cost, retries, denials, escalation,
+              and drift. Avoid dashboards whose aggregates hide rare severe failures.
+            evidence: dashboard plus alert rationale.
+        challenge:
+          id: observability-debugging.challenge
+          title: Diagnose a Failing Agent from Evidence
+          status: planned
+          path: courses/agentic-ai-engineering/units/observability-debugging/challenge.qmd
+          summary:
+            Use traces and fixtures to locate a regression among context assembly, model
+            routing, retrieval, tool execution, and state persistence. Repair it and preserve
+            a regression test.
+          estimated_time: 90–180 minutes
+      - number: 15
+        id: agent-security
+        title: Secure Agents by Construction
+        phase: IV. Evaluation and safety
+        status: planned
+        overview: courses/agentic-ai-engineering/units/agent-security/index.qmd
+        prerequisite_unit_ids:
+          - observability-debugging
+        outcome:
+          Threat-model an agent and defend against injection, poisoning, exfiltration,
+          confused-deputy behavior, command/URL attacks, excessive agency, and supply-chain compromise.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: agent-security.draw-assets-actors-trust-boundaries-and-data-flows
+            title: Draw Assets, Actors, Trust Boundaries, and Data Flows
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-security/draw-assets-actors-trust-boundaries-and-data-flows.qmd
+            summary:
+              Create a threat model for user input, retrieved content, model output, tools,
+              memory, protocols, credentials, telemetry, and humans. Prioritize threats by impact
+              and exposure.
+            evidence: data-flow diagram and risk register.
+          - id: agent-security.defend-against-prompt-injection-and-data-exfiltration
+            title: Defend Against Prompt Injection and Data Exfiltration
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-security/defend-against-prompt-injection-and-data-exfiltration.qmd
+            summary:
+              Treat external text as data, constrain tool capabilities, enforce policy outside
+              the model, label provenance, and test direct and indirect injection. Explain why a
+              stronger system prompt is insufficient.
+            evidence: adversarial document suite and containment results.
+          - id: agent-security.sandbox-code-browsing-and-network-access
+            title: Sandbox Code, Browsing, and Network Access
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-security/sandbox-code-browsing-and-network-access.qmd
+            summary:
+              Apply filesystem, process, network, resource, and credential boundaries with
+              cross-platform local fallbacks. Block path traversal, SSRF, shell injection, and unsafe
+              downloads.
+            evidence: sandbox escape test results.
+          - id: agent-security.protect-identity-secrets-tenants-and-dependencies
+            title: Protect Identity, Secrets, Tenants, and Dependencies
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-security/protect-identity-secrets-tenants-and-dependencies.qmd
+            summary:
+              Use scoped short-lived credentials, delegated identity, secret stores, tenant
+              isolation, dependency pinning, SBOMs, signatures, and vulnerability response.
+            evidence: access matrix and supply-chain audit.
+        challenge:
+          id: agent-security.challenge
+          title: Red-Team and Repair an Exposed Agent
+          status: planned
+          path: courses/agentic-ai-engineering/units/agent-security/challenge.qmd
+          summary:
+            Exploit a deliberately vulnerable research-and-action agent, record the attack
+            path, implement layered mitigations, and prove previously successful attacks now fail
+            safely.
+          estimated_time: 90–180 minutes
+      - number: 16
+        id: human-control
+        title: Design Meaningful Human Control
+        phase: IV. Evaluation and safety
+        status: planned
+        overview: courses/agentic-ai-engineering/units/human-control/index.qmd
+        prerequisite_unit_ids:
+          - agent-security
+        outcome:
+          Create approval, escalation, explanation, intervention, and governance mechanisms
+          matched to uncertainty, consequence, reversibility, and operator workload.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: human-control.calibrate-autonomy-to-risk
+            title: Calibrate Autonomy to Risk
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/human-control/calibrate-autonomy-to-risk.qmd
+            summary:
+              Classify actions by impact, reversibility, confidence, novelty, and authorization.
+              Choose automatic, notify, confirm, dual-control, or prohibit policies.
+            evidence: autonomy policy table tested against scenarios.
+          - id: human-control.ask-for-approval-with-decision-relevant-evidence
+            title: Ask for Approval with Decision-Relevant Evidence
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/human-control/ask-for-approval-with-decision-relevant-evidence.qmd
+            summary:
+              Present the proposed action, target, rationale, source evidence, alternatives,
+              consequences, and rollback. Avoid approval fatigue and deceptive defaults.
+            evidence: approval payload and usability critique.
+          - id: human-control.communicate-uncertainty-provenance-and-limits
+            title: Communicate Uncertainty, Provenance, and Limits
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/human-control/communicate-uncertainty-provenance-and-limits.qmd
+            summary:
+              Show what the system knows, inferred, could not verify, and chose not to do.
+              Compare confidence language with empirically measured calibration.
+            evidence: explanation/provenance evaluation.
+          - id: human-control.escalate-interrupt-appeal-and-audit
+            title: Escalate, Interrupt, Appeal, and Audit
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/human-control/escalate-interrupt-appeal-and-audit.qmd
+            summary:
+              Design timeouts, safe pauses, takeover, cancellation, appeals, incident records,
+              and accountability. Handle the case where stopping immediately is itself harmful.
+            evidence: intervention-state tests and audit record.
+        challenge:
+          id: human-control.challenge
+          title: Deliver a Defended Agent
+          status: planned
+          path: courses/agentic-ai-engineering/units/human-control/challenge.qmd
+          summary:
+            Take the grounded knowledge worker through evaluation, observability, threat
+            modeling, red-team testing, and human-control review. Repair the highest-risk failure
+            and demonstrate the regression gate.
+          estimated_time: 90–180 minutes
+      - number: 17
+        id: coding-agents
+        title: Build Coding Agents in Safe Repositories
+        phase: V. Advanced capabilities
+        status: planned
+        overview: courses/agentic-ai-engineering/units/coding-agents/index.qmd
+        prerequisite_unit_ids:
+          - human-control
+        outcome:
+          Build a repository-scale coding agent that searches, plans, edits, tests, reviews,
+          and rolls back inside an isolated, least-privilege environment.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: coding-agents.explore-a-repository-before-editing
+            title: Explore a Repository Before Editing
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/coding-agents/explore-a-repository-before-editing.qmd
+            summary:
+              Use file discovery, symbol search, tests, dependency metadata, and repository
+              instructions to form a bounded working set. Detect irrelevant or malicious instructions
+              in source files.
+            evidence: evidence-backed repository map.
+          - id: coding-agents.turn-an-issue-into-a-verifiable-plan
+            title: Turn an Issue into a Verifiable Plan
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/coding-agents/turn-an-issue-into-a-verifiable-plan.qmd
+            summary:
+              Clarify acceptance criteria, reproduce the problem, identify likely files and
+              tests, and state a minimal change plan. Reject plans that cannot be checked.
+            evidence: issue contract and reproduction test.
+          - id: coding-agents.edit-test-and-review-in-isolation
+            title: Edit, Test, and Review in Isolation
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/coding-agents/edit-test-and-review-in-isolation.qmd
+            summary:
+              Apply patches in a branch/worktree or sandbox, run focused then broad checks,
+              inspect diffs, and avoid unrelated changes. Handle generated files and formatting
+              deliberately.
+            evidence: patch, tests, and review checklist.
+          - id: coding-agents.evaluate-coding-agents-beyond-passing-tests
+            title: Evaluate Coding Agents Beyond Passing Tests
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/coding-agents/evaluate-coding-agents-beyond-passing-tests.qmd
+            summary:
+              Use seeded issues and held-out tests; inspect correctness, scope, security,
+              maintainability, and dependency changes. Understand benchmark contamination and weak
+              tests.
+            evidence: coding-agent evaluation report.
+        challenge:
+          id: coding-agents.challenge
+          title: Repair a Seeded Repository Defect
+          status: planned
+          path: courses/agentic-ai-engineering/units/coding-agents/challenge.qmd
+          summary:
+            The agent must reproduce, plan, patch, test, and explain a hidden defect without
+            touching forbidden files or network resources. Learners review and approve the final
+            diff.
+          estimated_time: 90–180 minutes
+      - number: 18
+        id: browser-multimodal-agents
+        title: Build Browser, Computer-Use, and Multimodal Agents
+        phase: V. Advanced capabilities
+        status: planned
+        overview: courses/agentic-ai-engineering/units/browser-multimodal-agents/index.qmd
+        prerequisite_unit_ids:
+          - coding-agents
+        outcome:
+          Compare API, DOM, accessibility-tree, and visual control; ground multimodal observations;
+          and constrain dynamic user-interface actions.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: browser-multimodal-agents.prefer-stable-interfaces-before-pixels
+            title: Prefer Stable Interfaces Before Pixels
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/browser-multimodal-agents/prefer-stable-interfaces-before-pixels.qmd
+            summary:
+              Choose API, structured data, DOM, accessibility tree, or screenshot interaction
+              based on availability and reliability. Measure brittleness under page changes.
+            evidence: interface-selection decision and tests.
+          - id: browser-multimodal-agents.ground-visual-observations-and-actions
+            title: Ground Visual Observations and Actions
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/browser-multimodal-agents/ground-visual-observations-and-actions.qmd
+            summary:
+              Combine screenshots, OCR, element descriptions, coordinates, and action history.
+              Detect stale screenshots and ambiguous targets before clicking.
+            evidence: grounding accuracy evaluation.
+          - id: browser-multimodal-agents.handle-dynamic-pages-authentication-and-downloads
+            title: Handle Dynamic Pages, Authentication, and Downloads
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/browser-multimodal-agents/handle-dynamic-pages-authentication-and-downloads.qmd
+            summary:
+              Wait on observable conditions, preserve session boundaries, validate downloads,
+              and avoid leaking authenticated content. Separate navigation from consequential action.
+            evidence: browser-state and download-validation tests.
+          - id: browser-multimodal-agents.defend-against-visual-injection-and-unsafe-ui-actions
+            title: Defend Against Visual Injection and Unsafe UI Actions
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/browser-multimodal-agents/defend-against-visual-injection-and-unsafe-ui-actions.qmd
+            summary:
+              Test malicious page instructions, hidden text, deceptive controls, and irreversible
+              submissions. Add domain allowlists, action previews, and confirmation.
+            evidence: adversarial browser benchmark.
+        challenge:
+          id: browser-multimodal-agents.challenge
+          title: Complete a Sandboxed Web Task Safely
+          status: planned
+          path: courses/agentic-ai-engineering/units/browser-multimodal-agents/challenge.qmd
+          summary:
+            Automate a multi-step task in a local benchmark website using the most stable
+            interfaces available. Hidden variants change layout, inject instructions, delay elements,
+            and present a consequential final action.
+          estimated_time: 90–180 minutes
+      - number: 19
+        id: durable-execution
+        title: Make Long-Running Agents Durable
+        phase: V. Advanced capabilities
+        status: planned
+        overview: courses/agentic-ai-engineering/units/durable-execution/index.qmd
+        prerequisite_unit_ids:
+          - browser-multimodal-agents
+        outcome:
+          Preserve progress across crashes, retries, duplicates, delays, and changing external
+          state without repeating irreversible actions.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: durable-execution.checkpoint-serializable-state-and-artifacts
+            title: Checkpoint Serializable State and Artifacts
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/durable-execution/checkpoint-serializable-state-and-artifacts.qmd
+            summary:
+              Define checkpoint boundaries, event history, artifact references, schema versions,
+              and resume semantics. Detect non-serializable hidden framework state.
+            evidence: stop/restart parity test.
+          - id: durable-execution.use-leases-heartbeats-deadlines-and-cancellation
+            title: Use Leases, Heartbeats, Deadlines, and Cancellation
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/durable-execution/use-leases-heartbeats-deadlines-and-cancellation.qmd
+            summary:
+              Coordinate ownership of long work, detect abandoned workers, renew leases,
+              propagate deadlines, and cancel nested operations safely.
+            evidence: worker-failure simulation.
+          - id: durable-execution.survive-duplicate-delivery-and-partial-effects
+            title: Survive Duplicate Delivery and Partial Effects
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/durable-execution/survive-duplicate-delivery-and-partial-effects.qmd
+            summary:
+              Apply idempotency, deduplication, transactional outbox, saga, and compensation
+              concepts. Recover from a crash between an external side effect and local checkpoint.
+            evidence: fault-injection invariant tests.
+          - id: durable-execution.wait-for-humans-and-external-events
+            title: Wait for Humans and External Events
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/durable-execution/wait-for-humans-and-external-events.qmd
+            summary:
+              Pause without consuming a worker, resume after hours or days, validate stale
+              approvals, and recompute assumptions when the environment changes.
+            evidence: delayed-event simulation.
+        challenge:
+          id: durable-execution.challenge
+          title: Finish a Task Across Three Failures
+          status: planned
+          path: courses/agentic-ai-engineering/units/durable-execution/challenge.qmd
+          summary:
+            Complete a multi-stage task despite process restart, duplicate message, tool
+            outage, and delayed approval. The system must not lose progress or repeat a protected
+            action.
+          estimated_time: 90–180 minutes
+      - number: 20
+        id: agent-improvement
+        title: Improve Agents Without Fooling Yourself
+        phase: V. Advanced capabilities
+        status: planned
+        overview: courses/agentic-ai-engineering/units/agent-improvement/index.qmd
+        prerequisite_unit_ids:
+          - durable-execution
+        outcome:
+          Optimize prompts, policies, and small models with train/validation/test separation
+          while detecting overfitting, leakage, reward hacking, and unsafe self-modification.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: agent-improvement.optimize-prompts-and-programs-on-training-data
+            title: Optimize Prompts and Programs on Training Data
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-improvement/optimize-prompts-and-programs-on-training-data.qmd
+            summary:
+              Define a search space, objective, constraints, and held-out split. Compare
+              manual iteration with automated prompt/program optimization.
+            evidence: experiment log and untouched test set.
+          - id: agent-improvement.learn-routing-and-selection-policies
+            title: Learn Routing and Selection Policies
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-improvement/learn-routing-and-selection-policies.qmd
+            summary:
+              Use contextual bandit intuition to choose models, tools, or strategies from
+              feedback. Separate exploration from high-risk production actions.
+            evidence: offline policy evaluation.
+          - id: agent-improvement.fine-tune-structured-tool-use
+            title: Fine-Tune Structured Tool Use
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-improvement/fine-tune-structured-tool-use.qmd
+            summary:
+              Prepare licensed trajectories, format supervised examples, fine-tune a small
+              model where resources permit, and evaluate schema validity and tool choice rather
+              than imitation alone.
+            evidence: data card and before/after evaluation.
+          - id: agent-improvement.detect-reward-hacking-and-unsafe-self-improvement
+            title: Detect Reward Hacking and Unsafe Self-Improvement
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-improvement/detect-reward-hacking-and-unsafe-self-improvement.qmd
+            summary:
+              Study process/outcome rewards, credit assignment, evaluator exploitation, test
+              tampering, and optimization pressure. Require isolated experiments, immutable gates,
+              and rollback.
+            evidence: reward-hacking case analysis and controls.
+        challenge:
+          id: agent-improvement.challenge
+          title: Build a Durable Specialist
+          status: planned
+          path: courses/agentic-ai-engineering/units/agent-improvement/challenge.qmd
+          summary:
+            Create a coding, browser, or data specialist that resumes after failure and
+            improves one measured component using a training split. Demonstrate held-out gains
+            without weakening safety gates.
+          estimated_time: 90–180 minutes
+      - number: 21
+        id: open-model-inference
+        title: Run Open Models Efficiently
+        phase: VI. Production
+        status: planned
+        overview: courses/agentic-ai-engineering/units/open-model-inference/index.qmd
+        prerequisite_unit_ids:
+          - agent-improvement
+        outcome:
+          Select, serve, quantize, batch, route, and cache open models using measured quality,
+          license, memory, throughput, latency, privacy, and energy tradeoffs.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: open-model-inference.match-models-and-licenses-to-tasks
+            title: Match Models and Licenses to Tasks
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/open-model-inference/match-models-and-licenses-to-tasks.qmd
+            summary:
+              Build a shortlist from model cards, supported modalities, context, structured
+              output, tool use, language coverage, licenses, and hardware. Verify claims on the
+              course eval suite.
+            evidence: model scorecard.
+          - id: open-model-inference.run-quantized-models-locally
+            title: Run Quantized Models Locally
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/open-model-inference/run-quantized-models-locally.qmd
+            summary:
+              Use Ollama or llama.cpp, inspect quantization and memory use, and compare CPU/GPU
+              execution. Identify quality losses on the actual task rather than generic prose.
+            evidence: local inference benchmark.
+          - id: open-model-inference.serve-models-for-throughput
+            title: Serve Models for Throughput
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/open-model-inference/serve-models-for-throughput.qmd
+            summary:
+              Use an open serving engine such as vLLM, TGI, or SGLang; study continuous batching,
+              KV cache, parallelism, and backpressure.
+            evidence: load-test curves and saturation point.
+          - id: open-model-inference.route-cache-and-fall-back-deliberately
+            title: Route, Cache, and Fall Back Deliberately
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/open-model-inference/route-cache-and-fall-back-deliberately.qmd
+            summary:
+              Choose models by task complexity, risk, availability, latency, and privacy.
+              Cache only safe, context-equivalent requests and test fallback semantic differences.
+            evidence: routing policy and failure drills.
+        challenge:
+          id: open-model-inference.challenge
+          title: Meet a Quality–Latency–Memory Budget
+          status: planned
+          path: courses/agentic-ai-engineering/units/open-model-inference/challenge.qmd
+          summary:
+            Configure an open-model stack that meets declared thresholds on constrained
+            hardware. Compare at least three model/configuration options and defend the Pareto
+            choice.
+          estimated_time: 90–180 minutes
+      - number: 22
+        id: agent-services
+        title: Deploy a Durable Agent Service
+        phase: VI. Production
+        status: planned
+        overview: courses/agentic-ai-engineering/units/agent-services/index.qmd
+        prerequisite_unit_ids:
+          - open-model-inference
+        outcome:
+          Package agents behind clear APIs and workers with persistent state, queues, concurrency
+          control, idempotency, streaming progress, and tenant isolation.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: agent-services.define-service-and-task-apis
+            title: Define Service and Task APIs
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-services/define-service-and-task-apis.qmd
+            summary:
+              Design submit, inspect, stream, cancel, approve, and retrieve-artifact endpoints.
+              Use stable task IDs, idempotency keys, and explicit terminal status.
+            evidence: OpenAPI contract and consumer tests.
+          - id: agent-services.separate-api-workflow-worker-and-storage-roles
+            title: Separate API, Workflow, Worker, and Storage Roles
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-services/separate-api-workflow-worker-and-storage-roles.qmd
+            summary:
+              Build a local service topology with API, queue/workflow engine, workers, database,
+              artifact store, and model/tool adapters. Trace ownership of every state transition.
+            evidence: deployment and data-flow diagram.
+          - id: agent-services.control-concurrency-backpressure-and-failure-cascades
+            title: Control Concurrency, Backpressure, and Failure Cascades
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-services/control-concurrency-backpressure-and-failure-cascades.qmd
+            summary:
+              Apply rate limits, queues, worker pools, circuit breakers, bulkheads, and admission
+              control. Diagnose retry storms and overloaded shared dependencies.
+            evidence: overload and recovery test.
+          - id: agent-services.isolate-tenants-tasks-and-resources
+            title: Isolate Tenants, Tasks, and Resources
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/agent-services/isolate-tenants-tasks-and-resources.qmd
+            summary:
+              Propagate identity and quotas; partition data and artifacts; restrict worker
+              capabilities; and test cross-tenant access attempts.
+            evidence: isolation test suite.
+        challenge:
+          id: agent-services.challenge
+          title: Operate a Resumable Multi-User Service
+          status: planned
+          path: courses/agentic-ai-engineering/units/agent-services/challenge.qmd
+          summary:
+            Deploy a local containerized service, submit concurrent tasks, stream progress,
+            cancel one task, restart a worker, and prove state recovery and tenant isolation.
+          estimated_time: 90–180 minutes
+      - number: 23
+        id: release-and-recovery
+        title: Release, Monitor, and Recover Agent Systems
+        phase: VI. Production
+        status: planned
+        overview: courses/agentic-ai-engineering/units/release-and-recovery/index.qmd
+        prerequisite_unit_ids:
+          - agent-services
+        outcome:
+          Version every behavior-shaping artifact, enforce CI gates, release gradually,
+          monitor SLOs and drift, and respond to incidents with rollback and learning.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: release-and-recovery.version-models-prompts-tools-policies-and-data
+            title: Version Models, Prompts, Tools, Policies, and Data
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/release-and-recovery/version-models-prompts-tools-policies-and-data.qmd
+            summary:
+              Create a run manifest linking code commit, environment, model, prompt, schemas,
+              tool versions, policies, and dataset. Reproduce a prior evaluation from the manifest.
+            evidence: reproducibility check.
+          - id: release-and-recovery.build-ci-evaluation-and-security-gates
+            title: Build CI Evaluation and Security Gates
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/release-and-recovery/build-ci-evaluation-and-security-gates.qmd
+            summary:
+              Run unit, contract, replay, evaluation, adversarial, dependency, and secret
+              checks with tiered budgets. Prevent flaky model calls from making every code change
+              untestable.
+            evidence: passing pipeline and intentional-failure demonstration.
+          - id: release-and-recovery.release-with-shadows-canaries-flags-and-rollback
+            title: Release with Shadows, Canaries, Flags, and Rollback
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/release-and-recovery/release-with-shadows-canaries-flags-and-rollback.qmd
+            summary:
+              Compare versions on recorded or shadow traffic, canary a bounded population,
+              monitor decision criteria, and roll back code and behavior assets together.
+            evidence: release plan and canary analysis.
+          - id: release-and-recovery.define-slos-alerts-runbooks-and-postmortems
+            title: Define SLOs, Alerts, Runbooks, and Postmortems
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/release-and-recovery/define-slos-alerts-runbooks-and-postmortems.qmd
+            summary:
+              Set indicators for task success, unsafe action, latency, cost, availability,
+              and escalation. Respond to a simulated incident and write a blameless, evidence-rich
+              postmortem.
+            evidence: incident timeline and corrective actions.
+        challenge:
+          id: release-and-recovery.challenge
+          title: Stop a Bad Release Before It Spreads
+          status: planned
+          path: courses/agentic-ai-engineering/units/release-and-recovery/challenge.qmd
+          summary:
+            A new version improves average quality but causes rare tool misuse and higher
+            tail cost. Detect it through gates/canary evidence, roll back, identify the mechanism,
+            and preserve regression tests.
+          estimated_time: 90–180 minutes
+      - number: 24
+        id: architecture-product-decisions
+        title: Make Defensible Architecture and Product Decisions
+        phase: VI. Production
+        status: planned
+        overview: courses/agentic-ai-engineering/units/architecture-product-decisions/index.qmd
+        prerequisite_unit_ids:
+          - release-and-recovery
+        outcome:
+          Evaluate total cost, sustainability, human effort, legal/open-source constraints,
+          and product value; simplify or reject agent deployments when evidence demands it.
+        estimated_effort: 8–14 hours
+        lessons:
+          - id: architecture-product-decisions.measure-total-cost-per-successful-task
+            title: Measure Total Cost per Successful Task
+            order: 10
+            status: planned
+            path: courses/agentic-ai-engineering/units/architecture-product-decisions/measure-total-cost-per-successful-task.qmd
+            summary:
+              Include model calls, retrieval, tools, retries, evaluation, infrastructure,
+              failures, and human review. Distinguish marginal demo cost from operated-system cost.
+            evidence: cost model tied to evaluation outcomes.
+          - id: architecture-product-decisions.balance-quality-latency-cost-and-energy
+            title: Balance Quality, Latency, Cost, and Energy
+            order: 20
+            status: planned
+            path: courses/agentic-ai-engineering/units/architecture-product-decisions/balance-quality-latency-cost-and-energy.qmd
+            summary:
+              Construct Pareto frontiers and scenario-specific budgets. Use compute and energy
+              proxies honestly when direct measurement is unavailable.
+            evidence: tradeoff visualization and selected operating point.
+          - id: architecture-product-decisions.review-licensing-privacy-governance-and-build-or-buy
+            title: Review Licensing, Privacy, Governance, and Build-or-Buy
+            order: 30
+            status: planned
+            path: courses/agentic-ai-engineering/units/architecture-product-decisions/review-licensing-privacy-governance-and-build-or-buy.qmd
+            summary:
+              Examine model/data/code licenses, personal data, retention, vendor dependencies,
+              open-source maintenance, and exit plans. Identify restrictions before architecture
+              is locked.
+            evidence: adoption checklist and dependency exit strategy.
+          - id: architecture-product-decisions.decide-not-to-deploy-or-remove-the-agent
+            title: Decide Not to Deploy—or Remove the Agent
+            order: 40
+            status: planned
+            path: courses/agentic-ai-engineering/units/architecture-product-decisions/decide-not-to-deploy-or-remove-the-agent.qmd
+            summary:
+              Compare the agent with a rule, search interface, workflow, and human process.
+              Recognize insufficient value, evidence, control, or operational readiness.
+            evidence: go/simplify/no-go decision memo.
+        challenge:
+          id: architecture-product-decisions.challenge
+          title: Present a Production Candidate
+          status: planned
+          path: courses/agentic-ai-engineering/units/architecture-product-decisions/challenge.qmd
+          summary:
+            Deliver an open-source-first agent service with durable execution, local-model
+            support, observability, security controls, CI gates, SLOs, cost model, and rollback.
+            Defend why each autonomous decision remains necessary.
+          estimated_time: 90–180 minutes
+    milestones:
+      - id: milestone-1
+        number: 1
+        unit_id: reason-plan-verify
+        challenge_id: reason-plan-verify.challenge
+        title: Ship a Transparent Research Assistant
+        status: planned
+        path: courses/agentic-ai-engineering/projects/index.qmd#milestone-1
+      - id: milestone-2
+        number: 2
+        unit_id: agent-memory
+        challenge_id: agent-memory.challenge
+        title: Ship a Grounded Knowledge Worker
+        status: planned
+        path: courses/agentic-ai-engineering/projects/index.qmd#milestone-2
+      - id: milestone-3
+        number: 3
+        unit_id: human-control
+        challenge_id: human-control.challenge
+        title: Deliver a Defended Agent
+        status: planned
+        path: courses/agentic-ai-engineering/projects/index.qmd#milestone-3
+      - id: milestone-4
+        number: 4
+        unit_id: architecture-product-decisions
+        challenge_id: architecture-product-decisions.challenge
+        title: Present a Production Candidate
+        status: planned
+        path: courses/agentic-ai-engineering/projects/index.qmd#milestone-4
+    cumulative_reviews:
+      - unit_id: reason-plan-verify
+        status: planned
+        kind: milestone-review
+      - unit_id: agent-memory
+        status: planned
+        kind: milestone-review
+      - unit_id: multi-agent-coordination
+        status: planned
+        kind: architecture
+      - unit_id: human-control
+        status: planned
+        kind: milestone-review
+      - unit_id: agent-improvement
+        status: planned
+        kind: advanced
+      - unit_id: architecture-product-decisions
+        status: planned
+        kind: milestone-review
+    capstone:
+      id: defensible-agentic-system
+      title: Ship a Defensible Agentic System
+      status: planned
+      path: courses/agentic-ai-engineering/capstone/index.qmd
+      estimated_effort: 40–70 hours
+      stages:
+        - id: C1
+          title: Select the Problem and Establish the Baseline
+          summary:
+            Choose a safe, consequential, multi-step task; identify stakeholders and harms;
+            build the simplest non-agentic baseline; and define success, budgets, and forbidden
+            actions.
+        - id: C2
+          title: Design Architecture, Evaluation, and Threat Model
+          summary:
+            Submit system/data-flow diagrams, architecture decisions, evaluation data plan,
+            metric definitions, threat model, autonomy policy, and open-source license review
+            before implementation expands.
+        - id: C3
+          title: Build the Vertical Slice
+          summary:
+            Complete one end-to-end task through API, agent runtime, model, tool, state,
+            trace, and evaluation. Demonstrate local/open-model execution and deterministic fixture
+            mode.
+        - id: C4
+          title: Add Reliability and Security
+          summary:
+            Implement persistence, recovery, idempotency, budgets, sandboxing, scoped credentials,
+            adversarial tests, human intervention, and telemetry redaction.
+        - id: C5
+          title: Evaluate and Simplify
+          summary:
+            Run held-out quality, robustness, safety, latency, cost, and human-effort evaluations.
+            Remove any agent, memory, planning, or protocol layer that does not improve the declared
+            frontier.
+        - id: C6
+          title: Release and Defend
+          summary:
+            Perform a canary or simulated release, respond to one injected incident, submit
+            the system card/runbook/rollback plan, and demonstrate previously unseen tasks to
+            reviewers.

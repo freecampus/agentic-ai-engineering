@@ -1,0 +1,38 @@
+groups:
+  all:
+    tasks:
+      ci:
+        help: Validate code, package, site, and generated notebooks
+        run: python scripts/project.py all
+  tests:
+    tasks:
+      linter:
+        help: Check formatting, lint, and types without modifying Git hooks
+        run: python scripts/project.py lint
+      unit:
+        help: Run the test suite
+        run: python scripts/project.py test
+      ci:
+        help: Run the full validation pipeline
+        run: python scripts/project.py all
+  docs:
+    tasks:
+      build:
+        help: Render Quarto, then export Colab notebooks
+        run: python scripts/project.py docs
+      render:
+        help: Alias for docs.build
+        run: python scripts/project.py docs
+      preview:
+        help: Build and preview the site
+        run: python scripts/project.py preview
+  package:
+    tasks:
+      build:
+        help: Build distributions with uv
+        run: uv build
+  clean:
+    tasks:
+      tmp:
+        help: Remove generated output without touching environments or source
+        run: python scripts/project.py clean

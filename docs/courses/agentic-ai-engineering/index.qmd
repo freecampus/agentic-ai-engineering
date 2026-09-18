@@ -1,0 +1,86 @@
+---
+title: Agentic AI Engineering
+description: Build, evaluate, defend, and operate agents—and learn when not to use one.
+content_kind: course-overview
+content_status: available
+planned_unit_count: 25
+planned_lesson_count: 101
+planned_challenge_count: 25
+available_lesson_count: 0
+available_challenge_count: 0
+---
+
+::: {.callout-important}
+## In development
+The curriculum is planned, not a completed course. Available now: unit previews,
+readiness guidance, project outlines, and an executable offline smoke lab.
+**0 of 101 lessons and 0 of 25 unit challenges are released.**
+:::
+
+## Build systems you can explain and defend
+
+For learners with **project-ready Python**, this course moves from deterministic
+agent fixtures to bounded runtimes, tools, retrieval, memory, protocols, evaluation,
+safety, durable services, and production decisions. Start with a non-agentic baseline;
+add autonomy only when evidence justifies it.
+
+[Check your readiness](readiness.qmd) · [Run the smoke lab](../../resources/agent-lab.qmd)
+
+## Planned scope and pacing
+
+- **25 units:** Unit 0 has five lessons; Units 1–24 have four each.
+- **101 lessons and 25 challenges**, with three short checkpoints per substantial lesson.
+- **Four numbered milestone projects**, plus architecture and advanced checkpoints.
+- **One capstone**, developed through six stages.
+- **Draft effort:** 240–360 hours plus optional extensions. Activity estimates,
+  milestone overlap, and the 40–70 hour capstone need calibration during authoring;
+  this is not a validated total workload.
+- Standard: 30–36 weeks at 7–10 hours/week; intensive: 18–22 weeks at 12–16 hours/week;
+  extended: 9–12 months. Adjust to actual lab time, not reading speed.
+
+## Learning sequence
+
+| Unit | Engineering focus | Planned lessons | Status |
+|---|---|---:|---|
+| 0 | [Launch a Reproducible Agent Engineering Lab](units/launch-agent-lab/index.qmd) | 5 | Planned |
+| 1 | [Decide Whether a Problem Needs an Agent](units/choose-agent-architecture/index.qmd) | 4 | Planned |
+| 2 | [Treat Language Models as Probabilistic Components](units/probabilistic-models/index.qmd) | 4 | Planned |
+| 3 | [Build a Minimal Agent Runtime](units/minimal-agent-runtime/index.qmd) | 4 | Planned |
+| 4 | [Reason, Search, Plan, and Verify](units/reason-plan-verify/index.qmd) | 4 | Planned |
+| 5 | [Design Tools as Capability Boundaries](units/tool-capability-boundaries/index.qmd) | 4 | Planned |
+| 6 | [Engineer Context Instead of Concatenating Prompts](units/context-engineering/index.qmd) | 4 | Planned |
+| 7 | [Build Grounded Retrieval and Research Agents](units/grounded-retrieval/index.qmd) | 4 | Planned |
+| 8 | [Build Memory That Earns Its Cost](units/agent-memory/index.qmd) | 4 | Planned |
+| 9 | [Compose Agentic Design Patterns](units/agentic-design-patterns/index.qmd) | 4 | Planned |
+| 10 | [Understand Frameworks Without Becoming Dependent on Them](units/framework-adapters/index.qmd) | 4 | Planned |
+| 11 | [Connect Agents Through Open Protocols](units/open-protocols/index.qmd) | 4 | Planned |
+| 12 | [Coordinate Multiple Agents Only with Evidence](units/multi-agent-coordination/index.qmd) | 4 | Planned |
+| 13 | [Evaluate Agent Behavior Scientifically](units/agent-evaluation/index.qmd) | 4 | Planned |
+| 14 | [Observe and Debug Nondeterministic Systems](units/observability-debugging/index.qmd) | 4 | Planned |
+| 15 | [Secure Agents by Construction](units/agent-security/index.qmd) | 4 | Planned |
+| 16 | [Design Meaningful Human Control](units/human-control/index.qmd) | 4 | Planned |
+| 17 | [Build Coding Agents in Safe Repositories](units/coding-agents/index.qmd) | 4 | Planned |
+| 18 | [Build Browser, Computer-Use, and Multimodal Agents](units/browser-multimodal-agents/index.qmd) | 4 | Planned |
+| 19 | [Make Long-Running Agents Durable](units/durable-execution/index.qmd) | 4 | Planned |
+| 20 | [Improve Agents Without Fooling Yourself](units/agent-improvement/index.qmd) | 4 | Planned |
+| 21 | [Run Open Models Efficiently](units/open-model-inference/index.qmd) | 4 | Planned |
+| 22 | [Deploy a Durable Agent Service](units/agent-services/index.qmd) | 4 | Planned |
+| 23 | [Release, Monitor, and Recover Agent Systems](units/release-and-recovery/index.qmd) | 4 | Planned |
+| 24 | [Make Defensible Architecture and Product Decisions](units/architecture-product-decisions/index.qmd) | 4 | Planned |
+
+## Learn from observable evidence
+
+**Specify → Predict → Run → Inspect → Explain → Modify → Evaluate → Attack → Record.**
+Use deterministic fixtures first. Inspect actions, state, tool results, traces,
+metrics, and concise external rationales—not private chain-of-thought. Network
+experiments will have fixture fallbacks; paid providers are never needed for core work.
+
+## Projects and recognition
+
+See the [milestone outlines](projects/index.qmd) and [six-stage capstone](capstone/index.qmd).
+Milestones refine the corresponding unit challenges; they are not duplicate lessons.
+Cumulative reviews are planned after Units 4, 8, 12, 16, 20, and 24.
+
+Browser progress is local and self-reported, not verified assessment or certificate
+evidence. Completion is disabled while the course is in development. No certificate
+or reviewed capstone submission is currently available.

@@ -1,0 +1,82 @@
+---
+title: Observe and Debug Nondeterministic Systems Overview
+description: Instrument portable traces, metrics, logs, and artifacts; redact sensitive data;
+  replay failures; and diagnose causality across model and tool calls.
+content_kind: unit-overview
+content_status: planned
+order: 0
+categories:
+- agentic-ai-engineering
+- observability-debugging
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/observability-debugging/index.ipynb
+---
+
+::: {.callout-important}
+## Curriculum preview—not a released unit
+The 4 lessons and challenge below are planned. This overview is available
+for orientation; it does not award course progress. The notebook is an orientation
+copy, not a completed instructional lab.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What you will be able to do
+
+Instrument portable traces, metrics, logs, and artifacts; redact sensitive data; replay failures; and diagnose causality across model and tool calls.
+
+**Phase:** IV. Evaluation and safety  
+**Overview:** 20–40 minutes  
+**Planned unit effort:** 8–14 hours, including typing, experiments,
+checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
+
+## 2. Before you begin
+
+Complete the preceding unit, [Evaluate Agent Behavior Scientifically](../agent-evaluation/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
+
+Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
+shared package. Work in a clean Colab/Jupyter notebook or a pinned local `uv`
+environment. The core route will not require provider keys or paid inference.
+Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
+
+## 3. Planned lesson sequence
+
+| Lesson | Evidence you will preserve |
+|---|---|
+| 1. Model Runs as Traces and Spans | Complete trace for a multi-step task. |
+| 2. Record Useful Events Without Leaking Data | Telemetry privacy test. |
+| 3. Replay Failures with Controlled Fixtures | Reproduced failure and minimized case. |
+| 4. Build Operational Quality Views | Dashboard plus alert rationale. |
+
+### 1. Model Runs as Traces and Spans
+
+Instrument task, agent step, model call, retrieval, tool, and approval spans with OpenTelemetry concepts. Propagate correlation and causation identifiers.
+
+### 2. Record Useful Events Without Leaking Data
+
+Define what belongs in attributes, events, metrics, logs, and artifacts. Apply redaction, hashing, sampling, access control, and retention policies.
+
+### 3. Replay Failures with Controlled Fixtures
+
+Capture model/tool boundaries as approved fixtures, replay deterministic portions, and distinguish state bugs from model variance or external drift.
+
+### 4. Build Operational Quality Views
+
+Create dashboards for success, latency, tokens, cost, retries, denials, escalation, and drift. Avoid dashboards whose aggregates hide rare severe failures.
+
+## 4. Challenge preview: Diagnose a Failing Agent from Evidence
+
+Use traces and fixtures to locate a regression among context assembly, model routing, retrieval, tool execution, and state persistence. Repair it and preserve a regression test.
+
+The complete challenge contract, starting fixtures, progressive checks, three-level
+hint ladder, and solution path are not authored yet. Do not interpret this outline
+as an executable assessment. A successful-looking output alone will not establish
+reliability: preserve the inputs, limits, observed behavior, and failed cases too.
+
+## 5. Suggested stopping points
+
+Plan one session per lesson. Before changing an implementation, write a prediction;
+after each session, record what ran, what failed, what changed, and what remains
+unverified. Save a clean run and an architecture note before attempting the challenge.
+Finish with a retrospective on quality, failures, latency, cost, and safety.
+
+[Preview Unit 15: Secure Agents by Construction](../agent-security/index.qmd) or [return to the complete course map](../../index.qmd).

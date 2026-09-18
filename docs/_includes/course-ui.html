@@ -1,0 +1,152 @@
+<script>
+  (() => {
+    "use strict";
+
+    const storageKey = "freecampus.agentic-ai-engineering.progress.v1";
+    const header = document.querySelector("#title-block-header");
+    if (!header) return;
+    const metadata = header.dataset;
+    const courseId = metadata.fcCourseId || "";
+    const curriculumVersion = Number(metadata.fcCurriculumVersion || 1);
+    const ruleVersion = Number(metadata.fcCompletionRuleVersion || 1);
+    const ids = (value) => new Set((value || "").split(/\s+/).filter(Boolean));
+    const lessonIds = ids(metadata.fcLessonIds);
+    const challengeIds = ids(metadata.fcChallengeIds);
+    const available = metadata.fcContentStatus === "available";
+    const lessonId = metadata.fcLessonId || "";
+    const challengeId = metadata.fcChallengeId || "";
+    const isLesson = Boolean(courseId && available && lessonIds.has(lessonId));
+    const isChallenge = Boolean(
+      courseId && available && challengeIds.has(challengeId),
+    );
+    const isRecord = (value) =>
+      value && typeof value === "object" && !Array.isArray(value);
+    const empty = () => ({ schema_version: 1, courses: {} });
+    let progress = empty();
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(storageKey));
+      if (saved?.schema_version === 1 && isRecord(saved.courses))
+        progress = saved;
+    } catch (_) {
+      // A blocked, corrupt, or unavailable store must not prevent learning.
+    }
+    const savedCourse = progress.courses[courseId];
+    const valid =
+      isRecord(savedCourse) &&
+      savedCourse.curriculum_version === curriculumVersion &&
+      savedCourse.rule_version === ruleVersion &&
+      isRecord(savedCourse.lessons) &&
+      isRecord(savedCourse.challenges);
+    const state = valid
+      ? savedCourse
+      : {
+          curriculum_version: curriculumVersion,
+          rule_version: ruleVersion,
+          lessons: {},
+          challenges: {},
+        };
+    let storageAvailable = true;
+
+    function count(allowed, recorded) {
+      return [...allowed].filter((id) => typeof recorded[id] === "string")
+        .length;
+    }
+
+    function updateButton(selector, id, recorded, enabled, noun) {
+      const button = document.querySelector(selector);
+      if (!button) return;
+      button.hidden = !enabled;
+      if (!enabled) return;
+      const complete = typeof recorded[id] === "string";
+      button.setAttribute("aria-pressed", String(complete));
+      button.classList.toggle("is-complete", complete);
+      const label = button.querySelector("[data-fc-complete-label]");
+      (label || button).textContent = complete
+        ? `${noun} recorded · select to undo`
+        : `Record ${noun.toLowerCase()} complete`;
+    }
+
+    function repaint() {
+      updateButton(
+        "[data-fc-complete]",
+        lessonId,
+        state.lessons,
+        isLesson,
+        "Lesson",
+      );
+      updateButton(
+        "[data-fc-challenge-complete]",
+        challengeId,
+        state.challenges,
+        isChallenge,
+        "Challenge",
+      );
+      const root = document.querySelector("[data-fc-lesson-progress]");
+      const total = lessonIds.size + challengeIds.size;
+      const completed =
+        count(lessonIds, state.lessons) + count(challengeIds, state.challenges);
+      if (root) {
+        root.hidden = !(isLesson || isChallenge) || total === 0;
+        const percent = total ? Math.round((100 * completed) / total) : 0;
+        const label = root.querySelector("[data-fc-progress-label]");
+        const value = root.querySelector("[data-fc-progress-value]");
+        const bar = root.querySelector("[data-fc-progress-bar]");
+        const track = root.querySelector("[data-fc-progress-track]");
+        if (label)
+          label.textContent = `${completed} of ${total} published activities recorded · self-reported`;
+        if (value) value.textContent = `${percent}%`;
+        if (bar) bar.style.width = `${percent}%`;
+        track?.setAttribute("aria-valuenow", String(percent));
+      }
+      const status = document.querySelector("[data-fc-storage-status]");
+      if (status)
+        status.textContent = storageAvailable
+          ? "Progress is local and self-reported, not verified assessment."
+          : "Browser storage is unavailable. This record lasts only for this page session.";
+      const context = document.querySelector("[data-fc-context]");
+      if (context && metadata.fcCourseTitle)
+        context.textContent = metadata.fcCourseTitle;
+      document
+        .querySelectorAll("#quarto-sidebar a.sidebar-link[href]")
+        .forEach((link) => {
+          const url = new URL(link.href, window.location.href);
+          const parts = url.pathname.split("/").filter(Boolean);
+          const index = parts.indexOf("units");
+          const id =
+            index >= 0 && parts[index - 1] === courseId
+              ? `${parts[index + 1]}.${(parts[index + 2] || "").replace(/\.(html|qmd)$/, "")}`
+              : "";
+          const complete =
+            url.origin === window.location.origin &&
+            ((lessonIds.has(id) && typeof state.lessons[id] === "string") ||
+              (challengeIds.has(id) &&
+                typeof state.challenges[id] === "string"));
+          link.classList.toggle("fc-is-complete", Boolean(complete));
+        });
+    }
+
+    function bind(selector, id, recorded, enabled) {
+      if (!enabled) return;
+      document.querySelector(selector)?.addEventListener("click", () => {
+        if (typeof recorded[id] === "string") delete recorded[id];
+        else recorded[id] = new Date().toISOString();
+        progress.courses[courseId] = state;
+        try {
+          window.localStorage.setItem(storageKey, JSON.stringify(progress));
+          storageAvailable = true;
+        } catch (_) {
+          storageAvailable = false;
+        }
+        repaint();
+      });
+    }
+    bind("[data-fc-complete]", lessonId, state.lessons, isLesson);
+    bind(
+      "[data-fc-challenge-complete]",
+      challengeId,
+      state.challenges,
+      isChallenge,
+    );
+    repaint();
+  })();
+</script>

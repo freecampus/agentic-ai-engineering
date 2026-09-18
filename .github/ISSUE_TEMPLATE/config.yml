@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Python documentation
+    url: https://docs.python.org/3/
+    about: Official Python language and standard-library documentation.
+  - name: Google Colab help
+    url: https://colab.research.google.com/notebooks/basic_features_overview.ipynb
+    about: Official Colab notebook basics for learners using browser-based practice.

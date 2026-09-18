@@ -1,0 +1,82 @@
+---
+title: Build Coding Agents in Safe Repositories Overview
+description: Build a repository-scale coding agent that searches, plans, edits, tests, reviews,
+  and rolls back inside an isolated, least-privilege environment.
+content_kind: unit-overview
+content_status: planned
+order: 0
+categories:
+- agentic-ai-engineering
+- coding-agents
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/coding-agents/index.ipynb
+---
+
+::: {.callout-important}
+## Curriculum preview—not a released unit
+The 4 lessons and challenge below are planned. This overview is available
+for orientation; it does not award course progress. The notebook is an orientation
+copy, not a completed instructional lab.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What you will be able to do
+
+Build a repository-scale coding agent that searches, plans, edits, tests, reviews, and rolls back inside an isolated, least-privilege environment.
+
+**Phase:** V. Advanced capabilities  
+**Overview:** 20–40 minutes  
+**Planned unit effort:** 8–14 hours, including typing, experiments,
+checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
+
+## 2. Before you begin
+
+Complete the preceding unit, [Design Meaningful Human Control](../human-control/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
+
+Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
+shared package. Work in a clean Colab/Jupyter notebook or a pinned local `uv`
+environment. The core route will not require provider keys or paid inference.
+Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
+
+## 3. Planned lesson sequence
+
+| Lesson | Evidence you will preserve |
+|---|---|
+| 1. Explore a Repository Before Editing | Evidence-backed repository map. |
+| 2. Turn an Issue into a Verifiable Plan | Issue contract and reproduction test. |
+| 3. Edit, Test, and Review in Isolation | Patch, tests, and review checklist. |
+| 4. Evaluate Coding Agents Beyond Passing Tests | Coding-agent evaluation report. |
+
+### 1. Explore a Repository Before Editing
+
+Use file discovery, symbol search, tests, dependency metadata, and repository instructions to form a bounded working set. Detect irrelevant or malicious instructions in source files.
+
+### 2. Turn an Issue into a Verifiable Plan
+
+Clarify acceptance criteria, reproduce the problem, identify likely files and tests, and state a minimal change plan. Reject plans that cannot be checked.
+
+### 3. Edit, Test, and Review in Isolation
+
+Apply patches in a branch/worktree or sandbox, run focused then broad checks, inspect diffs, and avoid unrelated changes. Handle generated files and formatting deliberately.
+
+### 4. Evaluate Coding Agents Beyond Passing Tests
+
+Use seeded issues and held-out tests; inspect correctness, scope, security, maintainability, and dependency changes. Understand benchmark contamination and weak tests.
+
+## 4. Challenge preview: Repair a Seeded Repository Defect
+
+The agent must reproduce, plan, patch, test, and explain a hidden defect without touching forbidden files or network resources. Learners review and approve the final diff.
+
+The complete challenge contract, starting fixtures, progressive checks, three-level
+hint ladder, and solution path are not authored yet. Do not interpret this outline
+as an executable assessment. A successful-looking output alone will not establish
+reliability: preserve the inputs, limits, observed behavior, and failed cases too.
+
+## 5. Suggested stopping points
+
+Plan one session per lesson. Before changing an implementation, write a prediction;
+after each session, record what ran, what failed, what changed, and what remains
+unverified. Save a clean run and an architecture note before attempting the challenge.
+Finish with a retrospective on quality, failures, latency, cost, and safety.
+
+[Preview Unit 18: Build Browser, Computer-Use, and Multimodal Agents](../browser-multimodal-agents/index.qmd) or [return to the complete course map](../../index.qmd).

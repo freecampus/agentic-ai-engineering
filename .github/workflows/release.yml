@@ -1,0 +1,14 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release-disabled:
+    name: Release disabled
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain release status
+        run: |
+          echo "Package publishing is disabled for now."
+          echo "Use the Documentation workflow to publish GitHub Pages."

@@ -1,0 +1,193 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - index.qmd
+    - courses/**/*.qmd
+    - resources/**/*.qmd
+website:
+  title: FreeCampus Agentic AI Engineering
+  description:
+    Learn to build, evaluate, defend, and operate agentic systems. Curriculum in
+    development.
+  site-url: https://freecampus.github.io/agentic-ai-engineering/
+  repo-url: https://github.com/freecampus/agentic-ai-engineering
+  repo-actions:
+    - edit
+    - issue
+  page-navigation: true
+  back-to-top-navigation: true
+  reader-mode: true
+  bread-crumbs: false
+  navbar:
+    title: FreeCampus Agents
+    logo: assets/freecampus-mark.svg
+    logo-alt: FreeCampus Agentic AI Engineering
+    search: true
+    collapse-below: lg
+    left:
+      - href: index.qmd
+        text: Home
+      - href: courses/agentic-ai-engineering/index.qmd
+        text: Curriculum
+      - href: courses/agentic-ai-engineering/readiness.qmd
+        text: Readiness
+      - href: resources/agent-lab.qmd
+        text: Smoke Lab
+      - href: resources/index.qmd
+        text: Resources
+    right:
+      - icon: github
+        href: https://github.com/freecampus/agentic-ai-engineering
+        aria-label: GitHub repository
+  sidebar:
+    - title: Agentic AI Engineering
+      style: floating
+      search: true
+      collapse-level: 1
+      contents:
+        - href: courses/agentic-ai-engineering/index.qmd
+          text: Course Overview
+        - href: courses/agentic-ai-engineering/readiness.qmd
+          text: Readiness
+        - section: "Unit 0: Launch a Reproducible Agent Engineering Lab"
+          contents:
+            - href: courses/agentic-ai-engineering/units/launch-agent-lab/index.qmd
+              text: Overview
+        - section: "Unit 1: Decide Whether a Problem Needs an Agent"
+          contents:
+            - href: courses/agentic-ai-engineering/units/choose-agent-architecture/index.qmd
+              text: Overview
+        - section: "Unit 2: Treat Language Models as Probabilistic Components"
+          contents:
+            - href: courses/agentic-ai-engineering/units/probabilistic-models/index.qmd
+              text: Overview
+        - section: "Unit 3: Build a Minimal Agent Runtime"
+          contents:
+            - href: courses/agentic-ai-engineering/units/minimal-agent-runtime/index.qmd
+              text: Overview
+        - section: "Unit 4: Reason, Search, Plan, and Verify"
+          contents:
+            - href: courses/agentic-ai-engineering/units/reason-plan-verify/index.qmd
+              text: Overview
+        - section: "Unit 5: Design Tools as Capability Boundaries"
+          contents:
+            - href: courses/agentic-ai-engineering/units/tool-capability-boundaries/index.qmd
+              text: Overview
+        - section: "Unit 6: Engineer Context Instead of Concatenating Prompts"
+          contents:
+            - href: courses/agentic-ai-engineering/units/context-engineering/index.qmd
+              text: Overview
+        - section: "Unit 7: Build Grounded Retrieval and Research Agents"
+          contents:
+            - href: courses/agentic-ai-engineering/units/grounded-retrieval/index.qmd
+              text: Overview
+        - section: "Unit 8: Build Memory That Earns Its Cost"
+          contents:
+            - href: courses/agentic-ai-engineering/units/agent-memory/index.qmd
+              text: Overview
+        - section: "Unit 9: Compose Agentic Design Patterns"
+          contents:
+            - href: courses/agentic-ai-engineering/units/agentic-design-patterns/index.qmd
+              text: Overview
+        - section: "Unit 10: Understand Frameworks Without Becoming Dependent on Them"
+          contents:
+            - href: courses/agentic-ai-engineering/units/framework-adapters/index.qmd
+              text: Overview
+        - section: "Unit 11: Connect Agents Through Open Protocols"
+          contents:
+            - href: courses/agentic-ai-engineering/units/open-protocols/index.qmd
+              text: Overview
+        - section: "Unit 12: Coordinate Multiple Agents Only with Evidence"
+          contents:
+            - href: courses/agentic-ai-engineering/units/multi-agent-coordination/index.qmd
+              text: Overview
+        - section: "Unit 13: Evaluate Agent Behavior Scientifically"
+          contents:
+            - href: courses/agentic-ai-engineering/units/agent-evaluation/index.qmd
+              text: Overview
+        - section: "Unit 14: Observe and Debug Nondeterministic Systems"
+          contents:
+            - href: courses/agentic-ai-engineering/units/observability-debugging/index.qmd
+              text: Overview
+        - section: "Unit 15: Secure Agents by Construction"
+          contents:
+            - href: courses/agentic-ai-engineering/units/agent-security/index.qmd
+              text: Overview
+        - section: "Unit 16: Design Meaningful Human Control"
+          contents:
+            - href: courses/agentic-ai-engineering/units/human-control/index.qmd
+              text: Overview
+        - section: "Unit 17: Build Coding Agents in Safe Repositories"
+          contents:
+            - href: courses/agentic-ai-engineering/units/coding-agents/index.qmd
+              text: Overview
+        - section: "Unit 18: Build Browser, Computer-Use, and Multimodal Agents"
+          contents:
+            - href: courses/agentic-ai-engineering/units/browser-multimodal-agents/index.qmd
+              text: Overview
+        - section: "Unit 19: Make Long-Running Agents Durable"
+          contents:
+            - href: courses/agentic-ai-engineering/units/durable-execution/index.qmd
+              text: Overview
+        - section: "Unit 20: Improve Agents Without Fooling Yourself"
+          contents:
+            - href: courses/agentic-ai-engineering/units/agent-improvement/index.qmd
+              text: Overview
+        - section: "Unit 21: Run Open Models Efficiently"
+          contents:
+            - href: courses/agentic-ai-engineering/units/open-model-inference/index.qmd
+              text: Overview
+        - section: "Unit 22: Deploy a Durable Agent Service"
+          contents:
+            - href: courses/agentic-ai-engineering/units/agent-services/index.qmd
+              text: Overview
+        - section: "Unit 23: Release, Monitor, and Recover Agent Systems"
+          contents:
+            - href: courses/agentic-ai-engineering/units/release-and-recovery/index.qmd
+              text: Overview
+        - section: "Unit 24: Make Defensible Architecture and Product Decisions"
+          contents:
+            - href: courses/agentic-ai-engineering/units/architecture-product-decisions/index.qmd
+              text: Overview
+        - href: courses/agentic-ai-engineering/projects/index.qmd
+          text: Milestone Outlines
+        - href: courses/agentic-ai-engineering/capstone/index.qmd
+          text: Capstone Outline
+  page-footer:
+    left: FreeCampus · Specify, inspect, evaluate, and defend.
+    center: Curriculum v1 · In development
+    right:
+      - text: GitHub
+        href: https://github.com/freecampus/agentic-ai-engineering
+format:
+  html:
+    brand: _brand.yml
+    theme:
+      light:
+        - cosmo
+        - theme-light.scss
+      dark:
+        - darkly
+        - theme-dark.scss
+    css:
+      - styles.css
+      - components/learning-shell.css
+      - components/landing.css
+      - components/catalog-faq.css
+      - components/course-portfolio.css
+      - components/responsive.css
+    template-partials:
+      - _partials/title-block.html
+    include-after-body:
+      - _includes/course-ui.html
+    toc: true
+    toc-title: On this page
+    toc-depth: 3
+    smooth-scroll: true
+    code-copy: true
+    code-overflow: wrap
+    code-line-numbers: true
+    link-external-newwindow: true
+execute:
+  eval: false

@@ -1,0 +1,268 @@
+---
+title: Run the Offline Agent Smoke Lab
+description: Inspect a deterministic tool call, test its stopping rule, and reject an unauthorized tool.
+content_kind: support
+content_status: available
+assessable: true
+categories: [agentic-ai-engineering, fixtures, runtime]
+order: 10
+colab_notebook: notebooks/resources/agent-lab.ipynb
+notebook_package: true
+---
+
+::: {.lesson-meta}
+- **Level:** Project-ready Python
+- **Estimated time:** 30–45 minutes
+- **You will check:** The package reproduces a known run and enforces a decision budget and tool allowlist.
+- **Practice in:** Colab, JupyterLab, or a local editor.
+:::
+
+{{< include ../_includes/colab-link.qmd >}}
+
+This is an infrastructure smoke lab, **not the complete Unit 0 lesson**. It uses a
+fake model with a fixed decision rule. No language model, provider account, GPU,
+secret, or inference request is involved. Passing it demonstrates a narrow software
+contract, not agent intelligence or production readiness.
+
+Three questions guide the check:
+
+1. Which component requests an action, and which component permits it?
+2. Why can the tool run successfully while the overall run exhausts its budget?
+3. What does one reproducible fixture prove—and what does it leave untested?
+
+## 1. Start from a clean environment
+
+**In the generated notebook:** the first setup cell bundles the course's Python
+source. Run it before the examples; it needs no network installation. Restart the
+kernel and run from the top rather than relying on another notebook's imports.
+
+**Locally:** from a checkout, run these commands in a terminal, not a Python cell:
+
+```bash
+uv sync --extra notebooks
+uv run python -m freecampus_agents.lab
+```
+
+The second command should print a JSON record with status `complete`, answer `12`,
+and four events. The development installation needs package-registry access once;
+the smoke run itself does not. See the [contributor guide](contributing.qmd) for
+lockfile status and full development checks.
+
+::: {.callout-warning}
+Use synthetic data only. This runtime is a teaching example, not a security sandbox.
+A custom model is trusted in-process Python code; the tool allowlist does not isolate
+arbitrary code in that model. The future security units address real isolation.
+:::
+
+## 2. Predict the task, action, observation, and answer
+
+Before running, predict the event order and final sum.
+
+```python
+from freecampus_agents.lab import Task, run_agent, smoke_test
+
+run = smoke_test()
+assert run.status == "complete"
+assert run.answer == 12
+for event in run.events:
+    print(event.kind, event.detail)
+```
+
+Expected output:
+
+```text
+task Add 7 and 5
+tool_call add
+observation 12
+final 12
+```
+
+`Task` stores two integer operands. `FakeModel` asks for the `add` tool when there is
+no observation. `run_agent` checks the tool name against its allowlist, adds the
+operands, and records the observation. On the next decision, the fake model returns
+that observation. The runtime accepts the answer only if it matches the observed
+integer. `smoke_test` also compares the whole record with a packaged JSON fixture.
+
+The trace is observable activity, not a private reasoning transcript. Four trace
+events do not mean four model decisions: this run makes **two decisions**.
+
+::: {.concept-diagram}
+The runtime mediates every requested tool action and checks the final result.
+
+```{mermaid}
+%%| echo: false
+%%| eval: true
+flowchart LR
+  T[Task] --> M[Fake model]
+  M --> R[Runtime checks]
+  R --> A[Addition tool]
+  A --> O[Observation]
+  O --> M
+  R --> F[Final result]
+```
+
+:::
+
+## 3. Change one input and check every downstream effect
+
+Predict the new sum, observation, and final event before running:
+
+```python
+changed = run_agent(Task(7, 8))
+assert changed.answer == 15
+assert changed.events[0].detail == "Add 7 and 8"
+assert changed.events[2].detail == "15"
+assert changed.events[3].detail == "15"
+```
+
+The tool choice stays `add`; the task, observation, and answer change. Now test a
+sum of zero. Zero is a valid result, not a missing observation.
+
+```python
+zero = run_agent(Task(-5, 5))
+assert zero.status == "complete"
+assert zero.answer == 0
+```
+
+## 4. Let the tool succeed but stop the run
+
+What changes when the runtime permits only one decision?
+
+```python
+limited = run_agent(Task(7, 5), max_steps=1)
+assert limited.status == "budget_exhausted"
+assert limited.answer is None
+assert [event.kind for event in limited.events] == [
+    "task", "tool_call", "observation", "budget_exhausted"
+]
+```
+
+The first decision requests the tool. The addition succeeds, but the runtime does
+not permit a second decision to return a final answer. The result is intentionally
+incomplete. Asking the model to stop is different from enforcing a limit in code.
+
+<details>
+<summary>Hint: find the boundary that consumes the budget</summary>
+
+`max_steps` counts calls to the model's `decide` method, not events. With a budget
+of two, the fake model first requests addition and then returns its observation.
+Increase the budget back to two and verify that the final answer reappears.
+
+</details>
+
+## 5. Request an unavailable capability
+
+This test double requests a shell tool. Predict whether any command can run.
+
+```python
+from freecampus_agents.lab import Decision
+
+
+class UnavailableToolModel:
+    def decide(self, task, observation):
+        return Decision("tool", tool="shell")
+
+
+denied = run_agent(Task(7, 5), model=UnavailableToolModel())
+assert denied.status == "denied"
+assert denied.answer is None
+assert [event.kind for event in denied.events] == ["task", "denied"]
+```
+
+A requested tool name is not permission. The runtime has no shell implementation and
+returns `denied`. It also rejects final answers that lack a preceding observation
+or disagree with it. Unexpected exceptions from a custom model propagate to the
+caller; this small scaffold does not promise production error recovery.
+
+## Check the run you observed
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "agent-lab-checkpoint",
+  "title": "Inspect the bounded run",
+  "instructions": "Choose an answer, then check your work.",
+  "questions": [
+    {
+      "id": "agent-lab-decision-budget",
+      "prompt": "Why does max_steps=1 stop before a final answer?",
+      "options": [
+        "The one decision was spent requesting the addition tool.",
+        "The calculator requires internet access.",
+        "A smaller budget makes addition inaccurate.",
+        "The fixture chooses a random stopping point."
+      ],
+      "answer_index": 0,
+      "explanation": "The tool runs on decision one; returning its result needs decision two. The runtime, not the model, enforces this limit."
+    },
+    {
+      "id": "agent-lab-evidence",
+      "prompt": "What does a successful smoke_test establish?",
+      "options": [
+        "Hosted language models will always choose the right tool.",
+        "This package reproduces one recorded deterministic run.",
+        "Every possible task is supported.",
+        "The course's production security review has passed."
+      ],
+      "answer_index": 1,
+      "explanation": "A fixture checks a narrow contract. It does not measure model quality or establish production readiness."
+    },
+    {
+      "id": "agent-lab-authorization",
+      "prompt": "What happens when a test double requests a shell tool?",
+      "options": [
+        "The runtime executes the shell but hides its output.",
+        "The model's confidence determines permission.",
+        "The runtime returns denied without executing that tool.",
+        "The runtime retries until permission appears."
+      ],
+      "answer_index": 2,
+      "explanation": "Only the pure add tool is available. A tool name in a model decision is a request, not authorization."
+    },
+    {
+      "id": "agent-lab-zero-observation",
+      "prompt": "What should run_agent(Task(-5, 5)) return?",
+      "options": [
+        "budget_exhausted because zero is false-like",
+        "invalid because negative inputs are forbidden",
+        "complete with no answer",
+        "complete with answer 0"
+      ],
+      "answer_index": 3,
+      "explanation": "The runtime distinguishes None from 0. A zero sum is a valid observation and final answer."
+    }
+  ]
+}
+</script>
+
+{{< include ../_includes/ojs-quiz.qmd >}}
+
+## 6. Keep a reproducible launch record
+
+Restart and run the notebook from the top. Save the ordinary, zero-sum, limited,
+and denied cases. Record your Python version, package version, commands, predicted
+results, and actual statuses in an [engineering journal](engineering-journal.qmd).
+
+```python
+import sys
+import freecampus_agents
+
+print("Python:", sys.version.split()[0])
+print("Course package:", freecampus_agents.__version__)
+assert smoke_test().answer == 12
+```
+
+Your acceptance checks are observable: the fixture agrees, the changed input changes
+the sum, zero is accepted, a one-decision run stops, and the unavailable tool is denied.
+If a check fails, preserve its input and traceback before changing anything. Do not
+change fixture expectations merely to silence a failure.
+
+## Key points
+
+- The fake model chooses actions; the runtime checks permissions and budgets.
+- A successful tool call is not necessarily a completed task.
+- One deterministic fixture is a baseline, not evidence of general reliability.
+- The smoke lab makes no inference calls and needs no secrets.
+
+Read the [course package source](https://github.com/freecampus/agentic-ai-engineering/tree/main/src/freecampus_agents),
+[Python dataclass reference](https://docs.python.org/3/library/dataclasses.html), and
+[Unit 0 preview](../courses/agentic-ai-engineering/units/launch-agent-lab/index.qmd).

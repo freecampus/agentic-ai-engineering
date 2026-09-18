@@ -1,0 +1,182 @@
+---
+title: Check Your Python Readiness
+description: Check functions, state, errors, modules, and tests before adding agent behavior.
+content_kind: support
+content_status: available
+assessable: true
+categories: [agentic-ai-engineering, readiness]
+order: 0
+colab_notebook: notebooks/courses/agentic-ai-engineering/readiness.ipynb
+---
+
+::: {.lesson-meta}
+- **Level:** Project-ready Python
+- **Estimated time:** 30–60 minutes
+- **You will check:** Whether you can predict, repair, and test a small Python component.
+- **Practice in:** Colab, JupyterLab, or a local editor.
+:::
+
+{{< include ../../_includes/colab-link.qmd >}}
+
+This is a preparation check, not a course lesson or verified admission test.
+You do not need prior agent-framework experience. You do need to work comfortably
+with functions, collections, exceptions, imports, environments, and tests.
+
+## 1. Separate returning a result from displaying it
+
+Before running, predict which call returns data to its caller.
+
+```python
+def display_total(left, right):
+    print(left + right)
+
+
+def add(left, right):
+    return left + right
+
+
+shown = display_total(2, 3)
+returned = add(2, 3)
+assert shown is None
+assert returned == 5
+```
+
+The first function displays `5`, then returns `None` implicitly. The second returns
+an integer without displaying it. A tool consumer needs data it can inspect, not
+just a message printed to a terminal. Change the two inputs and update the
+independent expected value before running again.
+
+## 2. Track shared mutable state
+
+Predict the final list before running. Does assigning a second name copy the list?
+
+```python
+events = ["task"]
+shared = events
+shared.append("tool_call")
+assert events == ["task", "tool_call"]
+```
+
+Both names refer to the same list. Replace `shared = events` with
+`shared = events.copy()`. Now `events` should remain `["task"]`; change the assertion
+to reflect the intended contract. Explain why hidden sharing could corrupt a trace.
+
+## 3. Locate the failure before changing the expected value
+
+Predict the exception produced by the conversion, then inspect its exact message.
+
+```python
+try:
+    value = int("twelve")
+except ValueError as error:
+    print(type(error).__name__, str(error))
+```
+
+Python raises `ValueError` because this text does not represent an integer.
+Handling it does not create a valid answer. A real caller needs a policy such as
+rejecting input, asking for clarification, or reporting failure.
+
+## 4. Repair and test a component
+
+This function is valid Python but violates the addition contract. First run its
+assertion unchanged. Use the resulting `AssertionError` as evidence.
+
+```python
+def combine(left, right):
+    return left - right
+
+
+assert combine(2, 3) == 5
+```
+
+Repair the implementation, not the expected sum. Then add independent assertions
+for two zeros, a negative input, and a sum of zero. Explain every test to a future reader.
+
+<details>
+<summary>Hint: compare the operation with the stated contract</summary>
+
+The contract says addition; the implementation subtracts. Replace `-` with `+`.
+Check `combine(0, 0) == 0`, `combine(-2, 3) == 1`, and `combine(-5, 5) == 0`.
+
+</details>
+
+## Check your prerequisites
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "python-readiness-checkpoint",
+  "title": "Check the Python you will use",
+  "instructions": "Choose an answer, then check your work.",
+  "questions": [
+    {
+      "id": "readiness-alias",
+      "prompt": "a = [1]; b = a; b.append(2). What is a?",
+      "options": [
+        "[1, 2]",
+        "[1]",
+        "[2]",
+        "An unbound name"
+      ],
+      "answer_index": 0,
+      "explanation": "Both names refer to the same mutable list. This matters when a runtime shares state between components."
+    },
+    {
+      "id": "readiness-return",
+      "prompt": "A function only prints 12. What value does its call return?",
+      "options": [
+        "12",
+        "None",
+        "\"12\"",
+        "True"
+      ],
+      "answer_index": 1,
+      "explanation": "Displaying output is not returning data. Tool contracts need explicit return values."
+    },
+    {
+      "id": "readiness-failure",
+      "prompt": "What happens when int(\"twelve\") is evaluated?",
+      "options": [
+        "It returns 12.",
+        "It returns None.",
+        "It raises ValueError.",
+        "It retries with a different spelling."
+      ],
+      "answer_index": 2,
+      "explanation": "Conversion rejects this text; a caller needs an explicit failure policy rather than assuming a usable number."
+    },
+    {
+      "id": "readiness-independent-test",
+      "prompt": "Which test checks an addition function against an independent expected value?",
+      "options": [
+        "assert add(2, 3) == add(2, 3)",
+        "print(add(2, 3))",
+        "assert callable(add)",
+        "assert add(2, 3) == 5"
+      ],
+      "answer_index": 3,
+      "explanation": "The expected value comes from the contract, not a second call to the same possibly incorrect implementation."
+    }
+  ]
+}
+</script>
+
+{{< include ../../_includes/ojs-quiz.qmd >}}
+
+## 5. Choose the next step honestly
+
+You are ready for the planned Unit 0 if you can explain these runs, repair the
+function without changing the contract, put it in an importable module, and run a
+test from a fresh environment. If those steps are unfamiliar, practice them in a
+Python course before adding model variability. This quiz alone does not establish readiness.
+
+The [offline smoke lab](../../resources/agent-lab.qmd) checks the new package.
+[Unit 0's overview](units/launch-agent-lab/index.qmd) previews the full onboarding sequence.
+
+## Key points
+
+- A return value, printed output, and an exception are different interfaces.
+- Shared mutable objects can create hidden state dependencies.
+- Tests compare behavior to an independent contract, including boundaries.
+
+Review the [Python tutorial](https://docs.python.org/3/tutorial/) and
+[Python's errors and exceptions guide](https://docs.python.org/3/tutorial/errors.html).

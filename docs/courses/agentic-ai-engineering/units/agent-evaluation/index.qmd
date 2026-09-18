@@ -1,0 +1,82 @@
+---
+title: Evaluate Agent Behavior Scientifically Overview
+description: Create representative datasets, layered graders, uncertainty estimates, and regression
+  gates for task, trajectory, tool, grounding, safety, latency, and cost.
+content_kind: unit-overview
+content_status: planned
+order: 0
+categories:
+- agentic-ai-engineering
+- agent-evaluation
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/agent-evaluation/index.ipynb
+---
+
+::: {.callout-important}
+## Curriculum preview—not a released unit
+The 4 lessons and challenge below are planned. This overview is available
+for orientation; it does not award course progress. The notebook is an orientation
+copy, not a completed instructional lab.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What you will be able to do
+
+Create representative datasets, layered graders, uncertainty estimates, and regression gates for task, trajectory, tool, grounding, safety, latency, and cost.
+
+**Phase:** IV. Evaluation and safety  
+**Overview:** 20–40 minutes  
+**Planned unit effort:** 8–14 hours, including typing, experiments,
+checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
+
+## 2. Before you begin
+
+Complete the preceding unit, [Coordinate Multiple Agents Only with Evidence](../multi-agent-coordination/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
+
+Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
+shared package. Work in a clean Colab/Jupyter notebook or a pinned local `uv`
+environment. The core route will not require provider keys or paid inference.
+Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
+
+## 3. Planned lesson sequence
+
+| Lesson | Evidence you will preserve |
+|---|---|
+| 1. Define Metrics from the Task Contract | Metric specification with gaming risks. |
+| 2. Build Representative Evaluation Data | Dataset card and coverage matrix. |
+| 3. Combine Deterministic, Model, and Human Graders | Grader agreement and disagreement analysis. |
+| 4. Compare Systems with Uncertainty | Reproducible comparison report. |
+
+### 1. Define Metrics from the Task Contract
+
+Translate success and harm into observable measures. Separate final-answer quality from trajectory correctness, policy compliance, and resource use.
+
+### 2. Build Representative Evaluation Data
+
+Create normal, boundary, adversarial, temporal, and abstention cases; prevent leakage; version fixtures and splits. Analyze whose tasks and failures are missing.
+
+### 3. Combine Deterministic, Model, and Human Graders
+
+Prefer exact and executable checks where possible; design rubrics and blinded pairwise judgments where needed. Calibrate model judges against human labels.
+
+### 4. Compare Systems with Uncertainty
+
+Run repeated trials, estimate confidence intervals, analyze paired differences, and avoid declaring tiny noisy gains. Construct quality–latency–cost frontiers.
+
+## 4. Challenge preview: Build an Evaluation Harness Before Improving the Agent
+
+Given two plausible agents, design data and graders that reveal their real tradeoffs. Hidden cases test leakage, judge bias, variance, and misleading aggregate scores.
+
+The complete challenge contract, starting fixtures, progressive checks, three-level
+hint ladder, and solution path are not authored yet. Do not interpret this outline
+as an executable assessment. A successful-looking output alone will not establish
+reliability: preserve the inputs, limits, observed behavior, and failed cases too.
+
+## 5. Suggested stopping points
+
+Plan one session per lesson. Before changing an implementation, write a prediction;
+after each session, record what ran, what failed, what changed, and what remains
+unverified. Save a clean run and an architecture note before attempting the challenge.
+Finish with a retrospective on quality, failures, latency, cost, and safety.
+
+[Preview Unit 14: Observe and Debug Nondeterministic Systems](../observability-debugging/index.qmd) or [return to the complete course map](../../index.qmd).

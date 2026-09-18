@@ -1,0 +1,99 @@
+<header
+  id="title-block-header"
+  class="quarto-title-block default fc-learning-header"
+  $if(course_id)$data-fc-course-id="$course_id$"
+  $endif$
+  $if(course_title)$data-fc-course-title="$course_title$"
+  $endif$
+  $if(course_home)$data-fc-course-home="$course_home$"
+  $endif$
+  $if(content_status)$data-fc-content-status="$content_status$"
+  $endif$
+  $if(curriculum_version)$data-fc-curriculum-version="$curriculum_version$"
+  $endif$
+  $if(completion_rule_version)$data-fc-completion-rule-version="$completion_rule_version$"
+  $endif$
+  data-fc-lesson-ids="$for(completion_lesson_ids)$$completion_lesson_ids$ $endfor$"
+  data-fc-challenge-ids="$for(completion_challenge_ids)$$completion_challenge_ids$ $endfor$"
+  $if(unit_id)$data-fc-unit-id="$unit_id$"
+  $endif$
+  $if(lesson_id)$data-fc-lesson-id="$lesson_id$"
+  $endif$
+  $if(challenge_id)$data-fc-challenge-id="$challenge_id$"
+  $endif$
+  $if(project_id)$data-fc-project-id="$project_id$"
+  $endif$
+>
+  <div class="fc-title-context" aria-live="polite">
+    <span class="fc-title-context-label" data-fc-context
+      >FreeCampus Agentic AI Engineering</span
+    >
+    <span class="fc-title-position" data-fc-position></span>
+  </div>
+
+  <div class="fc-title-layout">
+    <div class="fc-title-copy">
+      $if(title)$
+      <h1 class="title">$title$</h1>
+      $endif$ $if(hide-description)$ $elseif(description)$
+      <div class="description">$description$</div>
+      $endif$
+
+      <div class="fc-title-chips" data-fc-title-chips>
+        $if(categories)$ $for(categories)$
+        <span class="fc-title-chip">$categories$</span>
+        $endfor$ $endif$
+      </div>
+    </div>
+
+    $if(colab_notebook)$
+    <div class="fc-title-actions">
+      <a
+        class="btn btn-primary fc-title-colab"
+        href="https://colab.research.google.com/github/freecampus/agentic-ai-engineering/blob/gh-pages/$colab_notebook$"
+        target="_blank"
+        rel="noopener"
+      >
+        <span aria-hidden="true">↗</span>
+        Open in Colab
+      </a>
+      <button
+        class="fc-complete-button"
+        type="button"
+        data-fc-complete
+        aria-pressed="false"
+        hidden
+      >
+        <span class="fc-complete-icon" aria-hidden="true">✓</span>
+        <span data-fc-complete-label>Mark lesson complete</span>
+      </button>
+    </div>
+    $endif$
+  </div>
+
+  <div class="fc-lesson-progress" data-fc-lesson-progress hidden>
+    <div class="fc-progress-copy">
+      <span data-fc-progress-label>Course progress</span>
+      <span data-fc-progress-value>0%</span>
+    </div>
+    <div
+      class="fc-progress-track"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      data-fc-progress-track
+    >
+      <span data-fc-progress-bar></span>
+    </div>
+  </div>
+
+  <p
+    class="visually-hidden"
+    role="status"
+    aria-live="polite"
+    data-fc-storage-status
+  ></p>
+
+  $title-metadata.html()$
+</header>

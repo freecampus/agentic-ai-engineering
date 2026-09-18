@@ -1,0 +1,295 @@
+```{ojs}
+//| echo: false
+//| eval: true
+{
+  const scripts = Array.from(
+    document.querySelectorAll("script.fcagentic-ojs-quiz-config")
+  );
+  const script = scripts.find(
+    (node) => node.dataset.fcagenticRendered !== "true"
+  );
+
+  if (!script) {
+    return html`<div class="fcagentic-quiz fcagentic-quiz-warning">
+      Quiz configuration was not found.
+    </div>`;
+  }
+
+  script.dataset.fcagenticRendered = "true";
+  const quiz = JSON.parse(script.textContent);
+  const container = html`<div class="fcagentic-quiz"></div>`;
+  const title = document.createElement("h3");
+  title.textContent = quiz.title;
+  container.appendChild(title);
+
+  const instructions = document.createElement("p");
+  instructions.textContent = quiz.instructions;
+  container.appendChild(instructions);
+
+  const progress = document.createElement("div");
+  progress.className = "fcagentic-quiz-progress";
+
+  const counter = document.createElement("p");
+  counter.className = "fcagentic-quiz-counter";
+  counter.setAttribute("aria-live", "polite");
+  progress.appendChild(counter);
+
+  const tabs = document.createElement("div");
+  tabs.className = "fcagentic-quiz-steps";
+  tabs.setAttribute("role", "tablist");
+  tabs.setAttribute("aria-label", "Quiz questions");
+  progress.appendChild(tabs);
+  container.appendChild(progress);
+
+  const questions = document.createElement("div");
+  questions.className = "fcagentic-quiz-questions";
+
+  const feedbackNodes = [];
+  const questionPanels = [];
+  const stepButtons = [];
+  let currentQuestion = 0;
+
+  function setStepStatus(questionIndex, status) {
+    const step = stepButtons[questionIndex];
+    const question = quiz.questions[questionIndex];
+    const statuses = {
+      answered: "answered",
+      correct: "correct",
+      incorrect: "incorrect",
+      unanswered: "not answered",
+    };
+
+    step.classList.remove(
+      "is-answered",
+      "is-correct",
+      "is-incorrect",
+      "is-unanswered"
+    );
+    if (status) {
+      step.classList.add(`is-${status}`);
+    }
+
+    const statusLabel = status ? `, ${statuses[status]}` : "";
+    step.setAttribute(
+      "aria-label",
+      `Question ${questionIndex + 1}: ${question.prompt}${statusLabel}`
+    );
+  }
+
+  function showQuestion(questionIndex, focusPanel = false) {
+    currentQuestion = Math.max(
+      0,
+      Math.min(questionIndex, quiz.questions.length - 1)
+    );
+
+    questionPanels.forEach((panel, index) => {
+      panel.hidden = index !== currentQuestion;
+    });
+    stepButtons.forEach((step, index) => {
+      const isCurrent = index === currentQuestion;
+      step.classList.toggle("is-current", isCurrent);
+      step.setAttribute("aria-selected", String(isCurrent));
+      step.tabIndex = isCurrent ? 0 : -1;
+    });
+
+    counter.textContent = `Question ${currentQuestion + 1} of ${quiz.questions.length}`;
+
+    const selected = questionPanels[currentQuestion].querySelector(
+      "input[type='radio']:checked"
+    );
+    const isLastQuestion = currentQuestion === quiz.questions.length - 1;
+    previous.hidden = currentQuestion === 0;
+    next.hidden = isLastQuestion || !selected;
+    check.hidden = !isLastQuestion;
+
+    if (focusPanel) {
+      questionPanels[currentQuestion].focus();
+    }
+  }
+
+  quiz.questions.forEach((question, questionIndex) => {
+    const tabId = `${quiz.id}-question-tab-${questionIndex + 1}`;
+    const panelId = `${quiz.id}-question-panel-${questionIndex + 1}`;
+
+    const step = document.createElement("button");
+    step.type = "button";
+    step.className = "fcagentic-quiz-step";
+    step.id = tabId;
+    step.textContent = String(questionIndex + 1);
+    step.setAttribute("role", "tab");
+    step.setAttribute("aria-controls", panelId);
+    step.setAttribute("aria-selected", "false");
+    step.tabIndex = -1;
+    step.addEventListener("click", () => showQuestion(questionIndex));
+    step.addEventListener("keydown", (event) => {
+      let destination = null;
+      if (event.key === "ArrowRight") {
+        destination = (questionIndex + 1) % quiz.questions.length;
+      } else if (event.key === "ArrowLeft") {
+        destination =
+          (questionIndex - 1 + quiz.questions.length) % quiz.questions.length;
+      } else if (event.key === "Home") {
+        destination = 0;
+      } else if (event.key === "End") {
+        destination = quiz.questions.length - 1;
+      }
+
+      if (destination !== null) {
+        event.preventDefault();
+        showQuestion(destination);
+        stepButtons[destination].focus();
+      }
+    });
+    stepButtons.push(step);
+    tabs.appendChild(step);
+    setStepStatus(questionIndex, "");
+
+    const panel = document.createElement("div");
+    panel.className = "fcagentic-quiz-panel";
+    panel.id = panelId;
+    panel.setAttribute("role", "tabpanel");
+    panel.setAttribute("aria-labelledby", tabId);
+    panel.tabIndex = -1;
+
+    const fieldset = document.createElement("fieldset");
+    fieldset.className = "fcagentic-quiz-question";
+
+    const legend = document.createElement("legend");
+    legend.textContent = question.prompt;
+    fieldset.appendChild(legend);
+
+    question.options.forEach((option, optionIndex) => {
+      const label = document.createElement("label");
+      label.className = "fcagentic-quiz-option";
+
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = `${quiz.id}-${question.id}`;
+      input.value = String(optionIndex);
+      input.addEventListener("change", () => {
+        setStepStatus(questionIndex, "answered");
+        feedbackNodes[questionIndex].textContent = "";
+        feedbackNodes[questionIndex].className = "fcagentic-quiz-feedback";
+        score.textContent = "";
+        showQuestion(questionIndex);
+      });
+
+      const text = document.createElement("span");
+      text.textContent = option;
+
+      label.appendChild(input);
+      label.appendChild(text);
+      fieldset.appendChild(label);
+    });
+
+    const feedback = document.createElement("p");
+    feedback.className = "fcagentic-quiz-feedback";
+    feedback.setAttribute("aria-live", "polite");
+    feedbackNodes.push(feedback);
+    fieldset.appendChild(feedback);
+    panel.appendChild(fieldset);
+    questionPanels.push(panel);
+    questions.appendChild(panel);
+  });
+
+  container.appendChild(questions);
+
+  const actions = document.createElement("div");
+  actions.className = "fcagentic-quiz-actions";
+
+  const previous = document.createElement("button");
+  previous.type = "button";
+  previous.className = "fcagentic-quiz-secondary";
+  previous.textContent = "Previous";
+  previous.addEventListener("click", () => {
+    showQuestion(currentQuestion - 1, true);
+  });
+
+  const next = document.createElement("button");
+  next.type = "button";
+  next.textContent = "Next question";
+  next.addEventListener("click", () => {
+    showQuestion(currentQuestion + 1, true);
+  });
+
+  const check = document.createElement("button");
+  check.type = "button";
+  check.textContent = "Check answers";
+
+  const reset = document.createElement("button");
+  reset.type = "button";
+  reset.className = "fcagentic-quiz-secondary fcagentic-quiz-reset";
+  reset.textContent = "Reset";
+
+  const score = document.createElement("p");
+  score.className = "fcagentic-quiz-score";
+  score.setAttribute("aria-live", "polite");
+
+  check.addEventListener("click", () => {
+    let correctCount = 0;
+    let firstQuestionToReview = null;
+
+    quiz.questions.forEach((question, questionIndex) => {
+      const selected = container.querySelector(
+        `input[name="${quiz.id}-${question.id}"]:checked`
+      );
+      const feedback = feedbackNodes[questionIndex];
+
+      if (!selected) {
+        feedback.textContent = "Choose an answer before checking.";
+        feedback.className = "fcagentic-quiz-feedback";
+        setStepStatus(questionIndex, "unanswered");
+        if (firstQuestionToReview === null) {
+          firstQuestionToReview = questionIndex;
+        }
+        return;
+      }
+
+      const selectedIndex = Number(selected.value);
+      if (selectedIndex === question.answer_index) {
+        correctCount += 1;
+        feedback.textContent = `✅ Correct. ${question.explanation}`;
+        feedback.className = "fcagentic-quiz-feedback is-correct";
+        setStepStatus(questionIndex, "correct");
+      } else {
+        const answer = question.options[question.answer_index];
+        feedback.textContent = `❌ Not yet. Correct answer: ${answer}. ${question.explanation}`;
+        feedback.className = "fcagentic-quiz-feedback is-incorrect";
+        setStepStatus(questionIndex, "incorrect");
+        if (firstQuestionToReview === null) {
+          firstQuestionToReview = questionIndex;
+        }
+      }
+    });
+
+    score.textContent = `Score: ${correctCount}/${quiz.questions.length}`;
+    if (firstQuestionToReview !== null) {
+      showQuestion(firstQuestionToReview, true);
+    }
+  });
+
+  reset.addEventListener("click", () => {
+    container.querySelectorAll("input[type='radio']").forEach((input) => {
+      input.checked = false;
+    });
+    feedbackNodes.forEach((feedback) => {
+      feedback.textContent = "";
+      feedback.className = "fcagentic-quiz-feedback";
+    });
+    stepButtons.forEach((_, questionIndex) => {
+      setStepStatus(questionIndex, "");
+    });
+    score.textContent = "";
+    showQuestion(0, true);
+  });
+
+  actions.appendChild(previous);
+  actions.appendChild(next);
+  actions.appendChild(check);
+  actions.appendChild(reset);
+  container.appendChild(actions);
+  container.appendChild(score);
+  showQuestion(0);
+  return container;
+}
+```

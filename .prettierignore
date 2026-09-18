@@ -1,0 +1,10 @@
+docs/changelog.md
+CHANGELOG.md
+docs/_site/
+docs/.quarto/
+.quarto-tmp/
+.cache/
+.venv/
+build/
+dist/
+PLAN.md

@@ -1,0 +1,38 @@
+---
+name: Documentation Report
+description: Report a problem with course documentation or lesson text
+labels: ["docs", "needs-triage"]
+
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Thank you for helping improve the FreeCampus Agentic AI Engineering course materials.
+
+  - type: textarea
+    attributes:
+      label: Summary
+      description: Explain the documentation problem briefly.
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Documentation page or file
+      description: Paste the URL or repository path, such as docs/resources/agent-lab.qmd.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Suggested improvement
+      description: If you know how to improve it, describe the change.
+    validations:
+      required: false
+
+  - type: checkboxes
+    attributes:
+      label: Community guidelines
+      options:
+        - label: I agree to interact respectfully and constructively.
+          required: true

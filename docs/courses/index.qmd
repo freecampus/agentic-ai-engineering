@@ -1,0 +1,6 @@
+---
+title: Course Curriculum
+description: One connected Agentic AI Engineering sequence.
+---
+
+[Explore Agentic AI Engineering](agentic-ai-engineering/index.qmd): 25 planned units for learners with project-ready Python. The course is in development; the curriculum page distinguishes available resources from planned lessons.

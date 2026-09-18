@@ -1,0 +1,82 @@
+---
+title: Coordinate Multiple Agents Only with Evidence Overview
+description: Design specialization, delegation, shared state, communication, and conflict
+  resolution while measuring whether multiple agents outperform a single-agent baseline.
+content_kind: unit-overview
+content_status: planned
+order: 0
+categories:
+- agentic-ai-engineering
+- multi-agent-coordination
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/multi-agent-coordination/index.ipynb
+---
+
+::: {.callout-important}
+## Curriculum preview—not a released unit
+The 4 lessons and challenge below are planned. This overview is available
+for orientation; it does not award course progress. The notebook is an orientation
+copy, not a completed instructional lab.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What you will be able to do
+
+Design specialization, delegation, shared state, communication, and conflict resolution while measuring whether multiple agents outperform a single-agent baseline.
+
+**Phase:** III. Architecture  
+**Overview:** 20–40 minutes  
+**Planned unit effort:** 8–14 hours, including typing, experiments,
+checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
+
+## 2. Before you begin
+
+Complete the preceding unit, [Connect Agents Through Open Protocols](../open-protocols/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
+
+Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
+shared package. Work in a clean Colab/Jupyter notebook or a pinned local `uv`
+environment. The core route will not require provider keys or paid inference.
+Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
+
+## 3. Planned lesson sequence
+
+| Lesson | Evidence you will preserve |
+|---|---|
+| 1. Justify Decomposition and Specialization | Decomposition hypothesis and baseline. |
+| 2. Choose a Coordination Topology | Topology tradeoff matrix. |
+| 3. Share State and Resolve Conflict | Concurrency and conflict tests. |
+| 4. Detect Deadlock, Livelock, Correlated Error, and Runaway Cost | Coordination fault-injection report. |
+
+### 1. Justify Decomposition and Specialization
+
+Identify tasks with separable expertise, contexts, permissions, or parallel work. Reject role-play decompositions that merely duplicate the same model and information.
+
+### 2. Choose a Coordination Topology
+
+Compare supervisor, hierarchy, peer-to-peer, blackboard, and market-like coordination. Trace information loss and bottlenecks through each topology.
+
+### 3. Share State and Resolve Conflict
+
+Design message and artifact schemas, ownership, concurrency control, and disagreement procedures. Diagnose stale shared state, circular delegation, and overwritten work.
+
+### 4. Detect Deadlock, Livelock, Correlated Error, and Runaway Cost
+
+Instrument delegation depth, repeated messages, unresolved dependencies, and correlated judgments. Add budgets and a safe collapse-to-single-agent path.
+
+## 4. Challenge preview: Defend Single or Multi-Agent Design
+
+Implement one single-agent and one multi-agent version of a task. Keep the multi-agent design only if it improves the declared Pareto frontier; otherwise submit the evidence-backed simpler design.
+
+The complete challenge contract, starting fixtures, progressive checks, three-level
+hint ladder, and solution path are not authored yet. Do not interpret this outline
+as an executable assessment. A successful-looking output alone will not establish
+reliability: preserve the inputs, limits, observed behavior, and failed cases too.
+
+## 5. Suggested stopping points
+
+Plan one session per lesson. Before changing an implementation, write a prediction;
+after each session, record what ran, what failed, what changed, and what remains
+unverified. Save a clean run and an architecture note before attempting the challenge.
+Finish with a retrospective on quality, failures, latency, cost, and safety.
+
+[Preview Unit 13: Evaluate Agent Behavior Scientifically](../agent-evaluation/index.qmd) or [return to the complete course map](../../index.qmd).

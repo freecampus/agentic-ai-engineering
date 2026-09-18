@@ -1,0 +1,89 @@
+---
+name: Bug Report
+description: Report a problem with the course, package, docs, or tooling
+labels: ["bug", "needs-triage"]
+
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Thank you for reporting a problem in FreeCampus Agentic AI Engineering.
+
+        Please first check whether a similar issue already exists:
+        https://github.com/freecampus/agentic-ai-engineering/issues?q=is%3Aopen+is%3Aissue+label%3Abug
+
+  - type: textarea
+    attributes:
+      label: Summary
+      description: Explain the problem briefly.
+    validations:
+      required: true
+
+  - type: dropdown
+    attributes:
+      label: Area
+      description: Which part of the project is affected?
+      options:
+        - Course lesson or exercise
+        - Documentation website
+        - Python package code
+        - Installation or environment setup
+        - GitHub Actions / CI
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: OS / Environment
+      description: Provide your operating system, Python version, and tool used.
+      render: console
+      placeholder: |
+        OS: Ubuntu 24.04 / macOS / Windows / Colab
+        Python: 3.12
+        Tool: Colab / VS Code / Jupyter / terminal
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Steps to Reproduce
+      description: Describe exactly how to reproduce the problem.
+      placeholder: |
+        1. Open ...
+        2. Run ...
+        3. See ...
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Expected Results
+      description: Describe what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Actual Results
+      description: Paste redacted output, error text, screenshots, or tracebacks. Never include secrets or personal data.
+      render: console
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Version or commit
+      description: Paste the installed package version or Git commit if relevant.
+      render: console
+      placeholder: |
+        python -c "import freecampus_agents; print(freecampus_agents.__version__)"
+    validations:
+      required: false
+
+  - type: checkboxes
+    attributes:
+      label: Community guidelines
+      options:
+        - label: I agree to interact respectfully and constructively.
+          required: true
