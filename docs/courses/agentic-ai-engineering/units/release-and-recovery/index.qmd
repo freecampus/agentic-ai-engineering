@@ -23,8 +23,8 @@ copy, not a completed instructional lab.
 
 Version every behavior-shaping artifact, including skills and approved memory state; enforce CI gates, release gradually, monitor SLOs and drift, and respond to incidents with rollback and learning.
 
-**Phase:** VI. Production  
-**Overview:** 20–40 minutes  
+**Phase:** VI. Production
+**Overview:** 20–40 minutes
 **Planned unit effort:** 8–14 hours, including typing, experiments,
 checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
 

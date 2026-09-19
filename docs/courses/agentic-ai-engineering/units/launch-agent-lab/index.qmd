@@ -25,8 +25,8 @@ copy, not a completed instructional lab.
 
 Run, inspect, and modify a small deterministic agent in Colab; reproduce it locally; keep secrets out of artifacts; and distinguish model, runtime, tool, environment, and trace evidence.
 
-**Phase:** Orientation  
-**Overview:** 20–40 minutes  
+**Phase:** Orientation
+**Overview:** 20–40 minutes
 **Planned unit effort:** 10–16 hours, including typing, experiments,
 checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
 

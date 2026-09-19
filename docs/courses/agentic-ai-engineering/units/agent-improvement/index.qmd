@@ -23,8 +23,8 @@ copy, not a completed instructional lab.
 
 Optimize prompts, procedures, policies, and small models with train/validation/test separation while detecting overfitting, leakage, reward hacking, and unsafe self-modification.
 
-**Phase:** V. Advanced capabilities  
-**Overview:** 20–40 minutes  
+**Phase:** V. Advanced capabilities
+**Overview:** 20–40 minutes
 **Planned unit effort:** 8–14 hours, including typing, experiments,
 checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
 

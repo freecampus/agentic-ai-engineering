@@ -24,8 +24,8 @@ copy, not a completed instructional lab.
 
 Implement a framework-free, typed agent loop with explicit state, events, budgets, termination, and deterministic tests.
 
-**Phase:** I. Foundations  
-**Overview:** 20–40 minutes  
+**Phase:** I. Foundations
+**Overview:** 20–40 minutes
 **Planned unit effort:** 8–14 hours, including typing, experiments,
 checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
 

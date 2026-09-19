@@ -23,8 +23,8 @@ copy, not a completed instructional lab.
 
 Distinguish frameworks, agent harnesses, and complete assistant applications; migrate a stable application through adapters and quantify abstraction benefits and costs.
 
-**Phase:** III. Architecture  
-**Overview:** 20–40 minutes  
+**Phase:** III. Architecture
+**Overview:** 20–40 minutes
 **Planned unit effort:** 8–14 hours, including typing, experiments,
 checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
 

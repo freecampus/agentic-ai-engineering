@@ -24,8 +24,8 @@ copy, not a completed instructional lab.
 
 Compare API, DOM, accessibility-tree, and visual control; ground multimodal observations; and constrain dynamic user-interface actions.
 
-**Phase:** V. Advanced capabilities  
-**Overview:** 20–40 minutes  
+**Phase:** V. Advanced capabilities
+**Overview:** 20–40 minutes
 **Planned unit effort:** 8–14 hours, including typing, experiments,
 checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
 

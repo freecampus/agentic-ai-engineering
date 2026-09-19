@@ -24,8 +24,8 @@ copy, not a completed instructional lab.
 
 Evaluate total cost, sustainability, human effort, legal/open-source constraints, and product value; simplify or reject agent deployments when evidence demands it.
 
-**Phase:** VI. Production  
-**Overview:** 20–40 minutes  
+**Phase:** VI. Production
+**Overview:** 20–40 minutes
 **Planned unit effort:** 8–14 hours, including typing, experiments,
 checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
 

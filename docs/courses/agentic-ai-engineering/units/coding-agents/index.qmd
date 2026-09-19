@@ -24,8 +24,8 @@ copy, not a completed instructional lab.
 
 Build a repository-scale coding agent that searches, plans, edits, tests, reviews, and rolls back inside an isolated, least-privilege environment.
 
-**Phase:** V. Advanced capabilities  
-**Overview:** 20–40 minutes  
+**Phase:** V. Advanced capabilities
+**Overview:** 20–40 minutes
 **Planned unit effort:** 8–14 hours, including typing, experiments,
 checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
 
