@@ -218,8 +218,8 @@ __marimo__/
 .streamlit/secrets.toml
 
 .codex/
-PLAN.md
-PLAN-DETAILS.md
+PLAN*.md
+
 
 .quarto-tmp/
 pytest-of-*/

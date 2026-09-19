@@ -53,7 +53,9 @@ def clean() -> None:
             ".mypy_cache",
             ".ruff_cache",
             ".quarto-tmp",
-            ".cache",
+            ".cache/quarto",
+            ".cache/quarto-home",
+            ".cache/deno",
             "docs/_site",
             "docs/.quarto",
             "htmlcov",
@@ -75,15 +77,18 @@ def clean() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "task", choices=["lint", "test", "docs", "preview", "clean", "all"]
+        "task", choices=["lint", "test", "docs", "preview", "package", "clean", "all"]
     )
     task = parser.parse_args().task
+    if task != "clean":
+        run(sys.executable, "scripts/check_environment.py")
     if task in {"lint", "all"}:
         lint()
     if task in {"test", "all"}:
         run(sys.executable, "-m", "pytest", "-q")
-    if task == "all":
-        run("uv", "build")
+    if task in {"package", "all"}:
+        run("poetry", "check", "--strict")
+        run("poetry", "build")
     if task in {"docs", "preview", "all"}:
         docs()
     if task == "preview":

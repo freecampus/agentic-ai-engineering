@@ -35,8 +35,9 @@ checks, and a 90–180 minute challenge. Estimates will be recalibrated during a
 Bring project-ready Python: functions, data structures, modules, exceptions, and basic tests. Use the [readiness guide](../../readiness.qmd) to check gaps.
 
 Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
-shared package. Work in a clean Colab/Jupyter notebook or a pinned local `uv`
-environment. The core route will not require provider keys or paid inference.
+shared package. Work in a clean Colab/Jupyter notebook or a local Conda
+environment with Poetry-managed dependencies. The core route will not require
+provider keys or paid inference.
 Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
 
 ## 3. Planned lesson sequence
@@ -67,7 +68,7 @@ Inspect notebook state, execution order, package installation, files, runtime re
 
 ### 5. Build a Dependable Local Workspace
 
-Create the course environment with Git, `uv`, Python, pytest, Ruff, type checking, and environment-variable configuration on Windows, macOS, or Linux. Run the same smoke test locally and in Colab.
+Create the course environment with Git, Conda, `Poetry`, Python, pytest, Ruff, type checking, and environment-variable configuration on Windows, macOS, or Linux. Run the same smoke test locally and in Colab.
 
 ## 4. Challenge preview: Prove the Lab Is Ready
 

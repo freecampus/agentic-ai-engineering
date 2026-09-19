@@ -34,8 +34,9 @@ checks, and a 90–180 minute challenge. Estimates will be recalibrated during a
 Complete the preceding unit, [Understand Frameworks Without Becoming Dependent on Them](../framework-adapters/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
 
 Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
-shared package. Work in a clean Colab/Jupyter notebook or a pinned local `uv`
-environment. The core route will not require provider keys or paid inference.
+shared package. Work in a clean Colab/Jupyter notebook or a local Conda
+environment with Poetry-managed dependencies. The core route will not require
+provider keys or paid inference.
 Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
 
 ## 3. Planned lesson sequence

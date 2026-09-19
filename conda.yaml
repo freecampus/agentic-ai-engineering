@@ -1,9 +1,13 @@
-# Optional bootstrap only; uv manages the project environment and dependencies.
+# Required for development and CI; Poetry installs into this Conda environment.
 name: fc-agentic
 channels:
   - conda-forge
   - nodefaults
 dependencies:
   - python=3.12
-  - uv>=0.8.11
+  - poetry>=2.4,<3
   - nodejs
+  - pip
+variables:
+  POETRY_VIRTUALENVS_CREATE: "false"
+  POETRY_VIRTUALENVS_IN_PROJECT: "false"

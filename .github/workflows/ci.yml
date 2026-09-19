@@ -16,21 +16,31 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.12", "3.14"]
+    defaults:
+      run:
+        shell: bash -el {0}
     env:
-      UV_PYTHON: ${{ matrix.python-version }}
+      POETRY_VIRTUALENVS_CREATE: "false"
+      POETRY_VIRTUALENVS_IN_PROJECT: "false"
+      POETRY_NO_INTERACTION: "1"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: conda-incubator/setup-miniconda@v3
         with:
+          miniforge-version: latest
+          environment-file: conda.yaml
+          activate-environment: fc-agentic
+          auto-activate-base: false
+          channels: conda-forge,nodefaults
+          conda-solver: libmamba
           python-version: ${{ matrix.python-version }}
-      - uses: astral-sh/setup-uv@v6
-        with:
-          version: "0.8.11"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
+      - name: Verify Conda and Poetry use the same environment
+        run: python scripts/check_environment.py
       - name: Install course and development tools
-        # Bootstrap migration: change to --locked when uv.lock is generated.
-        run: uv sync --all-extras --group docs
+        # Bootstrap migration: require `poetry check --lock` once the lock is committed.
+        run: |
+          poetry check --strict
+          poetry install --all-extras --with docs
+          python scripts/check_environment.py
       - name: Lint, test, package, and render
-        run: uv run makim all.ci
+        run: poetry run makim all.ci

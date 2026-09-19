@@ -25,6 +25,7 @@ notebooks = ["ipywidgets>=8,<9", "ipykernel>=6,<8"]
 
 [dependency-groups]
 dev = [
+  "click>=8",
   "pytest>=8,<10",
   "ruff>=0.12,<1",
   "mypy>=1.17,<3",
@@ -32,19 +33,30 @@ dev = [
   "types-PyYAML>=6,<7",
   "makim==1.29.0",
   "pre-commit>=4,<5",
+  "pre-commit-hooks==4.6.0",
   "nbformat>=5,<6",
+  "tomli>=2,<3; python_version < '3.11'",
+  "quarto-cli==1.9.38"
 ]
-docs = ["quarto-cli==1.9.38"]
 
 [build-system]
-requires = ["setuptools>=77,<83"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=2.4,<3"]
+build-backend = "poetry.core.masonry.api"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.poetry]
+requires-poetry = ">=2.4,<3"
+packages = [{ include = "freecampus_agents", from = "src" }]
+include = [
+  { path = "src/freecampus_agents/py.typed", format = ["sdist", "wheel"] },
+  { path = "src/freecampus_agents/fixtures/*.json", format = ["sdist", "wheel"] },
+]
 
-[tool.setuptools.package-data]
-freecampus_agents = ["py.typed", "fixtures/*.json"]
+[tool.poetry.dependencies]
+# Bound dependency resolution without restricting the published package metadata.
+python = ">=3.10,<4"
+
+[tool.poetry.group.docs]
+optional = true
 
 [tool.ruff]
 line-length = 88

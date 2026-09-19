@@ -39,11 +39,14 @@ kernel and run from the top rather than relying on another notebook's imports.
 **Locally:** from a checkout, run these commands in a terminal, not a Python cell:
 
 ```bash
-uv sync --extra notebooks
-uv run python -m freecampus_agents.lab
+conda env create -f conda.yaml  # First setup only
+conda activate fc-agentic
+python scripts/check_environment.py
+poetry install --extras notebooks
+poetry run python -m freecampus_agents.lab
 ```
 
-The second command should print a JSON record with status `complete`, answer `12`,
+The final command should print a JSON record with status `complete`, answer `12`,
 and four events. The development installation needs package-registry access once;
 the smoke run itself does not. See the [contributor guide](contributing.qmd) for
 lockfile status and full development checks.

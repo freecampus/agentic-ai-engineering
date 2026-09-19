@@ -1,4 +1,17 @@
 groups:
+  environment:
+    tasks:
+      check:
+        help: Require Python and Poetry to use the same activated Conda environment
+        run: python scripts/check_environment.py
+  plan:
+    tasks:
+      check:
+        help: Local only; validate ignored lesson plan briefs, records, and dashboard
+        run: python scripts/check_lesson_plan.py
+      refresh:
+        help: Local only; refresh ignored lesson plan totals without changing task states
+        run: python scripts/check_lesson_plan.py --refresh
   all:
     tasks:
       ci:
@@ -29,8 +42,8 @@ groups:
   package:
     tasks:
       build:
-        help: Build distributions with uv
-        run: uv build
+        help: Build distributions with Poetry
+        run: python scripts/project.py package
   clean:
     tasks:
       tmp:

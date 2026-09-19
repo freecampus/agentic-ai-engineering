@@ -16,11 +16,14 @@
 
 <!-- List the commands or manual checks used to verify the change. -->
 
-- [ ] `uv lock --check` (after the initial lockfile is generated)
-- [ ] `uv run makim tests.linter`
-- [ ] `uv run makim tests.unit`
-- [ ] `uv run makim package.build`
-- [ ] `uv run makim docs.build`
+- [ ] Activated the Conda environment and ran
+      `python scripts/check_environment.py`
+- [ ] `poetry check --strict` (add `--lock` after the initial lockfile is
+      generated)
+- [ ] `poetry run makim tests.linter`
+- [ ] `poetry run makim tests.unit`
+- [ ] `poetry run makim package.build`
+- [ ] `poetry run makim docs.build`
 - [ ] Manual lesson review, if content changed
 
 ## Pull Request checklist

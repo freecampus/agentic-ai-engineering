@@ -13,19 +13,34 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash -el {0}
+    env:
+      POETRY_VIRTUALENVS_CREATE: "false"
+      POETRY_VIRTUALENVS_IN_PROJECT: "false"
+      POETRY_NO_INTERACTION: "1"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: conda-incubator/setup-miniconda@v3
         with:
+          miniforge-version: latest
+          environment-file: conda.yaml
+          activate-environment: fc-agentic
+          auto-activate-base: false
+          channels: conda-forge,nodefaults
+          conda-solver: libmamba
           python-version: "3.12"
-      - uses: astral-sh/setup-uv@v6
-        with:
-          version: "0.8.11"
+      - name: Verify Conda and Poetry use the same environment
+        run: python scripts/check_environment.py
       - name: Install documentation tools
-        # Bootstrap migration: change to --locked when uv.lock is generated.
-        run: uv sync --group docs
+        # Bootstrap migration: require `poetry check --lock` once the lock is committed.
+        run: |
+          poetry check --strict
+          poetry install --with docs
+          python scripts/check_environment.py
       - name: Render and export notebooks
-        run: uv run makim docs.build
+        run: poetry run makim docs.build
       - uses: actions/upload-artifact@v4
         with:
           name: course-site

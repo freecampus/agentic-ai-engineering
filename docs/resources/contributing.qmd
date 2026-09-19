@@ -5,9 +5,22 @@ description: Turn a planned lesson into reviewed instruction without weakening i
 
 ## 1. Choose one planned outcome
 
-Use the catalog and `PLAN-DETAILS.md` to find the owning unit, stable lesson ID,
-engineering action, and expected learner evidence. Keep the current task narrower
-than its unit outcome. Do not turn all 101 outlines into thin published pages.
+Use the tracked catalog, unit overview, and outcome map to find the owning unit,
+stable lesson ID, intended scope, and expected learner evidence. All `PLAN*.md`
+files are ignored local material, not prerequisites for contributing, running
+tests, or building the site. If a maintainer supplies a local `PLAN-LESSONS.md`,
+also use its detailed teaching brief and lab checks. Keep the current task
+narrower than its unit outcome. Do not turn all 101 outlines into thin published
+pages.
+
+When using that local tracker, maintain the task's development status, owner,
+date, blockers, and evidence. Explicitly run `poetry run makim plan.refresh` and
+`poetry run makim plan.check` after updates. These commands need the local plan;
+CI and normal pytest runs do not read it. CI tests the validator using synthetic
+records and checks public curriculum relationships using tracked sources.
+A finished brief is not an implemented lesson; unit gates and capstone stages
+are tracked separately. Development state does not replace catalog publication
+state or imply verified learner completion.
 
 The source layout keeps QMD under `docs/courses/agentic-ai-engineering/`, reusable
 Python under `src/freecampus_agents/`, and tests under `tests/`. This adapts the draft
@@ -41,21 +54,36 @@ exist. Do not enable whole-course completion until the completion contract is re
 
 ## 5. Check from a clean environment
 
-The current migration has not generated `uv.lock`: registry access was unavailable.
-Run `uv lock`, inspect and version the lockfile, then use `uv sync --locked` for
-reproducible installations. Until that step, dependency resolution is not pinned
-transitively. Do not describe the scaffold as a fully reproducible release.
+Use Poetry 2.4+ within the 2.x series. The migration could not connect to PyPI,
+so `poetry.lock` has not been generated. Run `poetry lock` with registry access,
+inspect and version the result, and add `poetry check --lock --strict` before CI
+installation. Until that step, dependency resolution is not pinned transitively.
+Do not describe the scaffold as a fully reproducible release or reuse another
+course's lockfile.
+
+Conda + Poetry are required locally and in CI. `conda.yaml` supplies Python 3.12,
+Poetry, Node.js, and pip. Poetry installs project dependencies directly into the
+activated Conda environment. The shared `poetry.toml` disables separate virtual
+environments; the environment check rejects nested venvs or mismatched tools.
+Use `poetry install`, not synchronization, to preserve Conda-owned tooling.
+Activate the environment in each terminal and select its Python in your editor.
+Pre-commit hooks use these installed tools rather than creating hook environments.
 
 ```bash
-uv sync --all-extras --group docs
-uv run pytest -q
-uv run ruff check src tests scripts
-uv run ruff format --check src tests scripts
-uv run mypy src
-uv build
-uv run makim docs.build
+conda env create -f conda.yaml  # First setup only
+conda activate fc-agentic
+python scripts/check_environment.py
+poetry check --strict
+poetry install --all-extras --with docs
+python scripts/check_environment.py
+poetry run pytest -q
+poetry run ruff check src tests scripts
+poetry run ruff format --check src tests scripts
+poetry run mypy src
+poetry build
+poetry run makim docs.build
 git diff --check
-uv run makim clean.tmp
+poetry run makim clean.tmp
 ```
 
 The build renders HTML, exports notebooks, and verifies expected output files.
@@ -64,4 +92,4 @@ Restart the smoke notebook and run from the top. Report skipped checks and exter
 limitations rather than treating unrun checks as passing.
 
 Use the [repository contribution guidance](https://github.com/freecampus/agentic-ai-engineering/blob/main/AGENTS.md)
-and [uv project guide](https://docs.astral.sh/uv/guides/projects/) for further detail.
+and [Poetry's basic usage](https://python-poetry.org/docs/basic-usage/) for further detail.

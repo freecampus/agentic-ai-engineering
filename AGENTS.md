@@ -10,10 +10,14 @@ beginner Python portfolio. Teach learners to specify, predict, run, inspect,
 explain, modify, evaluate, attack assumptions, and record evidence. Prefer the
 simplest adequate architecture; autonomy must earn its complexity.
 
-- `PLAN-DETAILS.md` is the tracked draft curriculum specification: 25 units, 101
-  lessons, 25 challenges, four numbered milestones, and a six-stage capstone.
-- `PLAN.md` is ignored local planning material. Update its implementation status
-  and deviations before handoff when work is driven by it.
+- All `PLAN*.md` files are ignored local planning material, including
+  `PLAN-LESSONS.md`. Preserve this rule; never require these files in CI, public
+  builds, or a fresh checkout, and do not restore tracking without approval.
+- When available locally, `PLAN-LESSONS.md` records 25 unit development
+  milestones, 101 detailed lesson tasks, statuses/evidence, unit gates, and
+  separate capstone/release readiness. Its four learner milestone projects are
+  not extra development milestones. Update local status/deviations when work is
+  driven by a plan; reconcile approved scope with the tracked catalog and QMD.
 - `docs/courses/_catalog.yml` owns machine IDs, titles, intended paths, status,
   sequence, outcomes, effort, milestone/challenge relationships, and counts.
 - `docs/courses/agentic-ai-engineering/_outcomes.yml` maps every planned lesson
@@ -86,6 +90,24 @@ metadata, outcomes, home counts, navigation, links, notebooks, and tests
 together. Do not retain aliases unless compatibility was explicitly requested.
 
 ## Lesson quality and prerequisite discipline
+
+Use the tracked catalog, unit overview, outcome map, and these authoring rules.
+When a local `PLAN-LESSONS.md` is available, also use its detailed lesson brief
+and editorial definition of done. Maintain its YAML `status`, owner, date,
+blockers, and evidence as work changes. Use `not_done`, `in_progress`,
+`in_review`, `implemented`, or `blocked`; do not mark a planned outline or
+preview implemented. Publication status stays in the catalog. A unit is done
+only when its lessons and all unit gates are done. Gate/capstone/release records
+never count as extra lessons.
+
+After status changes, run `poetry run makim plan.refresh`, then
+`poetry run makim plan.check`. Do not hand-edit dashboard totals or use the
+script's structural pass as a substitute for independent teaching/execution
+review. These are explicit local commands, not CI prerequisites. They fail
+clearly if the local lesson plan is absent, without creating placeholders. CI
+checks tracked curriculum relationships and the validator's behavior using
+synthetic test records; it never reads the actual local plans. Keep a local
+backup/change log for ignored plans; Git does not preserve their history.
 
 Teach one engineering layer at a time. Assume project-ready Python, not prior
 agent-framework expertise. Explain new protocols and model behavior at the point
@@ -201,20 +223,41 @@ environment files.
 
 ## Validation and tooling
 
-Use `uv`, `pyproject.toml`, and (once resolved) `uv.lock`, not Poetry. The
-initial restricted environment could not resolve registry dependencies; if the
-lockfile is absent, run `uv lock` with registry access, inspect it, and include
-it in the next change. Do not fabricate a lockfile or claim transitive
-reproducibility.
+Use **Conda + Poetry for all local development and CI**. `conda.yaml` supplies
+Python, Poetry 2.4+ within 2.x, Node.js, and pip; Poetry manages project Python
+dependencies via `pyproject.toml` and (once resolved) `poetry.lock`. Packaging
+uses `poetry-core`. Activate the real project Conda environment, not `base`, and
+run `python scripts/check_environment.py` before installing or validating. Never
+simulate activation by setting `VIRTUAL_ENV`. Python and Poetry must both
+resolve inside the activated Conda prefix.
+
+The tracked `poetry.toml` disables virtualenv creation and in-project selection;
+preserve both settings. Do not use Python/Poetry venvs or `poetry env use`. Use
+`poetry install`, not synchronization, to avoid removing Conda-owned tooling.
+Pre-commit hooks must use `language: system`, with dependencies supplied by the
+Conda/Poetry toolchain, not isolated hook environments. Preserve existing unused
+environment directories; never delete them automatically.
+
+The restricted environment could not connect to PyPI during `poetry lock`. With
+registry access, generate and inspect `poetry.lock`, version it, and require
+`poetry check --lock --strict` before installation in both workflows. Until
+then, CI resolves declared ranges and transitive reproducibility is not
+established. Do not fabricate a lockfile or borrow the reference course's
+dependency lock.
 
 ```bash
-uv sync --all-extras --group docs
-uv run pytest -q
-uv run ruff check src tests scripts
-uv run ruff format --check src tests scripts
-uv run mypy src
-uv build
-uv run makim docs.build
+conda env create -f conda.yaml  # First setup only
+conda activate fc-agentic
+python scripts/check_environment.py
+poetry check --strict
+poetry install --all-extras --with docs
+python scripts/check_environment.py
+poetry run pytest -q
+poetry run ruff check src tests scripts
+poetry run ruff format --check src tests scripts
+poetry run mypy src
+poetry build
+poetry run makim docs.build
 ```
 
 Run focused checks during work, then the full suite. Validate catalog counts,
@@ -222,7 +265,7 @@ lesson ownership, status-aware links, outcomes, metadata, quiz JSON and IDs,
 Python fences, Mermaid options, every expected HTML page, and notebook output.
 Run the smoke notebook from a clean process and inspect desktop/narrow-screen
 quizzes when browser tooling is available. Finish with `git diff --check`,
-scoped cleanup via `uv run makim clean.tmp`, and `git status --short`.
+scoped cleanup via `poetry run makim clean.tmp`, and `git status --short`.
 
 Do not delete virtual environments, unrelated user files, or existing staged
 work. Do not commit generated sites, caches, `_files` directories, build

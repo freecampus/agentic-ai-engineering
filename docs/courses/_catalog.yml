@@ -81,7 +81,7 @@ courses:
             status: planned
             path: courses/agentic-ai-engineering/units/launch-agent-lab/build-local-workspace.qmd
             summary:
-              Create the course environment with Git, `uv`, Python, pytest, Ruff, type checking,
+              Create the course environment with Git, Conda, `Poetry`, Python, pytest, Ruff, type checking,
               and environment-variable configuration on Windows, macOS, or Linux. Run the same smoke
               test locally and in Colab.
             evidence: environment report and passing cross-environment smoke test.

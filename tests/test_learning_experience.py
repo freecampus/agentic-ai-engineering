@@ -73,19 +73,21 @@ def test_catalog_records_the_exact_planned_course() -> None:
     ]
 
 
-def test_catalog_titles_outcomes_and_evidence_match_the_specification() -> None:
-    plan = Path("PLAN-DETAILS.md").read_text(encoding="utf-8")
-    units = catalog()["units"]
-    assert re.findall(r"^# Unit \d+ — (.+)$", plan, re.M) == [u["title"] for u in units]
-    assert re.findall(r"^## Lesson \d+\.\d+ — (.+)$", plan, re.M) == [
-        lesson["title"] for u in units for lesson in u["lessons"]
-    ]
-    for unit in units:
-        assert unit["outcome"] in plan
-        assert unit["challenge"]["summary"] in plan
+def test_catalog_scope_agrees_with_tracked_unit_overviews() -> None:
+    # Public curriculum consistency must not depend on private PLAN*.md files.
+    for unit in catalog()["units"]:
+        path = DOCS / unit["overview"]
+        assert front(path)["title"] == unit["title"] + " Overview"
+        text = path.read_text(encoding="utf-8")
+        assert re.findall(r"^### \d+\. (.+)$", text, re.M) == [
+            lesson["title"] for lesson in unit["lessons"]
+        ]
+        normalized = " ".join(text.split()).casefold()
+        assert " ".join(unit["outcome"].split()).casefold() in normalized
+        assert " ".join(unit["challenge"]["summary"].split()).casefold() in normalized
         for lesson in unit["lessons"]:
-            assert lesson["summary"] in plan
-            assert lesson["evidence"] in plan
+            assert " ".join(lesson["summary"].split()).casefold() in normalized
+            assert " ".join(lesson["evidence"].split()).casefold() in normalized
 
 
 def test_stable_unique_ownership_and_acyclic_unit_prerequisites() -> None:
@@ -300,7 +302,6 @@ def test_shared_site_configuration_and_retired_identity_cleanup() -> None:
         ]:
             assert retired not in path.read_text(encoding="utf-8"), (path, retired)
     assert not Path("src/fcpython").exists()
-    assert not Path("poetry.lock").exists()
 
 
 def test_preserved_quiz_css_and_title_identity() -> None:
