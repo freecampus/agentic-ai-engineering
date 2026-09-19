@@ -66,12 +66,25 @@ def parse_front_matter(text: str, fallback_title: str) -> FrontMatter:
     )
 
 
-def public_qmd_files(source_root: Path = SOURCE_ROOT) -> list[Path]:
+def is_draft(source: Path) -> bool:
+    """Drafts must declare their publication barrier on the source page itself."""
+    return (
+        parse_front_matter(
+            source.read_text(encoding="utf-8"), source.stem
+        ).metadata.get("draft")
+        is True
+    )
+
+
+def public_qmd_files(
+    source_root: Path = SOURCE_ROOT, *, include_drafts: bool = False
+) -> list[Path]:
     """List canonical public QMD pages that declare notebook output."""
     return sorted(
         path
         for path in source_root.rglob("*.qmd")
         if not any(part.startswith("_") for part in path.relative_to(source_root).parts)
+        and (include_drafts or not is_draft(path))
         and re.search(
             r"^colab_notebook:",
             path.read_text(encoding="utf-8"),
@@ -202,6 +215,7 @@ def split_qmd_cells(markdown: str) -> list[dict[str, Any]]:
     markdown_buffer: list[str] = []
     fence_info: str | None = None
     fence_buffer: list[str] = []
+    details_depth = 0
 
     def flush_markdown() -> None:
         text = clean_markdown("\n".join(markdown_buffer))
@@ -226,6 +240,14 @@ def split_qmd_cells(markdown: str) -> list[dict[str, Any]]:
         fence_info = None
 
     for line in markdown.splitlines():
+        # A hidden solution is reading material, not a cell that Run All should
+        # execute on the learner's behalf. Preserve the whole details block.
+        if fence_info is None and (
+            details_depth or line.lstrip().startswith("<details>")
+        ):
+            details_depth += line.count("<details>") - line.count("</details>")
+            markdown_buffer.append(line)
+            continue
         if fence_info is None:
             if line.startswith("```"):
                 flush_markdown()
@@ -259,6 +281,14 @@ def qmd_to_notebook(source: Path, source_root: Path = SOURCE_ROOT) -> dict[str, 
         "change one thing at a time.\n\n"
         f"[Source page]({SITE_URL}{Path(rel_source).with_suffix('.html')})"
     )
+    if parsed.metadata.get("draft"):
+        intro = (
+            f"# {parsed.title}\n\nReview draft, not a published assessment. "
+            "Restart the kernel and run cells in order. Hidden solutions remain "
+            "Markdown: copy them to a new cell only after attempting the lab.\n\n"
+            f"Canonical local source: `{rel_source}`. "
+            "No public notebook URL exists yet."
+        )
 
     def public_link(match: re.Match[str]) -> str:
         target, _, fragment = match.group(1).partition("#")
@@ -292,11 +322,18 @@ def qmd_to_notebook(source: Path, source_root: Path = SOURCE_ROOT) -> dict[str, 
 
 
 def build_notebooks(
-    source_root: Path = SOURCE_ROOT, output_root: Path = OUTPUT_ROOT
+    source_root: Path = SOURCE_ROOT,
+    output_root: Path = OUTPUT_ROOT,
+    *,
+    include_drafts: bool = False,
 ) -> list[Path]:
     """Build all public lesson notebooks and return written paths."""
     written: list[Path] = []
-    sources = public_qmd_files(source_root)
+    if include_drafts and output_root.resolve().is_relative_to(
+        (source_root / "_site").resolve()
+    ):
+        raise ValueError("Draft notebooks require a separate review output directory")
+    sources = public_qmd_files(source_root, include_drafts=include_drafts)
     destinations = [notebook_path_for(p, source_root) for p in sources]
     if len(set(destinations)) != len(destinations):
         raise ValueError("Duplicate Colab notebook paths")
@@ -316,9 +353,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-root", type=Path, default=SOURCE_ROOT)
     parser.add_argument("--output-root", type=Path, default=OUTPUT_ROOT)
+    parser.add_argument("--include-drafts", action="store_true")
     args = parser.parse_args()
 
-    written = build_notebooks(args.source_root, args.output_root)
+    written = build_notebooks(
+        args.source_root, args.output_root, include_drafts=args.include_drafts
+    )
     print(f"Built {len(written)} Colab notebooks in {args.output_root}")
 
 

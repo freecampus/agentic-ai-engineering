@@ -6,6 +6,7 @@ project:
     - courses/**/*.qmd
     - resources/**/*.qmd
 website:
+  draft-mode: gone
   title: FreeCampus Agentic AI Engineering
   description:
     Learn to build, evaluate, defend, and operate agentic systems. Curriculum in

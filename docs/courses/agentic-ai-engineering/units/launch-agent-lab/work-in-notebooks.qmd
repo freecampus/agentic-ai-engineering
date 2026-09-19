@@ -1,0 +1,406 @@
+---
+title: Work Reliably in Colab and Jupyter
+description: Inspect notebook state, execution order, package installation, files,
+  runtime resets, and reproducibility. Recover a notebook whose apparent success depends
+  on stale variables and an unrecorded package version.
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: launch-agent-lab
+unit_number: 0
+categories:
+- agentic-ai-engineering
+- launch-agent-lab
+order: 40
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/work-in-notebooks.ipynb
+notebook_package: true
+execute:
+  echo: true
+lesson_id: launch-agent-lab.work-in-notebooks
+lesson_order: 40
+---
+
+::: {.lesson-meta}
+- **Level:** Orientation; project-ready Python.
+- **Active time:** 120–150 minutes.
+- **Prerequisites:** Lessons 0.1–0.3; functions, exceptions, dictionaries, and files.
+- **Outcome:** Reproduce the tiny agent from fresh state, explicit inputs, and an identified interpreter instead of trusting saved notebook output.
+- **Evidence:** A failure/repair record and a clean-run transcript with input and environment identities.
+- **Environment:** Colab or Jupyter with Python 3.10+; the review export bundles the package. All files below are synthetic and temporary.
+:::
+
+::: {.callout-note}
+## Review draft
+Use the local review notebook until independent teaching and accessibility review
+is complete. A saved output is not a completed assessment.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. Separate the document from the running process
+
+A notebook file stores cells and possibly their outputs. A **kernel** is the
+running Python process that holds variables and imported modules. Editing a cell
+changes the document, not the values already stored in the kernel. You can
+therefore display convincing output from code that no longer reproduces it.
+
+Before running, predict:
+
+1. If an input cell changes, which later values change automatically?
+2. What survives saving the notebook but not restarting its kernel?
+3. Which directory resolves a relative file path?
+4. Does setting a random seed install dependencies or recreate missing inputs?
+
+Our deterministic fake needs no seed. Reproducibility still requires code,
+inputs, interpreter, dependencies, and execution order. A seed addresses only
+particular random-number sequences, not missing environmental state.
+
+## 2. Reproduce a stale-value failure deliberately
+
+Think of each labeled portion as a different notebook cell. The fixture is
+written together here so a clean run can reproduce the *failure* rather than
+depend on your own hidden history.
+
+```python
+from freecampus_agents.lab import Task, run_agent
+
+# Cell A, run yesterday
+left, right = 7, 5
+cached_total = left + right
+# Cell A edited and rerun today, but the calculation cell was not rerun
+left, right = -5, 5
+# Cell C displays yesterday's derived state
+assert cached_total == 12
+assert left + right == 0
+print("Stale output:", cached_total, "Current-input expectation:", left + right)
+```
+
+The output is a counterexample, not acceptable behavior. Now clear a deliberately
+named variable to reproduce what a clean kernel would expose:
+
+```python
+old_task = Task(7, 5)
+del old_task
+try:
+    run_agent(old_task)
+except NameError:
+    print("Expected failure: old_task was not defined in this clean state")
+else:
+    raise AssertionError("The stale-name fixture did not fail")
+```
+
+Do not fix a `NameError` by rerunning an arbitrary cell until the error disappears.
+Put the needed input construction before its use, then restart and run top to
+bottom. A function with explicit inputs makes that dependency easier to inspect:
+
+```python
+def calculate_current(left, right):
+    return run_agent(Task(left, right))
+
+assert calculate_current(-5, 5).answer == 0
+assert calculate_current(7, 5).answer == 12
+```
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-work-in-notebooks-concept",
+  "title": "Checkpoint: explain the contract",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-work-in-notebooks-concept-1",
+      "prompt": "What changes immediately when you edit an input cell without rerunning derived cells?",
+      "options": [
+        "Every dependent Python value is recalculated automatically.",
+        "All imported modules are reinstalled.",
+        "The document changes, but already computed kernel values remain.",
+        "The kernel becomes a new process."
+      ],
+      "answer_index": 2,
+      "explanation": "A notebook is not a reactive spreadsheet by default. Editing source does not invalidate or recompute existing Python objects."
+    },
+    {
+      "id": "u00-work-in-notebooks-concept-2",
+      "prompt": "What is the purpose of restarting and running from the top?",
+      "options": [
+        "Guarantee registry access.",
+        "Prove all operating systems work.",
+        "Make an incorrect expected value correct.",
+        "Expose dependencies on prior kernel state or cell order."
+      ],
+      "answer_index": 3,
+      "explanation": "A fresh process removes stale variables and imports. It does not establish external-service or cross-platform behavior."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 3. Bind file reads to an explicit workspace
+
+Relative paths are resolved against the current working directory, not reliably
+against the notebook's saved location. Colab runtimes are temporary; uploaded or
+created files can disappear when the runtime is replaced. Saving an `.ipynb` does
+not bundle every file you used. These are separate failure modes from stale values.
+
+Predict the missing-file result before running. The temporary directory is owned
+by this exercise and is removed when the block exits; nothing mounts a drive or
+reads your home directory.
+
+```python
+import json
+import os
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from freecampus_agents.unit0 import load_task
+
+with TemporaryDirectory(prefix="course notebook ") as folder:
+    workspace = Path(folder).resolve()
+    input_path = workspace / "task.json"
+    input_path.write_text(json.dumps({"left": -5, "right": 5}), encoding="utf-8")
+    other = workspace / "another directory"
+    other.mkdir()
+    original_directory = Path.cwd()
+    try:
+        os.chdir(other)
+        try:
+            load_task(Path("task.json"))
+        except FileNotFoundError as error:
+            print("Expected relative-path failure:", error)
+        else:
+            raise AssertionError("The missing relative input unexpectedly existed")
+        loaded = load_task(input_path)
+        assert run_agent(loaded).answer == 0
+    finally:
+        os.chdir(original_directory)
+```
+
+`resolve()` fixes the base before the directory changes. `finally` restores the
+working directory even if a test fails. `load_task` requires exactly `left` and
+`right`, both integers; it rejects missing or malformed input instead of silently
+substituting the smoke fixture. A default answer would hide which input ran.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-work-in-notebooks-evidence",
+  "title": "Checkpoint: interpret the evidence",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-work-in-notebooks-evidence-1",
+      "prompt": "Why did load_task(Path(\"task.json\")) fail after changing directories?",
+      "options": [
+        "The relative path was resolved from the new working directory.",
+        "The task schema changed automatically.",
+        "The seed was different.",
+        "Pathlib cannot handle spaces."
+      ],
+      "answer_index": 0,
+      "explanation": "Relative paths depend on the process cwd. An explicit path anchored before the change avoids that hidden dependency."
+    },
+    {
+      "id": "u00-work-in-notebooks-evidence-2",
+      "prompt": "Two reports share task_sha256 but have different Python versions. What is justified?",
+      "options": [
+        "All dependencies and source files are identical.",
+        "The normalized task matches; interpreter environments still differ.",
+        "One report must be fabricated.",
+        "The hash proves both notebooks executed successfully."
+      ],
+      "answer_index": 1,
+      "explanation": "The hash covers normalized operands only. It neither identifies every dependency nor proves a run occurred."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 4. Diagnose dependencies before changing the kernel
+
+The exported notebook's first code cell embeds this checkout's small course
+package into a temporary directory and adds it to the import path. It performs
+no package download. Run it once in a fresh kernel. If you rerun it after
+importing `freecampus_agents`, it asks you to restart: replacing files does not
+reliably replace objects already imported into a running process.
+
+For an optional external dependency, inspect the kernel identity first. In a
+Jupyter/IPython session, `%pip` targets the current kernel environment; a bare
+shell `pip` can refer to another interpreter. Neither guarantees network access
+or compatibility. This course's **local development** uses Conda + Poetry only;
+do not use notebook installs to mutate the local development environment.
+This unit's core notebook does not need an installation command.
+
+Here is a deterministic missing-dependency fixture. Its inventory is a supplied
+record, not a scan of your machine, so the negative case works even if you have
+many packages installed:
+
+```python
+def require_recorded_dependency(name, inventory):
+    if name not in inventory:
+        raise RuntimeError(f"Missing dependency: {name}; inspect kernel and setup first")
+    return inventory[name]
+
+recorded_inventory = {"freecampus-agents": "0.1.0"}
+try:
+    require_recorded_dependency("optional-display", recorded_inventory)
+except RuntimeError as error:
+    print(error)
+else:
+    raise AssertionError("The missing-dependency fixture did not fail")
+```
+
+For the actual kernel, inspect `sys.executable` locally, `sys.version`, and the
+imported package's `__version__` and `__file__`. An import path is useful for
+finding the wrong package, but may contain a personal username; redact it before
+sharing. Do not publish your whole environment. The fixture above tests an
+error-handling decision, not a successful registry install.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-work-in-notebooks-failure",
+  "title": "Checkpoint: diagnose the failure",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-work-in-notebooks-failure-1",
+      "prompt": "A missing input is replaced with the ordinary smoke task. Why is that the wrong repair?",
+      "options": [
+        "It wastes too many random numbers.",
+        "It should replace the file with a larger example.",
+        "It hides which input ran and turns a required failure into unrelated success.",
+        "It is acceptable whenever the displayed answer is 12."
+      ],
+      "answer_index": 2,
+      "explanation": "The caller supplied a path under a no-fallback contract. A default changes the task instead of repairing input identification."
+    },
+    {
+      "id": "u00-work-in-notebooks-failure-2",
+      "prompt": "The setup cell asks for a kernel restart after package import. What should you do?",
+      "options": [
+        "Ignore the error and assume imported objects changed.",
+        "Set a random seed to refresh imports.",
+        "Delete the local Conda environment.",
+        "Restart, run setup once, then run cells in order."
+      ],
+      "answer_index": 3,
+      "explanation": "Imported objects can outlive file changes. Restarting restores a coherent package state without destructive environment operations."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 5. Lab: repair a restartable launch function
+
+The starter ignores its argument and returns an old cached answer. Predict which
+case catches it, then implement a function that loads the supplied file and runs
+the agent. It must fail clearly for missing input. It must not use yesterday's
+variables or create a replacement file behind the caller's back.
+
+```python
+cached_answer = 12
+
+def stale_launch(input_path):
+    return cached_answer
+
+
+def launch(input_path):
+    raise NotImplementedError("Load this path and compute from its contents")
+
+
+def check_launch(candidate):
+    with TemporaryDirectory(prefix="launch check ") as folder:
+        path = Path(folder) / "input with spaces.json"
+        for data, expected in [({"left": 7, "right": 5}, 12), ({"left": -5, "right": 5}, 0)]:
+            path.write_text(json.dumps(data), encoding="utf-8")
+            assert candidate(path) == expected
+        path.unlink()
+        try:
+            candidate(path)
+        except FileNotFoundError as error:
+            assert "supply its path" in str(error)
+        else:
+            raise AssertionError("Missing input was silently accepted")
+        assert not path.exists(), "A missing input must not be fabricated"
+
+# After implementing: check_launch(launch)
+```
+
+Preserve the failure from `check_launch(stale_launch)` before testing your repair.
+Then do a **real kernel restart** and run the notebook from the first setup cell
+through the worked examples. Add your repaired function in a new cell and rerun
+the checker. Hidden solutions stay as Markdown in exported notebooks: Run All
+does not automatically solve your lab.
+
+<details>
+<summary>Hint: make the data flow visible</summary>
+
+The input path identifies the data. `load_task` validates it, and `run_agent`
+returns a structured run. Return its answer, but do not replace errors with a
+cached default.
+
+</details>
+
+<details>
+<summary>Solution and clean-state evidence</summary>
+
+```python
+def launch(input_path):
+    task = load_task(input_path)
+    return run_agent(task).answer
+
+try:
+    check_launch(stale_launch)
+except AssertionError:
+    print("Original stale-state defect caught")
+else:
+    raise AssertionError("Original stale function unexpectedly passed")
+check_launch(launch)
+print("Explicit-input launch checks passed")
+```
+
+These calls establish the checked path behavior. They are not a substitute for
+your own restart-and-run transcript or for testing an actual installed dependency.
+
+</details>
+
+## 6. Save the identity, not your private environment
+
+```python
+from freecampus_agents.unit0 import execution_identity
+
+identity = execution_identity(Task(-5, 5))
+print(json.dumps(identity, indent=2))
+assert len(identity["task_sha256"]) == 64
+```
+
+The hash identifies normalized operand data, not every file or dependency. Version
+strings describe the interpreter and bundled package; they are not proof of
+execution. Attach the actual command or kernel restart action, input, observed
+answer, assertion output, and limitations in the
+[journal](../../../../resources/engineering-journal.qmd). Do not paste tokens,
+full environment dumps, or authenticated notebook URLs.
+
+**Transfer:** move your input into a second temporary directory with spaces, run
+from a different working directory, and demonstrate both explicit success and an
+actionable missing-input failure. Explain why changing a random seed cannot fix
+either. Do not disclose the solution before trying the move.
+
+**Key points:** saved output can be stale; a kernel is a process; paths and
+imports are environmental dependencies; a restart tests hidden-state assumptions.
+Stop after a clean run produces the declared answer from the declared input.
+
+### Sources and implementation
+
+- [Colab FAQ: runtime and storage limits](https://research.google.com/colaboratory/faq.html) describes the temporary execution environment.
+- [IPython `%pip` magic](https://ipython.readthedocs.io/en/stable/interactive/magics.html#magic-pip) documents kernel-oriented package installation; no install is required here.
+- [Python pathlib](https://docs.python.org/3/library/pathlib.html) documents explicit path construction and resolution.
+- Local loader and identity report: `src/freecampus_agents/unit0.py`; setup/export logic: `scripts/build_colab_notebooks.py`.
+
+Fixtures are synthetic, original BSD-3-Clause course material. Primary references
+checked 2026-09-19. Colab service availability and UI labels may change; local
+Jupyter is the no-hosted-service alternative.

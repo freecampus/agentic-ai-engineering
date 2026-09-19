@@ -7,6 +7,7 @@ deliberately small; the full runtime is a planned Unit 3 learning artifact.
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from importlib.resources import files
 from typing import Literal, Protocol
@@ -70,12 +71,25 @@ class FakeModel:
         return Decision("final", answer=observation)
 
 
-def run_agent(task: Task, *, model: Model | None = None, max_steps: int = 2) -> Run:
+def add(task: Task) -> dict[str, int]:
+    """Return the explicit result envelope taught in Unit 0."""
+    return {"result": task.left + task.right}
+
+
+def run_agent(
+    task: Task,
+    *,
+    model: Model | None = None,
+    max_steps: int = 2,
+    add_tool: Callable[[Task], object] = add,
+) -> Run:
     """Run at most ``max_steps`` decisions with only a pure addition tool.
 
     This is not a sandbox for arbitrary Python models: callers supply trusted,
-    in-process test doubles. No shell, network, credential, or filesystem tool
-    is exposed. Unexpected model exceptions propagate to the caller.
+    in-process test doubles and tool implementations. No shell, network,
+    credential, or filesystem tool is exposed by the defaults. Injected Python
+    can do anything the process can do. Unexpected model/tool exceptions
+    propagate to the caller; the decision limit is not a wall-clock timeout.
     """
     if type(max_steps) is not int or max_steps < 1:
         raise ValueError("max_steps must be a positive integer")
@@ -92,7 +106,15 @@ def run_agent(task: Task, *, model: Model | None = None, max_steps: int = 2) -> 
                 events.append(Event("denied", "Requested tool is not allowed"))
                 return Run("denied", None, tuple(events))
             events.append(Event("tool_call", "add"))
-            observation = task.left + task.right
+            result = add_tool(task)
+            if (
+                not isinstance(result, dict)
+                or set(result) != {"result"}
+                or type(result["result"]) is not int
+            ):
+                events.append(Event("invalid", "Expected {'result': integer}"))
+                return Run("invalid", None, tuple(events))
+            observation = result["result"]
             events.append(Event("observation", str(observation)))
         elif (
             decision.kind == "final"

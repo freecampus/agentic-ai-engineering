@@ -111,7 +111,11 @@ def test_stable_unique_ownership_and_acyclic_unit_prerequisites() -> None:
                 assert (DOCS / activity["path"]).is_file()
     assert len(activity_ids) == len(set(activity_ids))
     assert len(activity_paths) == len(set(activity_paths))
-    actual = {front(p).get("lesson_id") for p in pages() if front(p).get("lesson_id")}
+    actual = {
+        front(p).get("lesson_id")
+        for p in pages()
+        if front(p).get("lesson_id") and not front(p).get("draft")
+    }
     registered = {
         lesson["id"]
         for u in catalog()["units"]
@@ -119,6 +123,19 @@ def test_stable_unique_ownership_and_acyclic_unit_prerequisites() -> None:
         if lesson["status"] == "available"
     }
     assert actual == registered
+    # Authored drafts are real sources, not yet published/completable lessons.
+    activities = {
+        activity["id"]: activity
+        for unit in catalog()["units"]
+        for activity in [*unit["lessons"], unit["challenge"]]
+    }
+    for page in pages():
+        meta = front(page)
+        if meta.get("draft"):
+            activity = activities[meta.get("lesson_id", meta.get("challenge_id"))]
+            assert activity["status"] == "planned"
+            assert meta["content_status"] == "draft"
+            assert DOCS / activity["path"] == page
 
 
 def test_publication_counts_completion_and_home_metadata_agree() -> None:
@@ -218,10 +235,13 @@ def test_internal_links_and_includes_resolve_without_planned_lesson_links() -> N
         text = page.read_text(encoding="utf-8")
         for target in re.findall(r"\]\(([^)\s]+\.qmd(?:#[^)]*)?)\)", text):
             if "://" not in target:
-                assert (page.parent / target.split("#")[0]).resolve().is_file(), (
+                destination = (page.parent / target.split("#")[0]).resolve()
+                assert destination.is_file(), (
                     page,
                     target,
                 )
+                if not front(page).get("draft"):
+                    assert not front(destination).get("draft"), (page, target)
         for target in re.findall(r"\{\{< include (.+?) >\}\}", text):
             assert (page.parent / target).is_file(), (page, target)
 

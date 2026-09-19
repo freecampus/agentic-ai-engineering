@@ -1,0 +1,18 @@
+project:
+  output-dir: _review
+website:
+  draft-mode: visible
+  sidebar:
+    - title: Unit 0 authoring review
+      contents:
+        - section: "Unit 0: Launch a Reproducible Agent Engineering Lab"
+          contents:
+            - href: courses/agentic-ai-engineering/units/launch-agent-lab/index.qmd
+              text: Overview
+            - courses/agentic-ai-engineering/units/launch-agent-lab/meet-a-tiny-agent.qmd
+            - courses/agentic-ai-engineering/units/launch-agent-lab/learn-with-evidence.qmd
+            - courses/agentic-ai-engineering/units/launch-agent-lab/use-ai-responsibly.qmd
+            - courses/agentic-ai-engineering/units/launch-agent-lab/work-in-notebooks.qmd
+            - courses/agentic-ai-engineering/units/launch-agent-lab/build-local-workspace.qmd
+            - href: courses/agentic-ai-engineering/units/launch-agent-lab/challenge.qmd
+              text: Unit Challenge

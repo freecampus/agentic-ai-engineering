@@ -1,5 +1,6 @@
 """Fail the documentation build if expected pages or notebooks are missing."""
 
+import argparse
 import base64
 import json
 import re
@@ -7,7 +8,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-from build_colab_notebooks import notebook_path_for, public_qmd_files
+from build_colab_notebooks import is_draft, notebook_path_for, public_qmd_files
 
 
 class LocalLinks(HTMLParser):
@@ -23,27 +24,48 @@ class LocalLinks(HTMLParser):
                 self.targets.append(value)
 
 
-def check_site(source_root: Path = Path("docs")) -> None:
-    site = source_root / "_site"
+def check_site(source_root: Path = Path("docs"), *, review: bool = False) -> None:
+    site = source_root / ("_review" if review else "_site")
     public_pages = [
         path
         for path in source_root.rglob("*.qmd")
         if not any(part.startswith("_") for part in path.relative_to(source_root).parts)
+        and (review or not is_draft(path))
     ]
     expected = [
         site / path.relative_to(source_root).with_suffix(".html")
         for path in public_pages
     ]
     expected.extend(
-        site / notebook_path_for(path) for path in public_qmd_files(source_root)
+        site / notebook_path_for(path)
+        for path in public_qmd_files(source_root, include_drafts=review)
     )
     missing = [str(path) for path in expected if not path.is_file()]
     if missing:
         raise RuntimeError("Missing generated output:\n" + "\n".join(missing))
     broken = []
+    drafts = [
+        path
+        for path in public_qmd_files(source_root, include_drafts=True)
+        if is_draft(path)
+    ]
+    if not review:
+        for source in drafts:
+            notebook = site / notebook_path_for(source)
+            if notebook.exists():
+                broken.append(f"{notebook}: draft notebook leaked into public output")
+            page = site / source.relative_to(source_root).with_suffix(".html")
+            if page.exists() and "fc-learning-header" in page.read_text(
+                encoding="utf-8"
+            ):
+                broken.append(
+                    f"{page}: draft teaching content leaked into public output"
+                )
     for source in public_pages:
         output = site / source.relative_to(source_root).with_suffix(".html")
         html = output.read_text(encoding="utf-8")
+        if is_draft(source) and "https://colab.research.google.com/" in html:
+            broken.append(f"{output}: draft exposes an unavailable public Colab link")
         links = LocalLinks()
         links.feed(html)
         for value in links.targets:
@@ -81,4 +103,6 @@ def check_site(source_root: Path = Path("docs")) -> None:
 
 
 if __name__ == "__main__":
-    check_site()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--review", action="store_true")
+    check_site(review=parser.parse_args().review)

@@ -30,6 +30,9 @@ groups:
         run: python scripts/project.py all
   docs:
     tasks:
+      review:
+        help: Render drafts and notebooks into docs/_review, never public _site
+        run: python scripts/project.py review
       build:
         help: Render Quarto, then export Colab notebooks
         run: python scripts/project.py docs

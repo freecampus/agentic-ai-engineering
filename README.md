@@ -10,6 +10,12 @@ milestone projects, and one six-stage capstone. No content lessons or unit
 challenges are released yet. Available now: the course map, 25 unit previews,
 readiness guidance, project outlines, and an executable deterministic smoke lab.
 
+Unit 0 now has five complete lesson drafts and a guided challenge, including
+offline labs, 36 checkpoint questions, and reproducible failure/repair fixtures.
+They await independent teaching/accessibility review and are not counted as
+published lessons. See the
+[Unit 0 authoring report](reports/unit0-authoring-review.md).
+
 ## Explore the course
 
 - [Website source](docs/index.qmd)
@@ -117,6 +123,29 @@ its fixture. It runs without downloading a package or contacting a provider.
 Browser OJS quizzes become offline Markdown questions with hidden answers in
 notebook exports. Overview notebooks remain clearly labeled orientation
 material.
+
+### Review Unit 0 without publishing it
+
+```bash
+conda activate fc-agentic
+python scripts/check_environment.py
+poetry run makim docs.review
+```
+
+Open
+`docs/_review/courses/agentic-ai-engineering/units/launch-agent-lab/meet-a-tiny-agent.html`
+using a local web server (OJS modules require HTTP), for example
+`python -m http.server 8000 --bind 127.0.0.1 --directory docs/_review`. The
+review sidebar contains the five lessons and Unit Challenge. Matching notebooks
+are under
+`docs/_review/notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/`.
+Upload an exported notebook manually to Colab or open it in Jupyter. Hidden
+solutions remain collapsed Markdown, not code executed by Run All.
+
+Normal `docs.build` omits draft content and notebook exports. The separate
+review output is ignored and never deployed by the docs workflow. Do not publish
+it as an alternative way to bypass review. Completion and public Colab launch
+links remain disabled on drafts. `makim clean.tmp` removes both generated sites.
 
 Progress storage uses this course's own namespace and only explicit published
 activity IDs. Progress is local and self-reported, not verified grading or a

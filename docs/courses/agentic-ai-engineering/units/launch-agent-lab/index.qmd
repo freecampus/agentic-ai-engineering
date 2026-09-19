@@ -14,9 +14,10 @@ colab_notebook: notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/
 
 ::: {.callout-important}
 ## Curriculum preview—not a released unit
-The 5 lessons and challenge below are planned. This overview is available
-for orientation; it does not award course progress. The notebook is an orientation
-copy, not a completed instructional lab.
+The 5 lessons and challenge have complete authoring drafts awaiting independent
+teaching and accessibility review; they remain planned for publication. This
+overview does not award course progress. Its notebook is an orientation copy,
+not a completed instructional lab.
 :::
 
 {{< include ../../../../_includes/colab-link.qmd >}}
@@ -30,6 +31,11 @@ Run, inspect, and modify a small deterministic agent in Colab; reproduce it loca
 **Planned unit effort:** 10–16 hours, including typing, experiments,
 checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
 
+**Scenario:** help a repair café hand off a dependable launch kit. A correct-looking
+sum, a missing document, an unsafe suggested fix, a stale notebook, and a broken
+local entry point each expose a different kind of evidence failure. Your final
+artifact is a launch card another volunteer can reproduce—not a screenshot of 12.
+
 ## 2. Before you begin
 
 Bring project-ready Python: functions, data structures, modules, exceptions, and basic tests. Use the [readiness guide](../../readiness.qmd) to check gaps.
@@ -39,6 +45,18 @@ shared package. Work in a clean Colab/Jupyter notebook or a local Conda
 environment with Poetry-managed dependencies. The core route will not require
 provider keys or paid inference.
 Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
+
+The notebook route bundles a small offline package and uses only synthetic data.
+Local development requires Git and the real project Conda + Poetry environment;
+initial installation needs registry access. No GPU is required. Use an explicit
+workspace, keep your journal outside temporary runtime storage, and distinguish
+notebook success from a verified local installation.
+
+**Working vocabulary:** the task states the requested result; the model proposes
+an action; the runtime authorizes and dispatches it; the tool returns data; the
+trajectory records visible events. The model here is a deterministic test double,
+not an LLM. The in-process examples are not security sandboxes. General runtime,
+tool-boundary, and security engineering arrive in Units 3, 5, and 15.
 
 ## 3. Planned lesson sequence
 
@@ -74,10 +92,13 @@ Create the course environment with Git, Conda, `Poetry`, Python, pytest, Ruff, t
 
 Repair a deliberately stale notebook and broken local project, run the tiny agent from clean state, reject an unsafe AI-generated fix, and submit a launch card containing versions, commands, outputs, and unresolved limitations.
 
-The complete challenge contract, starting fixtures, progressive checks, three-level
-hint ladder, and solution path are not authored yet. Do not interpret this outline
-as an executable assessment. A successful-looking output alone will not establish
-reliability: preserve the inputs, limits, observed behavior, and failed cases too.
+The draft challenge includes a deliberately stale notebook, a CLI that ignores its
+input path, independent fresh-process checks, three progressive hints, and a
+hidden solution. It is not yet a released assessment. The contract requires
+explicit input paths, current operands, denial before tool effects, and an
+actionable failure instead of a fabricated missing input. Local setup and
+clean-kernel evidence are separate gates. A successful-looking output alone will
+not establish reliability: preserve inputs, limits, behavior, and failed cases.
 
 ## 5. Suggested stopping points
 
@@ -85,5 +106,12 @@ Plan one session per lesson. Before changing an implementation, write a predicti
 after each session, record what ran, what failed, what changed, and what remains
 unverified. Save a clean run and an architecture note before attempting the challenge.
 Finish with a retrospective on quality, failures, latency, cost, and safety.
+
+Suggested breaks: after the first annotated trace (Lesson 1); after the negative
+lookup test and assistance disclosure (Lessons 2–3); after a clean notebook run
+(Lesson 4); and after the local environment report (Lesson 5). Save evidence at
+each break. Pause setup work on an unavailable registry rather than silently
+substituting a different environment. The challenge finishes with a comparison
+against direct arithmetic and an explicit list of unverified claims.
 
 [Preview Unit 1: Decide Whether a Problem Needs an Agent](../choose-agent-architecture/index.qmd) or [return to the complete course map](../../index.qmd).

@@ -1,3 +1,3 @@
-::: {.fc-colab-launch}
+::: {.fc-colab-launch .content-hidden when-meta="draft"}
 [Open this lesson in Google Colab](https://colab.research.google.com/github/freecampus/agentic-ai-engineering/blob/gh-pages/{{< meta colab_notebook >}}){.btn .btn-primary target="_blank" rel="noopener"}
 :::

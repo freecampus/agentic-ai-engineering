@@ -1,0 +1,378 @@
+---
+title: Learn with Specifications and Evidence
+description: Turn a vague request into a task contract containing success, stop, budget,
+  escalation, and forbidden-action rules. Compare a convincing demo with a reproducible
+  test and learn why one successful run is not evidence of reliability.
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: launch-agent-lab
+unit_number: 0
+categories:
+- agentic-ai-engineering
+- launch-agent-lab
+order: 20
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/learn-with-evidence.ipynb
+notebook_package: true
+execute:
+  echo: true
+lesson_id: launch-agent-lab.learn-with-evidence
+lesson_order: 20
+---
+
+::: {.lesson-meta}
+- **Level:** Orientation; project-ready Python.
+- **Active time:** 90–120 minutes.
+- **Prerequisites:** Lesson 0.1's task, observation, trace, and budget vocabulary; dictionaries and assertions.
+- **Outcome:** Turn a vague lookup request into a testable contract, then distinguish a plausible answer from compliant behavior.
+- **Evidence:** A contract, case table, negative test, and prediction/run/explanation record.
+- **Environment:** Bundled offline course package; no model service, network, or credentials.
+:::
+
+::: {.callout-note}
+## Review draft
+Use the local review notebook. Independent teaching and accessibility review are
+pending; this is not a published completion activity.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. Replace “find the information” with observable rules
+
+A volunteer at a neighborhood repair café asks, “Find our opening hours.” A demo
+that prints a plausible time is not enough. It could have read a private note,
+made fifty lookups, or answered from memory after finding nothing. You need a
+**behavior contract**: the observable conditions under which the result counts.
+
+Write answers before the first run:
+
+1. What must be true besides the final text for this lookup to succeed?
+2. What is the specified result when the document is absent?
+3. Does denying access after reading a private document repair the violation?
+4. How would you prove that a budget was enforced rather than merely requested?
+
+Use a closed, synthetic collection, not actual organizational documents. The
+`documents` dictionary below is the entire environment. An ID is a key, not a URL.
+A sequence of requested IDs is a deterministic script replacing model decisions.
+This is a bounded workflow for practicing evidence, not a retrieval framework.
+
+| Clause | Contract for this exercise |
+|---|---|
+| Success | Return the first nonempty approved document, with its ID. |
+| Allowed capability | Read only `hours` and `holiday` from the supplied collection. |
+| Stop | Stop at success, denied request, exhausted budget, or end of requests. |
+| Budget | At most two actual lookups, including misses. Zero is a valid no-read budget. |
+| Missing result | Return `missing`, with no document ID or text. Do not invent hours. |
+| Escalation | Tell the caller which terminal status occurred; a human may revise the task. No automatic privilege expansion. |
+| Forbidden behavior | Reading `private`, using a network source, silently exceeding the limit, or making up a result. |
+| Evidence | Record IDs actually looked up, including misses, in order. |
+
+Authorization is checked before budget, and both before reading. If a forbidden
+request arrives at an already exhausted budget, `denied` takes precedence. State
+such choices explicitly so two correct-looking implementations do not disagree
+silently. Empty strings count as missing here; whitespace-only strings do not.
+That deliberate simplification belongs in the contract, not in a surprise test.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-learn-with-evidence-concept",
+  "title": "Checkpoint: explain the contract",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-learn-with-evidence-concept-1",
+      "prompt": "Which success contract is testable for the café lookup?",
+      "options": [
+        "Always give an answer that sounds useful.",
+        "Try hard to keep lookups low.",
+        "Return an approved document ID and text within the read limit, or an explicit terminal failure.",
+        "Find information by any available route."
+      ],
+      "answer_index": 2,
+      "explanation": "Success must describe observable result, provenance, and limits. Intentions and plausible prose cannot establish compliance."
+    },
+    {
+      "id": "u00-learn-with-evidence-concept-2",
+      "prompt": "Where must the permission check occur?",
+      "options": [
+        "After reading, provided the result is not displayed.",
+        "Only when the final answer is wrong.",
+        "Inside the generated answer text.",
+        "Before the document mapping is read."
+      ],
+      "answer_index": 3,
+      "explanation": "Reading is the effect being restricted. A later denial does not undo an unauthorized read."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 2. Predict an ordinary run and compare a simpler baseline
+
+```python
+from freecampus_agents.unit0 import lookup_documents
+
+documents = {"hours": "Saturday 10:00–14:00", "holiday": "", "private": "DUMMY ONLY"}
+allowed = frozenset({"hours", "holiday"})
+found = lookup_documents(
+    ["holiday", "hours"], documents, allowed=allowed, max_lookups=2
+)
+assert found.status == "found"
+assert found.document_id == "hours"
+assert found.text == "Saturday 10:00–14:00"
+assert found.looked_up == ("holiday", "hours")
+print(found)
+```
+
+`holiday` is an allowed miss and consumes one lookup. `hours` is the second read
+and ends the workflow. The returned tuple contains observed reads, not an account
+of internal reasoning. Inspect `lookup_documents` in `src/freecampus_agents/unit0.py`:
+notice that the permission and budget checks occur before `documents.get`.
+Moving either check below that line changes effects even if the final status is
+unchanged.
+
+The simplest baseline, when the task already specifies the permitted ID, is:
+
+```python
+baseline = documents.get("hours")
+assert baseline == "Saturday 10:00–14:00"
+```
+
+That direct lookup wins on simplicity. It is not an equivalent policy wrapper
+for arbitrary requests: the caller has already selected the known allowed ID.
+Do not compare an unrestricted baseline against a constrained workflow without
+naming the difference. Neither version needs an LLM. Unit 1 will develop this
+architecture decision in more depth.
+
+## 3. Write a case table before collecting results
+
+Predict all four statuses below. Distinguish “the script ended after a miss” from
+“the script wanted another read but the budget would not allow it.”
+
+```python
+cases = [
+    (["holiday"], 2, "missing", ("holiday",)),
+    (["private"], 2, "denied", ()),
+    (["holiday", "hours"], 1, "budget_exhausted", ("holiday",)),
+    (["hours"], 0, "budget_exhausted", ()),
+]
+for requests, limit, expected_status, expected_reads in cases:
+    result = lookup_documents(requests, documents, allowed=allowed, max_lookups=limit)
+    assert result.status == expected_status
+    assert result.looked_up == expected_reads
+    assert result.text is None
+    assert result.document_id is None
+    print(requests, limit, result.status, result.looked_up)
+```
+
+A convincing demo exercises one point. A regression test repeats an explicitly
+specified case and checks its outcome. An evaluation asks whether performance
+generalizes to a defined task distribution; that requires more than these four
+fixtures. Do not attach a “100% reliable” label to four passing assertions.
+These examples establish deterministic behavior only for the checked cases.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-learn-with-evidence-evidence",
+  "title": "Checkpoint: interpret the evidence",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-learn-with-evidence-evidence-1",
+      "prompt": "holiday is empty, hours is present, and max_lookups=1. What follows requests [holiday, hours]?",
+      "options": [
+        "budget_exhausted after only holiday was read.",
+        "found, because the second document exists.",
+        "missing with both documents read.",
+        "denied, because empty documents are forbidden."
+      ],
+      "answer_index": 0,
+      "explanation": "An allowed miss consumes a lookup. The next request hits the limit before access; missing is reserved for exhausting the script without a result."
+    },
+    {
+      "id": "u00-learn-with-evidence-evidence-2",
+      "prompt": "What do the four deterministic cases establish?",
+      "options": [
+        "The system is statistically reliable on every future task.",
+        "The checked implementation met those specific fixture contracts.",
+        "Any future network connector is safe.",
+        "The agent is better than direct lookup."
+      ],
+      "answer_index": 1,
+      "explanation": "Finite deterministic checks are regression evidence, not distributional reliability or an architecture comparison by themselves."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 4. Catch an answer that conceals a failed lookup
+
+This adapter is deliberately wrong. It discards the terminal status and substitutes
+an answer when there was no evidence. Predict why its ordinary case looks good:
+
+```python
+def convincing_demo(requests, limit):
+    result = lookup_documents(requests, documents, allowed=allowed, max_lookups=limit)
+    return result.text or "Saturday 10:00–14:00"
+
+assert convincing_demo(["hours"], 2) == "Saturday 10:00–14:00"
+# This counterexample demonstrates the defect; it is not the desired contract.
+assert convincing_demo(["private"], 2) == "Saturday 10:00–14:00"
+```
+
+The text matches the correct hours, but the request was denied. The claimed answer
+has no permitted source in that run. An output-only grader would miss this fault.
+Changing the wording to “probably Saturday” does not repair evidence loss. Preserve
+the structured status and require the caller to handle non-success explicitly.
+
+The in-memory mapping and request script are trusted Python. A trace is useful
+for diagnosing this implementation, not cryptographic proof that no other code
+ran. In the lab, an independent read spy checks effects instead of trusting only
+the reported tuple.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-learn-with-evidence-failure",
+  "title": "Checkpoint: diagnose the failure",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-learn-with-evidence-failure-1",
+      "prompt": "Why is returning the correct hours after a denied lookup a defect?",
+      "options": [
+        "The hours string should be longer.",
+        "Denied requests should consume more retries.",
+        "That run has no permitted source supporting the returned answer.",
+        "The model needs a more confident prompt."
+      ],
+      "answer_index": 2,
+      "explanation": "An answer can be textually correct but procedurally unsupported. Preserve status rather than converting lack of evidence into success."
+    },
+    {
+      "id": "u00-learn-with-evidence-failure-2",
+      "prompt": "A run reports no reads, but the independent mapping spy contains private. What should you conclude?",
+      "options": [
+        "The reported tuple is authoritative, so the spy can be ignored.",
+        "The private read is allowed because no answer was emitted.",
+        "Only the quiz text needs correction.",
+        "The tested implementation violated the no-read contract and its trace is insufficient."
+      ],
+      "answer_index": 3,
+      "explanation": "The independent observer contradicts the self-report. Fix the read ordering rather than weakening the acceptance check."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 5. Lab: produce a lookup contract that can fail
+
+Implement `find_public_note(requests, limit, collection)` by applying the contract
+above. Return the complete `LookupRun`, not an attractive string. You may reuse
+the shared runtime; do not duplicate its loop or add a network client.
+
+```python
+def find_public_note(requests, limit, collection):
+    raise NotImplementedError("Apply the public-note contract and preserve evidence")
+
+class ReadSpy(dict):
+    def __init__(self, values):
+        super().__init__(values)
+        self.reads = []
+
+    def get(self, key, default=None):
+        self.reads.append(key)
+        return super().get(key, default)
+
+
+def check_lookup(candidate):
+    fixtures = [
+        (["hours"], 2, "found", ("hours",), "Saturday 10:00–14:00"),
+        (["holiday"], 2, "missing", ("holiday",), None),
+        (["private"], 2, "denied", (), None),
+        (["holiday", "hours"], 1, "budget_exhausted", ("holiday",), None),
+        (["hours"], 0, "budget_exhausted", (), None),
+    ]
+    for requests, limit, status, reads, text in fixtures:
+        spy = ReadSpy(documents)
+        result = candidate(requests, limit, spy)
+        assert result.status == status
+        assert result.looked_up == reads
+        assert tuple(spy.reads) == reads
+        assert result.text == text
+        assert result.document_id == ("hours" if status == "found" else None)
+
+# After implementing: check_lookup(find_public_note)
+```
+
+Preserve a failing test for the original string-only approach. An `AttributeError`
+from this checker is meaningful: it shows the missing evidence contract, not a
+request to delete the status assertion. Keep your own expectation table separate
+from candidate output.
+
+<details>
+<summary>Hint: keep the wrapper small</summary>
+
+The runtime already enforces bounded reads. Supply the fixed allowed set and the
+caller's limit, then return its structured result without a fallback sentence.
+
+</details>
+
+<details>
+<summary>Solution, negative case, and limitation</summary>
+
+```python
+def find_public_note(requests, limit, collection):
+    return lookup_documents(
+        requests, collection, allowed=frozenset({"hours", "holiday"}), max_lookups=limit
+    )
+
+def original_adapter(requests, limit, collection):
+    return convincing_demo(requests, limit)
+
+try:
+    check_lookup(original_adapter)
+except AttributeError:
+    print("Original evidence-dropping adapter caught")
+else:
+    raise AssertionError("Original adapter unexpectedly passed")
+check_lookup(find_public_note)
+print("Lookup contract passed")
+```
+
+The spy confirms the calls made through this mapping in these fixtures. It does
+not contain arbitrary Python or establish behavior of a future network connector.
+
+</details>
+
+## 6. Record a defensible claim, then change the setting
+
+Submit the contract, predictions, actual outputs, the failed original adapter,
+and the passing repair in the [journal](../../../../resources/engineering-journal.qmd).
+For each success clause point to a specific assertion. Record the maximum number
+of observed reads and the absence of live-model costs; do not manufacture timing
+measurements or provider prices. Record one unresolved limitation.
+
+**Transfer:** a lending library has an approved `returns` note and a restricted
+`staff` note. Write a new contract and case table, including an exhausted budget
+and an absent approved note. Decide whether a direct lookup suffices. Do not
+copy the café's answer or assume the same permissions.
+
+**Key points:** write rules before examples; check effects as well as text; make
+missing evidence explicit; deterministic regression is not statistical reliability.
+Stop after the evidence supports exactly the claim you wrote—no broader claim.
+
+### Sources and implementation
+
+- [Python unittest documentation](https://docs.python.org/3/library/unittest.html) explains test fixtures, assertions, and test cases.
+- [pytest assertion guidance](https://docs.pytest.org/en/stable/how-to/assert.html) explains assertion evidence and expected exceptions.
+- Local contract implementation: `src/freecampus_agents/unit0.py`, `lookup_documents` and `LookupRun`.
+
+The café, collection, and fixtures are original synthetic course material under
+BSD-3-Clause. Primary references checked 2026-09-19.

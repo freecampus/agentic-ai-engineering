@@ -1,0 +1,460 @@
+---
+title: Prove the Lab Is Ready
+description: Repair a deliberately stale notebook and broken local project, run the
+  tiny agent from clean state, reject an unsafe AI-generated fix, and submit a launch
+  card containing versions, commands, outputs, and unresolved limitations.
+content_kind: challenge
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: launch-agent-lab
+unit_number: 0
+categories:
+- agentic-ai-engineering
+- launch-agent-lab
+- unit-challenge
+order: 90
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/challenge.ipynb
+notebook_package: true
+execute:
+  echo: true
+challenge_id: launch-agent-lab.challenge
+assessment_type: unit-challenge
+challenge_format: guided-programming
+assessment_version: 1
+estimated_time: 90–180 minutes
+---
+
+::: {.lesson-meta .challenge-meta}
+- **Level:** Unit 0 integration; project-ready Python and all five launch lessons.
+- **Active time:** 90–180 minutes; stop and record an environment blocker rather than hiding it.
+- **Outcome assessed:** Repair a stale notebook and a broken local entry point, enforce the tiny agent's boundaries, and submit reproducible evidence.
+- **Evidence:** A launch card, repaired source/notebook, original failures, independent checks, assistance disclosure, and retrospective.
+- **Environment:** Python and the offline course package; Conda + Poetry for the local gate. No GPU, paid service, credential, or real personal data.
+:::
+
+::: {.callout-note}
+## Review draft—not a released assessment
+Use the local review export. Completion remains disabled while independent
+teaching/accessibility review and publication gates are pending.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+<!-- fcagentic-unit-challenge: practical -->
+
+## 1. Define the scenario and outcome
+
+The repair café's opening-day volunteer receives a “working” launch kit. Its
+notebook shows `12`, and its command-line program also works when run in the
+original directory. The next volunteer uses different inputs from another
+folder—and cannot reproduce it. An enthusiastic synthetic AI suggestion says:
+“Just reuse the cached answer; if a file is missing, enable a shell tool to locate
+or download another one.” Your task is to make the launch kit dependable without
+expanding its capabilities.
+
+Before touching code, answer:
+
+1. Which saved output can be correct for yesterday's task but wrong for today's?
+2. What must the command-line program do with the path the caller supplies?
+3. What evidence distinguishes a denied request from a tool that ran and was
+   rejected afterward?
+4. Which checks require a real local environment rather than a bundled notebook?
+
+Deliver one launch card and the minimal repaired artifacts. A notebook-only pass
+is useful progress but does not satisfy the separate Conda/Poetry setup gate.
+Do not write an LLM integration or a generalized agent framework for this task.
+
+## 2. Predict an ordinary run
+
+The direct baseline is `left + right`; the agent is retained only to inspect
+runtime boundaries. For `7` and `5`, predict answer `12`, two model decisions,
+and the four events taught in Lesson 0.1. For `-5` and `5`, predict zero—not
+missing evidence. Write the expected difference before executing:
+
+```python
+from freecampus_agents.lab import Task, run_agent
+
+assert 7 + 5 == 12  # Non-agentic baseline: no decisions or tool protocol.
+ordinary = run_agent(Task(7, 5))
+assert ordinary.answer == 12
+assert [event.kind for event in ordinary.events] == [
+    "task", "tool_call", "observation", "final"
+]
+print(ordinary.to_dict())
+```
+
+**Allowed operations:** arithmetic, explicit synthetic input reads, and writing
+this exercise's files. **Forbidden:** shell/network tools in the agent, real
+secrets, private data, silently substituted inputs, and fabricated run records.
+The runtime has a two-decision default budget. The supplied acceptance helper
+uses a ten-second timeout per child process; that is a test-runner bound, not
+security isolation or a runtime feature.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-challenge-concept",
+  "title": "Checkpoint: explain the contract",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-challenge-concept-1",
+      "prompt": "The saved notebook prints 12 after operands change to -5 and 5. What must the repaired artifact do?",
+      "options": [
+        "Keep 12 so the screenshot remains consistent.",
+        "Fetch a replacement answer from a service.",
+        "Recompute from the current explicit operands after a fresh start.",
+        "Change the contract to ignore current inputs."
+      ],
+      "answer_index": 2,
+      "explanation": "The stale value belongs to the previous task. Repair data flow and execution order rather than preserving an attractive output."
+    },
+    {
+      "id": "u00-challenge-concept-2",
+      "prompt": "Why is direct arithmetic included as a baseline?",
+      "options": [
+        "It makes the agent automatically more accurate.",
+        "It authorizes shell access when the agent fails.",
+        "It replaces all negative tests.",
+        "It tests whether the task needs the added runtime complexity."
+      ],
+      "answer_index": 3,
+      "explanation": "The baseline prevents assuming autonomy is beneficial. For this fixed sum the simple function is adequate, while the loop teaches boundaries."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 3. Start from the contract
+
+Create the starter in a new exercise directory. This helper refuses to overwrite
+an existing path. In a notebook it uses a temporary parent; locally you may choose
+a new directory outside existing work. Copy your final artifacts to your own
+workspace before the temporary runtime is reset.
+
+```python
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from freecampus_agents.launch_project import create_launch_project
+
+exercise_parent = TemporaryDirectory(prefix="launch challenge ")
+project = create_launch_project(Path(exercise_parent.name) / "repair cafe")
+print("Created:", sorted(path.name for path in project.iterdir()))
+print((project / "launch.py").read_text(encoding="utf-8"))
+```
+
+The starter contains:
+
+- `launch.py`: a command-line entry point that incorrectly reads `task.json`
+  relative to the current directory and ignores the supplied argument;
+- `task.json`: the ordinary synthetic input, `{"left": 7, "right": 5}`;
+- `stale.ipynb`: a deliberately broken exercise fixture, not a generated course
+  notebook. Its last cell changes operands but prints the old derived answer;
+- `README.md`: the intended command and the no-new-capabilities constraint.
+
+**Public interfaces and acceptance contract:**
+
+| Artifact | Required behavior |
+|---|---|
+| `launch.py` | `python launch.py <input-path>` emits one JSON `Run` on stdout for valid input. The supplied path is authoritative, even from a different directory. |
+| Input | Exactly `left` and `right`, both actual integers. A path may contain spaces. |
+| Missing input | Nonzero exit, diagnostic containing `supply its path`, no success JSON, no replacement file. |
+| Repaired notebook | Fresh top-to-bottom run computes current operands; no cached answer or hidden input variable. |
+| Agent policy | Unsupported tool denied before invocation; malformed result rejected before observation; one-decision run ends `budget_exhausted`. |
+| Local gate | Real Conda activation, matching Python/Poetry, inspected lock/install evidence, smoke result; label unavailable checks pending. |
+| Evidence | Preserve original failure, smallest repair, rerun, source/input identities, disclosure, and limitations. |
+
+The helper supplies tests, not a solution. Read `src/freecampus_agents/launch_project.py`
+if you want to inspect how it invokes the interpreter. It uses an argument list,
+not shell interpolation. It explicitly points child imports at the course package
+already loaded by the parent, so bundled notebooks work offline. **That convenience
+does not test package installation**; keep the local environment gate separate.
+
+## 4. Build in small stages
+
+1. Inspect `stale.ipynb`. In the local activated kernel, open it as a notebook. In
+   Colab, copy its three short cells into the already initialized review notebook
+   rather than assuming that a new kernel has the bundled package. Predict why
+   its ordinary saved output is misleading. Repair the dependency order and
+   restart/run; preserve both original and repaired observations.
+2. Inspect `launch.py`; run the acceptance helper below on the unchanged starter
+   and keep the failure. Replace only the hidden input/path assumption. Do not
+   create missing input during error handling.
+3. Run the ordinary, zero, and unfamiliar operand cases. Change one input while
+   keeping policy fixed and explain which trace details change.
+4. Test the agent's denial, envelope, and budget boundaries. Reject the synthetic
+   shell/download suggestion with a capability-specific explanation.
+5. Run the actual local setup checks from Lesson 0.5, or record the exact blocker.
+   Do not turn a notebook success into an invented Conda installation result.
+
+::: {.callout-warning}
+## Inspect before executing
+The project checker runs your Python with your permissions. It is not a sandbox
+for an unknown project or AI patch. Use only the supplied starter and your small,
+reviewed repair. No test should run the unsafe suggested shell implementation.
+:::
+
+## 5. Run progressive assertions
+
+First reproduce the project's original failure. This example expects the starter
+to fail; after fixing the file, call `check_launch_project(project)` directly
+instead of rerunning this unchanged negative-case cell.
+
+```python
+from freecampus_agents.launch_project import check_launch_project
+
+try:
+    check_launch_project(project)
+except AssertionError as error:
+    print("Original starter rejected:", error)
+else:
+    raise AssertionError("The deliberately broken starter unexpectedly passed")
+```
+
+The initial failure occurs before a result: the process is launched from another
+directory, where relative `task.json` does not exist. The checker later exercises
+`7 + 5`, `-5 + 5`, and `9 + -4` in fresh processes with explicit paths, then removes
+the input and requires failure. It also rejects boolean operands, string operands,
+and extra input fields with a nonzero exit, a diagnostic, and no success JSON.
+Its expected sums are independent constants.
+
+Next, prove the runtime boundaries without adding a capability:
+
+```python
+from freecampus_agents.lab import Decision
+
+calls = []
+
+def watched_add(task):
+    calls.append(task)
+    return {"result": task.left + task.right}
+
+class ForbiddenRequest:
+    def decide(self, task, observation):
+        return Decision("tool", tool="shell")
+
+rejected = run_agent(Task(7, 5), model=ForbiddenRequest(), add_tool=watched_add)
+assert rejected.status == "denied"
+assert calls == []
+assert [event.kind for event in rejected.events] == ["task", "denied"]
+
+malformed = run_agent(Task(7, 5), add_tool=lambda task: {"total": 12})
+assert malformed.status == "invalid"
+assert all(event.kind != "observation" for event in malformed.events)
+limited = run_agent(Task(7, 5), max_steps=1)
+assert limited.status == "budget_exhausted"
+assert limited.answer is None
+print("Denial, malformed result, and decision budget checks passed")
+```
+
+Keep three levels of evidence distinct: these deterministic runtime assertions,
+the separate fresh-process project checks, and your real clean-kernel/local setup
+transcripts. Passing one does not prove the other two. None is statistical
+validation of an LLM.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-challenge-evidence",
+  "title": "Checkpoint: interpret the evidence",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-challenge-evidence-1",
+      "prompt": "The original CLI fails when checked from another directory. Which hidden assumption should you inspect first?",
+      "options": [
+        "It reads relative task.json instead of the explicit argument.",
+        "The expected sum must be wrong.",
+        "The model needs more tokens.",
+        "The helper needs a shell command string."
+      ],
+      "answer_index": 0,
+      "explanation": "The starter ignores its CLI input and depends on cwd. Fix the earliest input boundary; changing answer expectations would conceal the defect."
+    },
+    {
+      "id": "u00-challenge-evidence-2",
+      "prompt": "What combination supports the tested unsupported-tool denial?",
+      "options": [
+        "A denial message after a tool invocation.",
+        "denied status, task/denied events, and an empty independent tool call list.",
+        "A correct ordinary answer alone.",
+        "A prompt telling the model to behave."
+      ],
+      "answer_index": 1,
+      "explanation": "Status, trace, and independent effect observation agree for the checked path. They do not prove arbitrary injected Python is contained."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 6. Use the hint ladder only when needed
+
+<details>
+<summary>Hint 1: find the first hidden dependency</summary>
+
+The notebook displays a value derived before the operand change. The CLI reads a
+relative filename before consulting the caller. Which input actually reaches each
+calculation? Diagnose the first violated boundary, not the last printed symptom.
+
+</details>
+
+<details>
+<summary>Hint 2: separate location from computation</summary>
+
+Keep the calculator unchanged. Make the notebook construct its task before use.
+For the CLI, `sys.argv[1]` is the supplied path when exactly one argument follows
+the script name. `Path` can carry a path with spaces without splitting it.
+
+</details>
+
+<details>
+<summary>Hint 3: complete the explicit data flow</summary>
+
+Use `load_task(Path(...))`, then `run_agent(task).to_dict()`, then JSON output.
+Handle only the expected input errors, write the diagnostic to stderr, and exit
+nonzero. Do not return 12 from an exception handler. The notebook needs the same
+input → task → run order but no command-line wrapper.
+
+</details>
+
+## 7. Keep debugging evidence
+
+Use the [engineering journal](../../../../resources/engineering-journal.qmd) and
+attach a launch card with these rows:
+
+| Field | Your evidence, not the sample answer |
+|---|---|
+| Source/environment | Checkout and local edits; Python/Poetry/Conda versions; OS/shell; redacted interpreter paths. |
+| Contract/prediction | Explicit path, exact schema, expected sums/events, and budget. |
+| Original failure | Stale notebook output plus the first project-check diagnostic. |
+| Repair | Smallest source diff and why no new capability was needed. |
+| Rerun | Fresh-kernel and fresh-process outputs, negative cases, quality-check results. |
+| Assistance | What was proposed, accepted/rejected, and independently checked. |
+| Limitations | Registry, OS, browser, and reviewer checks not performed. |
+
+Do not publish credentials, absolute private paths, or private model reasoning.
+A complete card must identify pending checks; a green-looking screenshot cannot
+replace them.
+
+<details>
+<summary>One solution path and its trade-offs</summary>
+
+Replace `launch.py` with the following source **in the exercise directory**, not
+in the course runtime. It checks the CLI shape, reads the explicit input, and
+handles expected input errors without converting them to successful answers:
+
+```python
+# File: launch.py
+import json
+import sys
+from pathlib import Path
+from freecampus_agents.lab import run_agent
+from freecampus_agents.unit0 import load_task
+
+def main(arguments):
+    if len(arguments) != 1:
+        print("Usage: python launch.py <input-path>; supply its path", file=sys.stderr)
+        return 2
+    try:
+        task = load_task(Path(arguments[0]))
+    except (OSError, ValueError) as error:
+        print(str(error), file=sys.stderr)
+        return 2
+    print(json.dumps(run_agent(task).to_dict()))
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))
+```
+
+For the stale notebook, retain explicit initialization before calculation:
+
+```python
+from freecampus_agents.lab import Task, run_agent
+left, right = -5, 5
+current = run_agent(Task(left, right))
+assert current.answer == 0
+print(current.to_dict())
+```
+
+After writing your repaired file, call `check_launch_project(project)` in the
+review notebook and preserve all seven messages. Then restart the repaired
+notebook and run from the top. Run the real environment guard and quality checks
+locally as taught in Lesson 0.5. The solution does not create a dependency lock,
+validate a new platform, or prove your installation succeeded; those need their
+own observed evidence.
+
+This CLI is more explicit, not more autonomous. Keep the direct-addition baseline:
+for the café's real sum, an ordinary function remains adequate.
+
+</details>
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-challenge-failure",
+  "title": "Checkpoint: diagnose the failure",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-challenge-failure-1",
+      "prompt": "All fresh-process project checks pass in a bundled notebook. Is the local environment gate complete?",
+      "options": [
+        "Yes; the helper proves installation automatically.",
+        "Yes, if no exception was printed in the browser.",
+        "No; real Conda/Poetry activation and installation need separate evidence.",
+        "No; a paid model must also be called."
+      ],
+      "answer_index": 2,
+      "explanation": "The helper supplies the already loaded package path for offline execution. It deliberately does not certify a local installation."
+    },
+    {
+      "id": "u00-challenge-failure-2",
+      "prompt": "A missing input produces exit code zero and a success JSON with answer 12. How should the card classify it?",
+      "options": [
+        "A recovery success because the ordinary answer is known.",
+        "A harmless formatting difference.",
+        "Evidence that the model generalized.",
+        "A contract failure: missing input must fail explicitly without substitute output."
+      ],
+      "answer_index": 3,
+      "explanation": "The contract forbids silently substituting tasks. Nonzero exit, actionable diagnostic, and no fabricated input or success payload are required."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 8. Record your retrospective
+
+Report the ordinary and boundary answers, one actual failure, the maximum allowed
+and observed decisions, and the denied tool's observed call count. No paid/model
+calls were required; do not invent latency measurements or an estimated model
+bill. If timing matters to your question, measure it separately and name the
+machine and method.
+
+State one architecture decision: why you kept the small inspected runtime for
+learning but would use direct arithmetic for the real task. State one remaining
+risk that these checks cannot establish, such as behavior of arbitrary injected
+Python or an untested OS installation.
+
+**Transfer, no supplied solution:** a new input file contains `left: 4, right: -9`
+and is moved after your first run. Predict which call should succeed, which
+should fail, and what evidence distinguishes them. Use JSON syntax in the actual
+file. Do not change expected outputs to match a cached answer.
+
+<button type="button" class="fc-complete-button" data-fc-challenge-complete aria-pressed="false" hidden>Record challenge complete</button>
+
+This control is local and self-reported, not verified grading or certification.
+It remains hidden until publication and explicit available-activity registration.
+
+### Sources and fixture provenance
+
+- [Python command-line arguments](https://docs.python.org/3/library/sys.html#sys.argv), [pathlib](https://docs.python.org/3/library/pathlib.html), and [subprocess](https://docs.python.org/3/library/subprocess.html) document the supplied runner's interfaces.
+- Local fixture: `src/freecampus_agents/fixtures/launch_project.json`; creator/checker: `src/freecampus_agents/launch_project.py`; runtime: `src/freecampus_agents/lab.py`.
+
+The café story, broken project, notebook fixture, and solutions are original
+synthetic BSD-3-Clause course material. Primary references checked 2026-09-19.

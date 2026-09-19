@@ -1,0 +1,385 @@
+---
+title: Meet an Agent Through a Tiny Complete Run
+description: Run a three-step deterministic agent that reads a task, chooses a calculator
+  tool, and returns a result. Learners map every source object to the visible trajectory,
+  predict one controlled edit, and repair a malformed tool result.
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: launch-agent-lab
+unit_number: 0
+categories:
+- agentic-ai-engineering
+- launch-agent-lab
+order: 10
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/meet-a-tiny-agent.ipynb
+notebook_package: true
+execute:
+  echo: true
+lesson_id: launch-agent-lab.meet-a-tiny-agent
+lesson_order: 10
+---
+
+::: {.lesson-meta}
+- **Level:** Orientation; project-ready Python, no agent framework required.
+- **Active time:** 90–120 minutes, including the repair lab.
+- **Prerequisites:** Functions, dictionaries, classes, imports, assertions; the [readiness check](../../readiness.qmd).
+- **Outcome:** Explain each boundary in a complete run and repair a malformed result without weakening authorization.
+- **Evidence:** An annotated trajectory, one prediction, a failing fixture, and the repaired regression checks.
+- **Environment:** Python 3.10+; the exported notebook bundles the course package. No account, API key, GPU, or network is needed for the core code.
+:::
+
+::: {.callout-note}
+## Review draft
+This lesson is awaiting independent teaching and accessibility review. The local
+review build includes its notebook; a public Colab URL is not available yet.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. Predict a complete calculator run
+
+A museum volunteer needs to combine two counts of borrowed audio guides. The
+answer is ordinary arithmetic. We deliberately use an agent-shaped loop so you
+can inspect who asks for work, who permits it, and who records the result. An
+ordinary addition function is the better production architecture for this task.
+The extra machinery here is a teaching instrument, not an improvement in accuracy.
+
+Before running anything, write brief answers:
+
+1. Who requests an action, and who authorizes it?
+2. How can a result from the calculator reach a final answer?
+3. Would a result of zero mean that no tool has run?
+4. Where should a tool result with the wrong field name fail?
+
+The **task** contains two integers. The **model** chooses an action. Our model is
+`FakeModel`: a deterministic Python test double, not an LLM. The **runtime**
+executes the loop and enforces its rules. A **tool** performs the permitted
+calculation. An **observation** is validated data returned by that tool. A
+**trajectory** is the ordered record of externally visible events. It is not a
+private reasoning transcript.
+
+## 2. Run once, then connect records to code
+
+Predict the answer and the number of model decisions for `7 + 5`. In an exported
+notebook, run the bundled setup cell first. Locally, use the installed course
+package; Lesson 0.5 supplies that setup.
+
+```python
+from freecampus_agents.lab import Task, run_agent
+
+task = Task(left=7, right=5)
+run = run_agent(task)
+for number, event in enumerate(run.events, start=1):
+    print(number, event.kind, event.detail)
+assert run.status == "complete"
+assert run.answer == 12
+```
+
+The expected record is:
+
+| Event | Detail | Responsible component and meaning |
+|---|---|---|
+| `task` | `Add 7 and 5` | Runtime records the input; nothing has been calculated. |
+| `tool_call` | `add` | Model requested `add`; runtime accepted the name before dispatch. |
+| `observation` | `12` | Tool returned `{"result": 12}`; runtime validated the envelope. |
+| `final` | `12` | Model returned the observation; runtime checked agreement. |
+
+There are **two decisions but four events**. First, `FakeModel.decide(task, None)`
+requests `add`. The runtime checks that name, calls the trusted addition function,
+and validates its result. Second, the model receives the integer `12` and requests
+a final answer. A decision is a request; an event records what the runtime did.
+The current log does not separately record every proposed decision.
+
+Read the actual local implementation rather than inferring it from the output:
+
+```python
+import inspect
+from freecampus_agents.lab import FakeModel, add
+
+print(inspect.getsource(FakeModel))
+print(inspect.getsource(add))
+print(inspect.getsource(run_agent))
+```
+
+Read the loop in this order: input budget check, model selection, initial event,
+`decide`, decision validation, tool-name check, dispatch, result validation,
+observation storage, final-answer check. `Task`, `Decision`, `Event`, and `Run`
+are Python dataclasses: named records whose fields make these boundaries visible.
+`frozen=True` prevents reassignment of their fields; it does not turn Python into
+a security sandbox. The `Model` protocol describes a method signature, not an
+authorization mechanism. The runtime's `if` statements enforce the contract.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-meet-a-tiny-agent-concept",
+  "title": "Checkpoint: explain the contract",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-meet-a-tiny-agent-concept-1",
+      "prompt": "Who authorizes the requested add operation?",
+      "options": [
+        "The runtime checks the requested name before dispatch.",
+        "The model authorizes any name it emits.",
+        "The tool authorizes itself after calculating.",
+        "The final answer grants permission retroactively."
+      ],
+      "answer_index": 0,
+      "explanation": "A model decision is a request. The runtime allowlist precedes dispatch; a correct answer cannot retroactively authorize an effect."
+    },
+    {
+      "id": "u00-meet-a-tiny-agent-concept-2",
+      "prompt": "Why is FakeModel not evidence of LLM capability?",
+      "options": [
+        "It uses a smaller paid model.",
+        "It follows deterministic Python rules rather than predicting language.",
+        "It stores hidden reasoning in each Event.",
+        "It becomes an LLM after importing a framework."
+      ],
+      "answer_index": 1,
+      "explanation": "The test double is deliberately predictable. It tests runtime paths, not language understanding or stochastic model reliability."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 3. Change one input without changing the policy
+
+Predict which event details change when the operands become `-5` and `5`.
+Predict again for a one-decision budget. Keep those predictions before execution.
+
+```python
+zero = run_agent(Task(-5, 5))
+assert zero.answer == 0
+assert [event.kind for event in zero.events] == [
+    "task", "tool_call", "observation", "final"
+]
+limited = run_agent(Task(7, 5), max_steps=1)
+assert limited.status == "budget_exhausted"
+assert limited.answer is None
+print(zero.to_dict())
+print(limited.to_dict())
+```
+
+`observation is None` means there has not been a validated result. `0` is a
+perfectly valid result; a truthiness check such as `if not observation` would
+confuse those states. With one decision the addition runs, but the model cannot
+make its second, final decision. The trace contains an observation followed by
+`budget_exhausted`, not `final`. A tool result alone is not a completed run.
+
+The budget counts model decisions, not events, tokens, seconds, or tool effects.
+A trusted Python model or tool can still hang inside one call. Timeouts and
+process isolation are later engineering layers, taught in Units 3, 5, and 15;
+this lesson does not claim to implement them.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-meet-a-tiny-agent-evidence",
+  "title": "Checkpoint: interpret the evidence",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-meet-a-tiny-agent-evidence-1",
+      "prompt": "For -5 + 5, which interpretation of observation=0 is correct?",
+      "options": [
+        "The tool has not run because zero is falsey.",
+        "The model must call the tool until the result is positive.",
+        "A valid tool result exists and can be finalized.",
+        "The runtime must replace zero with None."
+      ],
+      "answer_index": 2,
+      "explanation": "None denotes absence. Zero is an integer result; using truthiness instead of an explicit None check loses this distinction."
+    },
+    {
+      "id": "u00-meet-a-tiny-agent-evidence-2",
+      "prompt": "Why does max_steps=1 leave answer=None after observing 12?",
+      "options": [
+        "The budget counts four log events and rejects arithmetic.",
+        "Twelve exceeds the numeric answer limit.",
+        "The tool result was malformed because it was positive.",
+        "The final decision would require a second step."
+      ],
+      "answer_index": 3,
+      "explanation": "The budget counts model decisions, not events or answer magnitude. One step can calculate without allowing a final decision."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 4. Locate the first violated boundary
+
+A tool author confused a display label with a return-field name. Predict the last
+event and whether a final answer will exist:
+
+```python
+def wrong_envelope(task):
+    return {"total": task.left + task.right}
+
+broken = run_agent(Task(7, 5), add_tool=wrong_envelope)
+assert broken.status == "invalid"
+assert broken.answer is None
+assert [event.kind for event in broken.events] == ["task", "tool_call", "invalid"]
+print(broken.events[-1].detail)
+```
+
+Expected diagnostic: `Expected {'result': integer}`. The tool was called, but
+there was no valid observation. Do not repair this by making the model guess the
+sum or by accepting any field. Repair the producer at the tool-result boundary.
+A tool that only prints `12` implicitly returns `None` and fails at the same point.
+The schema accepts an integer, not a string or boolean. Schema validity is not
+arithmetic correctness: `{"result": 999}` has the right shape. Independent
+arithmetic tests still matter.
+
+::: {.callout-warning}
+## Trusted code is not contained code
+Only use the supplied synthetic tools and your inspected, pure replacements.
+The `add_tool` injection point accepts Python running with your process's
+permissions. The allowlist blocks an unsupported *tool name* before dispatch;
+it cannot stop malicious code hidden inside an allowed Python function.
+:::
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-meet-a-tiny-agent-failure",
+  "title": "Checkpoint: diagnose the failure",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-meet-a-tiny-agent-failure-1",
+      "prompt": "The trace is task, tool_call, invalid for {\"total\": 12}. What should you repair first?",
+      "options": [
+        "The tool producer must return the declared result field.",
+        "Permit every field name so the run can continue.",
+        "Ask the model to guess a final answer.",
+        "Remove the tool-name allowlist."
+      ],
+      "answer_index": 0,
+      "explanation": "The tool ran but its envelope violated the result contract. Repairing that boundary preserves both policy and diagnostic evidence."
+    },
+    {
+      "id": "u00-meet-a-tiny-agent-failure-2",
+      "prompt": "Which test best supports denial before a tool effect?",
+      "options": [
+        "The final text says access was denied.",
+        "An unsupported request produces denied and an independent call spy remains empty.",
+        "The tool prints no output after it returns.",
+        "The answer is correct for the ordinary case."
+      ],
+      "answer_index": 1,
+      "explanation": "A call spy checks the tested effect boundary independently. A denial label alone could be recorded after a tool already ran."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 5. Lab: repair the envelope and prove denial precedes effects
+
+Your launch card must contain the original malformed trace, the smallest repair,
+a boundary case returning zero, and an unsupported-tool attempt. Start here;
+replace the exception with a result matching the declared schema:
+
+```python
+def repaired_add(task):
+    raise NotImplementedError("Return exactly one integer result field")
+```
+
+Use these independent acceptance checks. The function is supplied now, but call
+it only after implementing your repair. These expected values come from the task,
+not from the candidate implementation.
+
+```python
+from freecampus_agents.lab import Decision
+
+def check_repair(candidate):
+    for left, right, expected in [(7, 5, 12), (-5, 5, 0), (-3, -4, -7)]:
+        result = run_agent(Task(left, right), add_tool=candidate)
+        assert result.status == "complete"
+        assert result.answer == expected
+        assert [event.kind for event in result.events] == [
+            "task", "tool_call", "observation", "final"
+        ]
+
+    calls = []
+    def watched_tool(task):
+        calls.append(task)
+        return candidate(task)
+
+    class UnsupportedModel:
+        def decide(self, task, observation):
+            return Decision("tool", tool="shell")
+
+    denied = run_agent(Task(7, 5), model=UnsupportedModel(), add_tool=watched_tool)
+    assert denied.status == "denied"
+    assert [event.kind for event in denied.events] == ["task", "denied"]
+    assert calls == []
+
+# In your own cell, after the repair: check_repair(repaired_add)
+```
+
+First pass `wrong_envelope` to `check_repair` and preserve the assertion failure.
+Then test your repair. Do not edit the checker to accept a different field.
+
+<details>
+<summary>Hint: repair the earliest boundary, not the last symptom</summary>
+
+The tool received valid operands. Compare its dictionary key with the validator
+inside `run_agent`. Keep the arithmetic unchanged and retain the zero test.
+
+</details>
+
+<details>
+<summary>Solution and regression check — open after attempting the repair</summary>
+
+```python
+def repaired_add(task):
+    return {"result": task.left + task.right}
+
+try:
+    check_repair(wrong_envelope)
+except AssertionError:
+    print("Original defect caught")
+else:
+    raise AssertionError("The original defect unexpectedly passed")
+check_repair(repaired_add)
+print("Envelope repair and denial checks passed")
+```
+
+This repairs a data contract. It does not add capabilities or make arbitrary
+injected Python safe. The spy establishes that the tested denied request never
+invoked the supplied tool; it does not prove all possible models are contained.
+
+</details>
+
+## 6. Keep evidence and attempt a transfer
+
+In the [engineering journal](../../../../resources/engineering-journal.qmd),
+record input, prediction, observed event order, first violated boundary, minimal
+change, acceptance result, and one limitation. Include concise explanations of
+observable behavior—not a request for hidden model reasoning.
+
+**Transfer, without a supplied solution:** sketch a read-only centimeters-to-meters
+assistant. Identify the task, permitted action, result schema, and one independent
+expected-value test. Explain why merely renaming `add` in this runtime is
+insufficient. Choose whether a direct conversion function or an agent is warranted.
+Unit 5 will teach generalized tool interfaces; do not build one here.
+
+**Key points:** requests are not permissions; zero is not absence; a schema check
+is not a correctness proof; a passing deterministic run is not evidence of LLM
+reliability. Stop when another person can reconstruct your repair from the card.
+
+### Sources and implementation
+
+- [Python dataclasses](https://docs.python.org/3/library/dataclasses.html) explains record construction and frozen fields.
+- [Python errors and exceptions](https://docs.python.org/3/tutorial/errors.html) explains why narrowly caught, expected failures differ from hiding arbitrary errors.
+- Local canonical code: `src/freecampus_agents/lab.py`; recorded ordinary trace: `src/freecampus_agents/fixtures/addition.json`.
+
+These examples and fixtures are original synthetic course material under the
+repository's BSD-3-Clause license. Primary references checked 2026-09-19.

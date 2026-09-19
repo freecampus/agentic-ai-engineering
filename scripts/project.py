@@ -22,7 +22,7 @@ def lint() -> None:
     run(sys.executable, "-m", "mypy", "src")
 
 
-def docs() -> None:
+def docs(*, review: bool = False) -> None:
     for relative in (".quarto-tmp", ".cache/quarto-home", ".cache/deno"):
         (ROOT / relative).mkdir(parents=True, exist_ok=True)
     env = {
@@ -32,14 +32,20 @@ def docs() -> None:
         "XDG_CACHE_HOME": str(ROOT / ".cache"),
         "DENO_DIR": str(ROOT / ".cache/deno"),
     }
+    profile = ["--profile", "review"] if review else []
     subprocess.run(
-        ["quarto", "render", "docs", "--no-execute-daemon"],
+        ["quarto", "render", "docs", "--no-execute-daemon", *profile],
         cwd=ROOT,
         env=env,
         check=True,
     )
-    run(sys.executable, "scripts/build_colab_notebooks.py")
-    run(sys.executable, "scripts/check_site.py")
+    notebook_args = (
+        ["--include-drafts", "--output-root", "docs/_review/notebooks"]
+        if review
+        else []
+    )
+    run(sys.executable, "scripts/build_colab_notebooks.py", *notebook_args)
+    run(sys.executable, "scripts/check_site.py", *(["--review"] if review else []))
 
 
 def clean() -> None:
@@ -57,6 +63,7 @@ def clean() -> None:
             ".cache/quarto-home",
             ".cache/deno",
             "docs/_site",
+            "docs/_review",
             "docs/.quarto",
             "htmlcov",
         )
@@ -77,7 +84,17 @@ def clean() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "task", choices=["lint", "test", "docs", "preview", "package", "clean", "all"]
+        "task",
+        choices=[
+            "lint",
+            "test",
+            "docs",
+            "review",
+            "preview",
+            "package",
+            "clean",
+            "all",
+        ],
     )
     task = parser.parse_args().task
     if task != "clean":
@@ -91,6 +108,8 @@ def main() -> None:
         run("poetry", "build")
     if task in {"docs", "preview", "all"}:
         docs()
+    if task == "review":
+        docs(review=True)
     if task == "preview":
         run("quarto", "preview", "docs")
     if task == "clean":

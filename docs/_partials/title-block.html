@@ -46,7 +46,11 @@
       </div>
     </div>
 
-    $if(colab_notebook)$
+    $if(draft)$
+    <p class="fc-title-actions">
+      Review draft — use the local notebook export.
+    </p>
+    $elseif(colab_notebook)$
     <div class="fc-title-actions">
       <a
         class="btn btn-primary fc-title-colab"

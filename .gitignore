@@ -227,6 +227,7 @@ pytest-of-*/
 # Course-generated content and local execution
 .cache/
 docs/_site/
+docs/_review/
 docs/.quarto/
 docs/courses/**/*_files/
 docs/resources/**/*_files/

@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -144,3 +145,109 @@ def test_yaml_front_matter_uses_delimiter_lines_not_title_punctuation() -> None:
 def test_yaml_front_matter_requires_a_mapping() -> None:
     with pytest.raises(ValueError, match="mapping"):
         builder.parse_front_matter("---\n- one\n- two\n---\nBody", "Fallback")
+
+
+UNIT0 = Path("docs/courses/agentic-ai-engineering/units/launch-agent-lab")
+UNIT0_DRAFTS = sorted(path for path in UNIT0.glob("*.qmd") if path.stem != "index")
+
+
+def test_draft_exports_are_explicit_and_never_target_the_public_site(tmp_path):
+    assert len(UNIT0_DRAFTS) == 6
+    assert not set(UNIT0_DRAFTS) & set(builder.public_qmd_files())
+    assert set(UNIT0_DRAFTS) <= set(builder.public_qmd_files(include_drafts=True))
+    with pytest.raises(ValueError, match="separate review"):
+        builder.build_notebooks(include_drafts=True)
+    written = builder.build_notebooks(output_root=tmp_path, include_drafts=True)
+    assert len(written) == 36
+    for path in written:
+        nbformat.validate(nbformat.read(path, as_version=4))
+
+
+def test_hidden_solutions_stay_hidden_reading_material_not_run_all_cells():
+    cells = builder.split_qmd_cells(
+        "Before\n<details>\n<summary>Solution</summary>\n\n"
+        "```python\nanswer = 99\n```\n\n</details>\n\n"
+        "```python\nprint('ordinary')\n```\n"
+    )
+    code = "\n".join("".join(c["source"]) for c in cells if c["cell_type"] == "code")
+    markdown = "\n".join(
+        "".join(c["source"]) for c in cells if c["cell_type"] == "markdown"
+    )
+    assert "answer = 99" not in code
+    assert "print('ordinary')" in code
+    assert "<details>" in markdown and "</details>" in markdown
+    assert "```python\nanswer = 99\n```" in markdown
+
+
+@pytest.mark.parametrize("source", UNIT0_DRAFTS, ids=lambda path: path.stem)
+def test_unit0_notebooks_run_cellwise_in_fresh_python_without_site_packages(
+    source, tmp_path
+):
+    notebook = builder.qmd_to_notebook(source)
+    nbformat.validate(nbformat.from_dict(notebook))
+    code = [
+        "".join(cell["source"])
+        for cell in notebook["cells"]
+        if cell["cell_type"] == "code"
+    ]
+    # Separate exec calls preserve notebook cell boundaries; -I -S removes ambient
+    # path/site-package assistance. The bundled setup must provide the package.
+    script = (
+        "import json\nnamespace = {'__name__': '__main__'}\n"
+        f"cells = json.loads({json.dumps(code)!r})\n"
+        "for number, source in enumerate(cells):\n"
+        "    exec(compile(source, f'cell-{number}', 'exec'), namespace)\n"
+        "print('CLEAN_CELL_RUN_OK')\n"
+    )
+    result = subprocess.run(
+        [sys.executable, "-I", "-S", "-c", script],
+        cwd=tmp_path,
+        env={**os.environ, "TMPDIR": str(tmp_path), "TEMP": str(tmp_path)},
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "CLEAN_CELL_RUN_OK" in result.stdout
+    markdown = "\n".join(
+        "".join(cell["source"])
+        for cell in notebook["cells"]
+        if cell["cell_type"] == "markdown"
+    )
+    assert "Review draft, not a published assessment" in markdown
+    assert "[Source page]" not in markdown
+    assert markdown.count("<summary>Check your answer</summary>") == 6
+    assert "<script" not in markdown
+    for heading in re.findall(r"^## .+$", source.read_text(encoding="utf-8"), re.M):
+        assert heading in markdown
+
+
+@pytest.mark.parametrize("source", UNIT0_DRAFTS, ids=lambda path: path.stem)
+def test_unit0_worked_examples_and_hidden_solutions_execute_separately(
+    source, tmp_path
+):
+    text = source.read_text(encoding="utf-8")
+    code = re.findall(r"```python\n(.*?)```", text, re.S)
+    # The challenge CLI solution is a separate file, tested as such in test_unit0.
+    code = [block for block in code if not block.startswith("# File: launch.py")]
+    script = (
+        "".join(builder.package_setup_cell()["source"]) + "\n\n" + "\n\n".join(code)
+    )
+    result = subprocess.run(
+        [sys.executable, "-I", "-S", "-c", script],
+        cwd=tmp_path,
+        env={**os.environ, "TMPDIR": str(tmp_path), "TEMP": str(tmp_path)},
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stderr
+    expected = {
+        "meet-a-tiny-agent": "Envelope repair and denial checks passed",
+        "learn-with-evidence": "Lookup contract passed",
+        "use-ai-responsibly": "Reviewed arithmetic checks passed",
+        "work-in-notebooks": "Explicit-input launch checks passed",
+        "build-local-workspace": "Unsupported mode rejected",
+        "challenge": "Denial, malformed result, and decision budget checks passed",
+    }
+    assert expected[source.stem] in result.stdout

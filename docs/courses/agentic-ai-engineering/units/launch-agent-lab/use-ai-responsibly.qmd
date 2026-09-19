@@ -1,0 +1,369 @@
+---
+title: Use AI Assistance Without Outsourcing Judgment
+description: 'Establish a responsible assistance protocol for course work: disclose
+  assistance, protect data and credentials, verify generated claims and code, and
+  preserve the learner’s own reasoning. Diagnose a confident but unsafe suggested
+  tool implementation.'
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: launch-agent-lab
+unit_number: 0
+categories:
+- agentic-ai-engineering
+- launch-agent-lab
+order: 30
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/use-ai-responsibly.ipynb
+notebook_package: true
+execute:
+  echo: true
+lesson_id: launch-agent-lab.use-ai-responsibly
+lesson_order: 30
+---
+
+::: {.lesson-meta}
+- **Level:** Orientation; project-ready Python.
+- **Active time:** 90–120 minutes.
+- **Prerequisites:** Lessons 0.1–0.2; input validation, assertions, and evidence contracts.
+- **Outcome:** Reject an unsafe generated shortcut, test a narrower repair, and separate verified claims from unsupported suggestions.
+- **Evidence:** A redacted assistance request, disclosure, claim-verification table, negative test, and decision record.
+- **Environment:** Offline Python and bundled course source. The supplied “assistant suggestions” are synthetic fixtures, not live model output.
+:::
+
+::: {.callout-note}
+## Review draft
+Independent teaching and accessibility review are pending. Use the locally
+exported review notebook; this page does not grant course progress.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. Keep responsibility for the contract
+
+A teammate asks an AI assistant to fix the calculator from Lesson 0.1. The
+assistant's confidence is not evidence that it understood the allowed capabilities.
+Your job is not to accept or reject everything it writes. Your job is to identify
+what is being claimed, inspect the proposed change, and test it against the task.
+
+Before inspecting the suggestions, answer:
+
+1. What information does an assistant actually need to repair an integer sum?
+2. Which new capability would be unacceptable even if `7 + 5` still returns `12`?
+3. What evidence would verify a source claim rather than repeat it?
+4. What must an assistance disclosure explain about your own decisions?
+
+Use this protocol: **minimize the input → request an explanation and tests → inspect
+capabilities → verify claims → run approved checks → disclose the assistance**.
+The learner remains responsible for the final artifact. Keep concise external
+rationales—“I rejected shell access because arithmetic needs no process”—not
+private model reasoning or a pasted conversation containing confidential material.
+
+## 2. Redact before sending, not after logging
+
+This fixture deliberately contains a dummy token and a synthetic personal detail.
+Do not replace either with real information. Predict what must be removed before
+a debugging request leaves your machine:
+
+```python
+raw_request = {
+    "task": "Repair integer addition",
+    "token": "DUMMY_NOT_A_REAL_SECRET",
+    "customer": "Synthetic Visitor 004",
+    "failure": "Expected {'result': integer}; received {'total': 12}",
+}
+# Construct a new minimal request instead of trying to blacklist every secret key.
+shareable_request = {key: raw_request[key] for key in ("task", "failure")}
+assert set(shareable_request) == {"task", "failure"}
+assert "DUMMY_NOT_A_REAL_SECRET" not in str(shareable_request)
+assert "Synthetic Visitor" not in str(shareable_request)
+print(shareable_request)
+```
+
+This selection is appropriate for this known fixture, not a universal redaction
+system. A token can appear inside the `failure` text too. Inspect values as well
+as keys, keep only synthetic reproductions, and do not send real credentials to
+“check whether redaction works.” Notebook outputs, saved files, screenshots, and
+Git history are artifacts too. Deleting a visible cell is not a reliable way to
+remove material already shared. If real credentials are exposed, stop sharing and
+follow the relevant service's revocation process; do not paste them into a help
+request.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-use-ai-responsibly-concept",
+  "title": "Checkpoint: explain the contract",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-use-ai-responsibly-concept-1",
+      "prompt": "What should the arithmetic debugging request contain?",
+      "options": [
+        "A minimal synthetic contract and error, inspected for sensitive values.",
+        "All environment variables to avoid missing context.",
+        "The real credential so the assistant can reproduce access.",
+        "A screenshot of every open notebook."
+      ],
+      "answer_index": 0,
+      "explanation": "Only task-relevant synthetic data is needed. Redacting keys alone is insufficient when values can contain sensitive material."
+    },
+    {
+      "id": "u00-use-ai-responsibly-concept-2",
+      "prompt": "Which disclosure demonstrates engineering ownership?",
+      "options": [
+        "State that AI was used, with no description of verification.",
+        "Name accepted and rejected suggestions, actual checks, and remaining uncertainty.",
+        "Paste the whole private conversation as proof.",
+        "Claim no assistance because you edited one line."
+      ],
+      "answer_index": 1,
+      "explanation": "A useful disclosure separates assistance from the learner’s decisions and evidence; neither secrecy nor an indiscriminate transcript does that."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 3. Inspect two generated suggestions without executing the unsafe one
+
+**Suggestion A, intentionally unsafe:** “Accept a string expression, evaluate it
+as Python, and expose a shell tool for anything the evaluator cannot handle.”
+Do not implement or run this suggestion. The task only needs two integer inputs
+and addition. Evaluation of arbitrary code and process execution are new
+capabilities, not harmless convenience. Renaming `shell` to `calculator_helper`
+does not remove them.
+
+**Suggestion B, safe to execute but wrong for our contract:** “Coerce inputs to
+integers so the demo never fails.” Predict the results for booleans and decimals:
+
+```python
+def generated_coercion(left, right):
+    return int(left) + int(right)
+
+assert generated_coercion(7, 5) == 12
+assert generated_coercion(True, 2) == 3
+assert generated_coercion(1.9, 2) == 3
+```
+
+The first assertion looks persuasive. The latter two expose a mismatch: the
+contract accepts actual integers, not booleans, strings, or rounded decimals.
+`bool` is a subclass of `int` in Python, so `isinstance(True, int)` alone is not
+the check this contract needs. `Task` uses `type(value) is int` deliberately.
+
+**Prediction:** would placing `try/except Exception: return 12` around the
+suggestion make it more reliable? No: it would replace diagnostic evidence with
+an unrelated answer. Exception handling should describe a known recovery, not
+make every run look successful.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-use-ai-responsibly-evidence",
+  "title": "Checkpoint: interpret the evidence",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-use-ai-responsibly-evidence-1",
+      "prompt": "generated_coercion(True, 2) returns 3. Why is that a failed contract?",
+      "options": [
+        "Three is not an integer.",
+        "The function should round the boolean down.",
+        "Booleans are forbidden inputs even though Python can coerce them to integers.",
+        "Only the string formatting is wrong."
+      ],
+      "answer_index": 2,
+      "explanation": "The declared input contract excludes booleans and decimals. A plausible sum does not justify silently changing input meaning."
+    },
+    {
+      "id": "u00-use-ai-responsibly-evidence-2",
+      "prompt": "A citation title sounds authoritative but no primary text was inspected. How should it appear in the claim table?",
+      "options": [
+        "Verified if the title matches the task.",
+        "Verified if two generated answers repeat it.",
+        "Refuted solely because its title is unfamiliar.",
+        "Unverified; do not cite it as supporting authority."
+      ],
+      "answer_index": 3,
+      "explanation": "Lack of inspected support warrants an unverified label, not manufactured evidence or a conclusion based only on familiarity."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 4. Verify claims separately from code behavior
+
+The synthetic assistant also provides this reference: “*Universal Notebook Safety
+Standard, section 9: frozen dataclasses sandbox Python*.” Treat it as an unverified,
+fabricated citation fixture. Do not invent an author, a URL, or supporting quotes.
+An impressive title is not an inspected primary source.
+
+Build a claim table with four fields: **claim, inspected source/version or code,
+observed support, disposition**. For example:
+
+| Claim | Evidence to inspect | Defensible disposition |
+|---|---|---|
+| `Task(True, 2)` is accepted as an integer task. | Local `Task.__post_init__` and a failing-input run. | Refuted for this implementation. |
+| Frozen dataclasses sandbox Python. | Python dataclass documentation and local runtime boundaries. | Unsupported; freezing fields is not process isolation. |
+| The fictitious safety standard requires shell access. | No inspected primary source is supplied. | Unverified; do not cite it as authority. |
+| The repaired arithmetic function rejects decimals. | Independent negative test below. | Verified only for the tested interface/cases. |
+
+A source's existence does not establish that it supports your claim. Read the
+relevant section and distinguish its statement from your inference. If offline,
+label a source verification as pending; local execution can still verify the
+behavior of the supplied code. Do not mark unread references checked.
+
+```python
+from freecampus_agents.lab import Task
+
+try:
+    Task(True, 2)
+except ValueError as error:
+    print(type(error).__name__, str(error))
+else:
+    raise AssertionError("Boolean input was incorrectly accepted")
+```
+
+This run tests rejection, not the safety of every possible caller. Likewise,
+static inspection can reveal an unwanted import, but a grep for the word
+“shell” cannot certify that arbitrary Python has no effects. For this lesson,
+choose a tiny inspected implementation whose only operation is validated
+arithmetic. Process isolation belongs to Unit 15, not a claim on this notebook.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-use-ai-responsibly-failure",
+  "title": "Checkpoint: diagnose the failure",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+  "questions": [
+    {
+      "id": "u00-use-ai-responsibly-failure-1",
+      "prompt": "How should you repair an arithmetic suggestion that adds a shell helper?",
+      "options": [
+        "Remove code evaluation/process capability and use validated arithmetic only.",
+        "Rename shell to a more reassuring tool name.",
+        "Keep it but request caution in the prompt.",
+        "Run it on real data to see whether anything bad happens."
+      ],
+      "answer_index": 0,
+      "explanation": "The capability itself is unnecessary. Renaming or prompting does not remove process execution, and unsafe trial runs are not a review method."
+    },
+    {
+      "id": "u00-use-ai-responsibly-failure-2",
+      "prompt": "What does check_add prove about a candidate that passes?",
+      "options": [
+        "It cannot access the network under any circumstances.",
+        "It satisfies the tested input/output cases; capability review remains separate.",
+        "Every generated source claim is correct.",
+        "It is safe to execute any other AI patch."
+      ],
+      "answer_index": 1,
+      "explanation": "Behavioral tests are scoped evidence. They cannot certify arbitrary Python harmless or validate unrelated claims."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 5. Lab: replace capability expansion with a narrow repair
+
+Write `reviewed_add(left, right)`. Accept exactly the integer inputs accepted by
+`Task`; return their sum. Do not add `eval`, `exec`, subprocesses, filesystem,
+network access, or broad exception fallbacks. Your review must identify the
+actual operations in the code, not merely rename the unsafe suggestion.
+
+```python
+def reviewed_add(left, right):
+    raise NotImplementedError("Validate the two operands; perform only addition")
+
+
+def check_add(candidate):
+    for left, right, expected in [(7, 5, 12), (-5, 5, 0), (-3, -4, -7)]:
+        assert candidate(left, right) == expected
+    for left, right in [(True, 2), (1.9, 2), ("7", 5), (1, False)]:
+        try:
+            candidate(left, right)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"Accepted forbidden operand types: {type(left)}, {type(right)}")
+
+# After implementing: check_add(reviewed_add)
+```
+
+First call `check_add(generated_coercion)` to preserve a failure. Then verify your
+repair without changing the expected values. Review the entire short function
+for new capabilities. The behavioral checker does not execute Suggestion A and
+cannot prove a malicious candidate harmless; only run code you have inspected.
+
+Create a disclosure using this structure, changing the entries to match your work:
+
+```text
+Assistance used: supplied synthetic suggestions; no live assistant used [or actual tool/date].
+Input shared: synthetic contract and error only [describe actual minimized input].
+Accepted: [specific idea or code and why].
+Rejected: [capability or unsupported claim and reason].
+My verification: [test, observed failure, repair, rerun, inspected primary source].
+Still unverified: [specific limitation, including unread references].
+```
+
+<details>
+<summary>Hint: reuse the already inspected input contract</summary>
+
+`Task` validates both operands. After construction, read its two fields and add
+them. Do not convert inputs to make the negative tests pass accidentally.
+
+</details>
+
+<details>
+<summary>Solution and the failure it fixes</summary>
+
+```python
+def reviewed_add(left, right):
+    task = Task(left, right)
+    return task.left + task.right
+
+try:
+    check_add(generated_coercion)
+except AssertionError:
+    print("Original coercion defect caught")
+else:
+    raise AssertionError("Original coercion unexpectedly passed")
+check_add(reviewed_add)
+print("Reviewed arithmetic checks passed")
+```
+
+The function constructs a validated record and adds its fields. It contains no
+code-evaluation or process capability. This is a deliberately inspectable repair,
+not a claim that a passing test suite makes generated code universally safe.
+
+</details>
+
+## 6. Defend the decision without outsourcing it
+
+Keep your disclosure, minimal request, claim table, original failure, and repaired
+checks in the [journal](../../../../resources/engineering-journal.qmd). Explain the
+repair in your own words. A reviewer should be able to distinguish what the
+assistant proposed from what you verified.
+
+**Transfer:** a suggested “fix” for missing input silently downloads a replacement
+file from an unfamiliar site. State which capability and evidence boundary changes,
+write a safer failure contract, and identify what permission would be needed
+before any real retrieval. Do not actually download a file for this exercise.
+
+**Key points:** minimize shared data; generated claims and code are untrusted
+proposals; capability expansion is not a bug fix; disclose assistance and own the
+verification. Stop when your claim table includes uncertainty instead of hiding it.
+
+### Sources and implementation
+
+- [Python dataclasses and frozen instances](https://docs.python.org/3/library/dataclasses.html#frozen-instances) describes restrictions on field assignment, not containment of arbitrary code.
+- [Python subprocess security considerations](https://docs.python.org/3/library/subprocess.html#security-considerations) explains why process invocation deserves a separate review.
+- [Python exception handling](https://docs.python.org/3/tutorial/errors.html#handling-exceptions) supports narrow handling of expected failures.
+- Local input contract: `src/freecampus_agents/lab.py`, `Task.__post_init__`.
+
+All identities, suggestions, and the fake citation are original synthetic fixtures
+under BSD-3-Clause. Primary references checked 2026-09-19; the fake citation is not
+a reference.
