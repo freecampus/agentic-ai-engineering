@@ -1,7 +1,6 @@
 ---
 title: Release, Monitor, and Recover Agent Systems Overview
-description: Version every behavior-shaping artifact, enforce CI gates, release gradually,
-  monitor SLOs and drift, and respond to incidents with rollback and learning.
+description: Version every behavior-shaping artifact, including skills and approved memory state; enforce CI gates, release gradually, monitor SLOs and drift, and respond to incidents with rollback and learning.
 content_kind: unit-overview
 content_status: planned
 order: 0
@@ -22,7 +21,7 @@ copy, not a completed instructional lab.
 
 ## 1. What you will be able to do
 
-Version every behavior-shaping artifact, enforce CI gates, release gradually, monitor SLOs and drift, and respond to incidents with rollback and learning.
+Version every behavior-shaping artifact, including skills and approved memory state; enforce CI gates, release gradually, monitor SLOs and drift, and respond to incidents with rollback and learning.
 
 **Phase:** VI. Production  
 **Overview:** 20–40 minutes  
@@ -43,14 +42,14 @@ Keep credentials and personal data out of notebooks, traces, and submitted artif
 
 | Lesson | Evidence you will preserve |
 |---|---|
-| 1. Version Models, Prompts, Tools, Policies, and Data | Reproducibility check. |
+| 1. Version Models, Prompts, Tools, Policies, and Data | Reproducibility check with a complete behavior-asset manifest and rollback dependency map. |
 | 2. Build CI Evaluation and Security Gates | Passing pipeline and intentional-failure demonstration. |
 | 3. Release with Shadows, Canaries, Flags, and Rollback | Release plan and canary analysis. |
 | 4. Define SLOs, Alerts, Runbooks, and Postmortems | Incident timeline and corrective actions. |
 
 ### 1. Version Models, Prompts, Tools, Policies, and Data
 
-Create a run manifest linking code commit, environment, model, prompt, schemas, tool versions, policies, and dataset. Reproduce a prior evaluation from the manifest.
+Create a run manifest linking code, environment, model, harness, prompt, schemas, tool and protocol versions, policies, skills, approved memory snapshots, and dataset. Reproduce a prior evaluation and identify which behavior assets must roll back together.
 
 ### 2. Build CI Evaluation and Security Gates
 
@@ -62,7 +61,7 @@ Compare versions on recorded or shadow traffic, canary a bounded population, mon
 
 ### 4. Define SLOs, Alerts, Runbooks, and Postmortems
 
-Set indicators for task success, unsafe action, latency, cost, availability, and escalation. Respond to a simulated incident and write a blameless, evidence-rich postmortem.
+Set indicators for task success, unsafe action, latency, cost, availability, and escalation. Respond to a simulated incident, including a poisoned skill update or unattended assistant action, and write an evidence-rich postmortem with containment and rollback.
 
 ## 4. Challenge preview: Stop a Bad Release Before It Spreads
 

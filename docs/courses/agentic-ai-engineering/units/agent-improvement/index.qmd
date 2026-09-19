@@ -1,7 +1,6 @@
 ---
 title: Improve Agents Without Fooling Yourself Overview
-description: Optimize prompts, policies, and small models with train/validation/test separation
-  while detecting overfitting, leakage, reward hacking, and unsafe self-modification.
+description: Optimize prompts, procedures, policies, and small models with train/validation/test separation while detecting overfitting, leakage, reward hacking, and unsafe self-modification.
 content_kind: unit-overview
 content_status: planned
 order: 0
@@ -22,7 +21,7 @@ copy, not a completed instructional lab.
 
 ## 1. What you will be able to do
 
-Optimize prompts, policies, and small models with train/validation/test separation while detecting overfitting, leakage, reward hacking, and unsafe self-modification.
+Optimize prompts, procedures, policies, and small models with train/validation/test separation while detecting overfitting, leakage, reward hacking, and unsafe self-modification.
 
 **Phase:** V. Advanced capabilities  
 **Overview:** 20–40 minutes  
@@ -43,14 +42,14 @@ Keep credentials and personal data out of notebooks, traces, and submitted artif
 
 | Lesson | Evidence you will preserve |
 |---|---|
-| 1. Optimize Prompts and Programs on Training Data | Experiment log and untouched test set. |
+| 1. Optimize Prompts and Programs on Training Data | Optimization log with skill lineage, frozen holdout, ablations, and measured regressions. |
 | 2. Learn Routing and Selection Policies | Offline policy evaluation. |
 | 3. Fine-Tune Structured Tool Use | Data card and before/after evaluation. |
 | 4. Detect Reward Hacking and Unsafe Self-Improvement | Reward-hacking case analysis and controls. |
 
 ### 1. Optimize Prompts and Programs on Training Data
 
-Define a search space, objective, constraints, and held-out split. Compare manual iteration with automated prompt/program optimization.
+Define a search space, objective, constraints, and held-out split. Compare manual and automated prompt/program optimization, including a Hermes-inspired experiment with no skills, a fixed reviewed skill, and a generated skill; distinguish procedural adaptation from weight training.
 
 ### 2. Learn Routing and Selection Policies
 
@@ -62,11 +61,11 @@ Prepare licensed trajectories, format supervised examples, fine-tune a small mod
 
 ### 4. Detect Reward Hacking and Unsafe Self-Improvement
 
-Study process/outcome rewards, credit assignment, evaluator exploitation, test tampering, and optimization pressure. Require isolated experiments, immutable gates, and rollback.
+Study process/outcome rewards, credit assignment, evaluator exploitation, test tampering, and optimization pressure. Stage memory and skill changes in isolated candidates; require immutable external gates, independent approval, revocation, and rollback before promotion.
 
 ## 4. Challenge preview: Build a Durable Specialist
 
-Create a coding, browser, or data specialist that resumes after failure and improves one measured component using a training split. Demonstrate held-out gains without weakening safety gates.
+Create a coding, browser, or data specialist that resumes after failure and evaluates a bounded improvement using a training split. Report held-out gains, regressions, or an inconclusive result without weakening safety gates; promote only evidence-backed candidates.
 
 The complete challenge contract, starting fixtures, progressive checks, three-level
 hint ladder, and solution path are not authored yet. Do not interpret this outline

@@ -58,7 +58,7 @@ Use Ollama or llama.cpp, inspect quantization and memory use, and compare CPU/GP
 
 ### 3. Serve Models for Throughput
 
-Use an open serving engine such as vLLM, TGI, or SGLang; study continuous batching, KV cache, parallelism, and backpressure.
+Use a maintained open serving engine such as vLLM or SGLang; study continuous batching, KV cache, parallelism, and backpressure. Treat maintenance-only TGI as a legacy/migration comparison, not the default new deployment.
 
 ### 4. Route, Cache, and Fall Back Deliberately
 

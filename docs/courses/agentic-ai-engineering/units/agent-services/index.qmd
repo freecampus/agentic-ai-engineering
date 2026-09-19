@@ -62,7 +62,7 @@ Apply rate limits, queues, worker pools, circuit breakers, bulkheads, and admiss
 
 ### 4. Isolate Tenants, Tasks, and Resources
 
-Propagate identity and quotas; partition data and artifacts; restrict worker capabilities; and test cross-tenant access attempts.
+Propagate identity and quotas, partition data and artifacts, restrict worker capabilities, and test cross-tenant access attempts. Contrast a trusted single-operator/team assistant gateway with an adversarial multi-tenant service; do not infer isolation from separate sessions.
 
 ## 4. Challenge preview: Operate a Resumable Multi-User Service
 

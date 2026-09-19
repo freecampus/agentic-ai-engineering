@@ -54,12 +54,13 @@ exist. Do not enable whole-course completion until the completion contract is re
 
 ## 5. Check from a clean environment
 
-Use Poetry 2.4+ within the 2.x series. The migration could not connect to PyPI,
-so `poetry.lock` has not been generated. Run `poetry lock` with registry access,
-inspect and version the result, and add `poetry check --lock --strict` before CI
-installation. Until that step, dependency resolution is not pinned transitively.
-Do not describe the scaffold as a fully reproducible release or reuse another
-course's lockfile.
+Use Poetry 2.4+ within the 2.x series. A tracked `poetry.lock` now exists;
+validate it against `pyproject.toml` with `poetry check --lock --strict` before
+installation. If they disagree, review and regenerate the lock through the
+dependency-maintenance workflow, not by hand or by borrowing another course's
+lock. Explicit CI lock enforcement and clean supported-platform installation
+evidence remain release work. A passing metadata check alone does not establish
+a fully reproducible release.
 
 Conda + Poetry are required locally and in CI. `conda.yaml` supplies Python 3.12,
 Poetry, Node.js, and pip. Poetry installs project dependencies directly into the
@@ -73,7 +74,7 @@ Pre-commit hooks use these installed tools rather than creating hook environment
 conda env create -f conda.yaml  # First setup only
 conda activate fc-agentic
 python scripts/check_environment.py
-poetry check --strict
+poetry check --lock --strict
 poetry install --all-extras --with docs
 python scripts/check_environment.py
 poetry run pytest -q
@@ -90,6 +91,68 @@ The build renders HTML, exports notebooks, and verifies expected output files.
 Open at least one desktop and narrow-screen quiz when browser tooling is available.
 Restart the smoke notebook and run from the top. Report skipped checks and external
 limitations rather than treating unrun checks as passing.
+
+## 6. Keep current-system examples reproducible
+
+Teach the transferable mechanism in the small course runtime first. The tracked
+`docs/courses/agentic-ai-engineering/_technology.yml` is a research register,
+not an installed dependency list or additional lesson catalog. It records the
+owning lesson IDs, accountable maintainer, primary sources, documentation review
+date, next review, known specification revision, and integration-validation state.
+Its initial entries are **not validated integrations**: no tested product version
+or execution evidence is implied by a documentation review.
+
+Recheck each entry at least every 90 days and before authoring or publication.
+Review immediately after a relevant security advisory, breaking change,
+deprecation, or license/provider-policy change. CI checks register structure and
+lesson ownership offline; it cannot verify that a human reviewed a source or
+that an upstream service is still compatible.
+
+Before supporting a live integration, record its exact release/commit, SDK and
+protocol revision, model revision, effective configuration, operating system,
+execution boundary, resource budget, and licensed fixture provenance. Preserve
+ordinary, denied-action, and held-out results plus independent review and an
+exit/rollback path. Set a validated version only when those artifacts exist.
+Do not use a floating `latest` or a vendor benchmark as execution evidence.
+Withhold or replace integrations whose maintenance or safety assumptions fail.
+
+### Use the case study appropriate to the engineering question
+
+- **Skills:** teach instruction packaging, selective loading, provenance, and
+  review separately from tool authorization. The
+  [Agent Skills specification](https://agentskills.io/specification) documents
+  the format; host support for experimental permission metadata can differ.
+- **OpenClaw:** use architecture/configuration inspection for persistent
+  assistants, then optional isolated operational experiments after Units 15–16.
+  Its documentation states that sandboxing is off by default and that one
+  gateway assumes a trusted boundary, not hostile multi-tenancy.
+  [Sandboxing](https://docs.openclaw.ai/gateway/sandboxing) and
+  [security guidance](https://docs.openclaw.ai/gateway/security).
+- **Hermes Agent by Nous Research:** study the distinction between factual memory
+  and reusable procedures, then compare no skill, a reviewed skill, and a generated
+  skill on held-out tasks. Changing a skill is not training model weights or proof
+  of improvement. [Skills documentation](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills).
+- **Serving engines:** verify a maintained vLLM or SGLang release for a new lab;
+  retain TGI as a legacy/migration comparison following the
+  [upstream maintenance notice](https://huggingface.co/docs/text-generation-inference/main/index).
+
+These source observations were reviewed on 2026-09-19; reverify before use.
+Early lessons use synthetic documents and sanitized architecture examples, not
+live assistants. Actual product execution is optional after the safety units,
+inside a disposable verified boundary with restricted mounts/egress, reviewed
+skills, synthetic identities, resource limits, and approvals. Do not require
+personal accounts, credentials, unattended host access, or paid services.
+
+Every lab distinguishes **course fixture execution**, **analysis of recorded
+observations**, and **optional live integration**. A Colab replay is a useful
+free learning route but cannot establish OS containment, real-model learning
+gains, deployment reliability, or hardware performance. Keep the evaluator and
+held-out answers outside the agent's writable boundary. Use observable actions
+and concise external rationales, never private chain-of-thought.
+
+Substitute focused cases rather than silently enlarging lesson workloads. The
+published effort range is provisional: pilot the active work and account for
+milestone refinements, reviews, and optional setup separately.
 
 Use the [repository contribution guidance](https://github.com/freecampus/agentic-ai-engineering/blob/main/AGENTS.md)
 and [Poetry's basic usage](https://python-poetry.org/docs/basic-usage/) for further detail.

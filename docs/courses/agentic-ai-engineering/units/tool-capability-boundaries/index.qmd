@@ -50,7 +50,7 @@ Keep credentials and personal data out of notebooks, traces, and submitted artif
 
 ### 1. Write Tool Contracts Models Can Use
 
-Design names, descriptions, schemas, examples, preconditions, and postconditions that separate model-facing affordances from implementation details. Measure how ambiguous schemas affect tool selection.
+Design names, descriptions, schemas, examples, preconditions, and postconditions that separate model-facing affordances from implementation details. Measure ambiguous tool selection and distinguish discovering a tool from permission to execute it.
 
 ### 2. Normalize Errors, Timeouts, and Cancellation
 

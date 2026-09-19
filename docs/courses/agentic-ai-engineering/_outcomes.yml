@@ -101,9 +101,7 @@ units:
       - tool-capability-boundaries.enforce-least-privilege-and-approval
     challenge_id: tool-capability-boundaries.challenge
   - id: context-engineering
-    outcome:
-      Assemble a bounded, provenance-aware context from instructions, state, data, and
-      tool results while managing conflicts, trust, and compression.
+    outcome: Assemble a bounded, provenance-aware context from instructions, state, data, tools, and skill packages while managing discovery, conflicts, trust, and compression.
     graduate_outcome_ids:
       - knowledge
       - safety
@@ -127,9 +125,7 @@ units:
       - grounded-retrieval.verify-claims-citations-freshness-and-abstention
     challenge_id: grounded-retrieval.challenge
   - id: agent-memory
-    outcome:
-      Design working, episodic, semantic, and procedural memory with controlled writes,
-      retrieval, consolidation, privacy, deletion, and poisoning defenses.
+    outcome: Design working, episodic, semantic, and procedural memory, including versioned skills, with controlled writes, retrieval, consolidation, privacy, deletion, and poisoning defenses.
     graduate_outcome_ids:
       - knowledge
       - safety
@@ -152,9 +148,7 @@ units:
       - agentic-design-patterns.encode-control-in-state-machines-and-graphs
     challenge_id: agentic-design-patterns.challenge
   - id: framework-adapters
-    outcome:
-      Explain what agent frameworks provide, migrate a stable application through adapters,
-      and quantify abstraction benefits and costs.
+    outcome: Distinguish frameworks, agent harnesses, and complete assistant applications; migrate a stable application through adapters and quantify abstraction benefits and costs.
     graduate_outcome_ids:
       - interoperability
     lesson_ids:
@@ -164,9 +158,7 @@ units:
       - framework-adapters.compare-a-lightweight-alternative
     challenge_id: framework-adapters.challenge
   - id: open-protocols
-    outcome:
-      Explain and implement MCP and agent-to-agent interfaces with authentication, lifecycle
-      management, versioning, and hostile-component defenses.
+    outcome: Explain and implement pinned MCP and A2A interfaces with authorization, lifecycle management, declared conformance limits, and hostile-component defenses; distinguish protocols from skill packaging.
     graduate_outcome_ids:
       - interoperability
       - safety
@@ -264,9 +256,7 @@ units:
       - browser-multimodal-agents.defend-against-visual-injection-and-unsafe-ui-actions
     challenge_id: browser-multimodal-agents.challenge
   - id: durable-execution
-    outcome:
-      Preserve progress across crashes, retries, duplicates, delays, and changing external
-      state without repeating irreversible actions.
+    outcome: Preserve verified progress across process and context resets, retries, duplicate triggers, delays, and changing external state without repeating irreversible actions.
     graduate_outcome_ids:
       - reliability
     lesson_ids:
@@ -276,9 +266,7 @@ units:
       - durable-execution.wait-for-humans-and-external-events
     challenge_id: durable-execution.challenge
   - id: agent-improvement
-    outcome:
-      Optimize prompts, policies, and small models with train/validation/test separation
-      while detecting overfitting, leakage, reward hacking, and unsafe self-modification.
+    outcome: Optimize prompts, procedures, policies, and small models with train/validation/test separation while detecting overfitting, leakage, reward hacking, and unsafe self-modification.
     graduate_outcome_ids:
       - evaluation
       - safety
@@ -314,9 +302,7 @@ units:
       - agent-services.isolate-tenants-tasks-and-resources
     challenge_id: agent-services.challenge
   - id: release-and-recovery
-    outcome:
-      Version every behavior-shaping artifact, enforce CI gates, release gradually, monitor
-      SLOs and drift, and respond to incidents with rollback and learning.
+    outcome: Version every behavior-shaping artifact, including skills and approved memory state; enforce CI gates, release gradually, monitor SLOs and drift, and respond to incidents with rollback and learning.
     graduate_outcome_ids:
       - operations
     lesson_ids:

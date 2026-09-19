@@ -1,7 +1,6 @@
 ---
 title: Engineer Context Instead of Concatenating Prompts Overview
-description: Assemble a bounded, provenance-aware context from instructions, state, data,
-  and tool results while managing conflicts, trust, and compression.
+description: Assemble a bounded, provenance-aware context from instructions, state, data, tools, and skill packages while managing discovery, conflicts, trust, and compression.
 content_kind: unit-overview
 content_status: planned
 order: 0
@@ -22,7 +21,7 @@ copy, not a completed instructional lab.
 
 ## 1. What you will be able to do
 
-Assemble a bounded, provenance-aware context from instructions, state, data, and tool results while managing conflicts, trust, and compression.
+Assemble a bounded, provenance-aware context from instructions, state, data, tools, and skill packages while managing discovery, conflicts, trust, and compression.
 
 **Phase:** II. Tools and knowledge  
 **Overview:** 20–40 minutes  
@@ -44,21 +43,21 @@ Keep credentials and personal data out of notebooks, traces, and submitted artif
 | Lesson | Evidence you will preserve |
 |---|---|
 | 1. Classify Context by Purpose and Trust | Context manifest with source and trust labels. |
-| 2. Select and Order the Working Set | Context-selection evaluation. |
+| 2. Select and Order the Working Set | Context-selection evaluation with discovery recall, token accounting, and task-success tradeoffs. |
 | 3. Compress Without Inventing State | Compression fidelity tests. |
 | 4. Detect Conflict, Contamination, and Context Rot | Adversarial context suite. |
 
 ### 1. Classify Context by Purpose and Trust
 
-Separate system policy, developer instruction, user request, retrieved data, tool output, memory, and generated scratch artifacts. Resolve priority without treating untrusted content as instruction.
+Separate system policy, developer instruction, user request, retrieved data, tool output, memory, and generated artifacts. Classify repository instruction files and SKILL.md procedures by provenance; neither a filename nor skill metadata grants execution authority.
 
 ### 2. Select and Order the Working Set
 
-Implement relevance, recency, authority, diversity, and token-budget rules. Test lost-in-the-middle behavior and ordering sensitivity.
+Implement relevance, recency, authority, diversity, and token-budget rules. Compare eager loading with tool discovery and progressive disclosure of skill descriptions, instructions, and references; measure ordering sensitivity and missed capabilities as well as token savings.
 
 ### 3. Compress Without Inventing State
 
-Compare truncation, extractive selection, structured summaries, and hierarchical compression. Preserve decisions, unresolved questions, provenance, and constraints across compression.
+Compare truncation, extractive selection, structured summaries, and hierarchical compression. Preserve decisions, unresolved questions, provenance, and constraints across context resets; distinguish a readable handoff from authoritative runtime state.
 
 ### 4. Detect Conflict, Contamination, and Context Rot
 

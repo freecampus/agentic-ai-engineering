@@ -44,6 +44,7 @@ into that activated Conda environment—not a separate virtual environment.
 conda env create -f conda.yaml  # First setup only
 conda activate fc-agentic
 python scripts/check_environment.py
+poetry check --lock --strict
 poetry install --all-extras --with docs
 python scripts/check_environment.py
 poetry run python -m freecampus_agents.lab
@@ -84,23 +85,21 @@ The core package has no runtime dependencies; notebook widgets are an extra.
 Hosted Colab notebooks use their supplied runtime and bundled course package;
 they do not require a local Conda installation.
 
-### Lockfile bootstrap still required
+### Lockfile validation and release evidence
 
-The Poetry migration attempted `poetry lock`, but connections to PyPI failed, so
-**`poetry.lock` has not been generated**. Top-level version bounds are declared,
-but transitive reproducibility is not yet established. Before a reproducible
-release:
+A tracked `poetry.lock` exists. The initial migration's registry failure is
+historical; do not infer the current lock's validity from that record. Run
+`poetry check --lock --strict` in the activated Conda environment before
+installation. A stale lock must be deliberately regenerated and reviewed, never
+hand-edited or copied from another course.
 
-1. Run `poetry lock` with registry access and inspect the resulting lockfile.
-2. Include `poetry.lock` in version control; do not copy the other course's
-   lock.
-3. Add `poetry check --lock --strict` before installation in both CI workflows.
-4. Validate clean installations using `poetry install --all-extras --with docs`
-   on supported platforms. Installation uses the committed lockfile once
-   present.
-
-CI currently resolves dependencies during installation rather than pretending a
-missing lockfile exists. See
+Before claiming a reproducible release, review/integrate dependency changes,
+require explicit `poetry check --lock --strict` before installation in both CI
+workflows, and record clean supported-platform installations using
+`poetry install --all-extras --with docs`. Current workflows still use the older
+metadata-only check; adding explicit lock enforcement remains dependency-release
+work. A valid lock alone does not prove clean installation or cross-platform
+compatibility. See
 [Poetry's basic usage](https://python-poetry.org/docs/basic-usage/) for lockfile
 behavior and
 [dependency groups](https://python-poetry.org/docs/managing-dependencies/) for
@@ -176,7 +175,7 @@ and learner self-reported progress remain separate.
 ```bash
 conda activate fc-agentic
 python scripts/check_environment.py
-poetry check --strict
+poetry check --lock --strict
 poetry run pytest -q
 poetry run ruff check src tests scripts
 poetry run ruff format --check src tests scripts

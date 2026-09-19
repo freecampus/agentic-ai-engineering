@@ -1,7 +1,6 @@
 ---
 title: Connect Agents Through Open Protocols Overview
-description: Explain and implement MCP and agent-to-agent interfaces with authentication,
-  lifecycle management, versioning, and hostile-component defenses.
+description: Explain and implement pinned MCP and A2A interfaces with authorization, lifecycle management, declared conformance limits, and hostile-component defenses; distinguish protocols from skill packaging.
 content_kind: unit-overview
 content_status: planned
 order: 0
@@ -22,7 +21,7 @@ copy, not a completed instructional lab.
 
 ## 1. What you will be able to do
 
-Explain and implement MCP and agent-to-agent interfaces with authentication, lifecycle management, versioning, and hostile-component defenses.
+Explain and implement pinned MCP and A2A interfaces with authorization, lifecycle management, declared conformance limits, and hostile-component defenses; distinguish protocols from skill packaging.
 
 **Phase:** III. Architecture  
 **Overview:** 20–40 minutes  
@@ -45,12 +44,12 @@ Keep credentials and personal data out of notebooks, traces, and submitted artif
 |---|---|
 | 1. Separate Protocol, Transport, Runtime, and Framework | Layered interoperability diagram. |
 | 2. Build and Inspect an MCP Server | Protocol transcript and conformance tests. |
-| 3. Consume MCP with Explicit Trust | Malicious-server test suite. |
-| 4. Exchange Tasks Between Agents | Cross-agent lifecycle trace. |
+| 3. Consume MCP with Explicit Trust | Malicious-server and authorization-boundary test suite with denied-action transcripts. |
+| 4. Exchange Tasks Between Agents | Cross-agent lifecycle trace and a versioned supported/unsupported-feature matrix. |
 
 ### 1. Separate Protocol, Transport, Runtime, and Framework
 
-Map OpenAPI, JSON Schema, MCP, A2A, HTTP, stdio, and event transport roles. Diagnose integration diagrams that confuse discovery with execution or authentication.
+Map OpenAPI, JSON Schema, MCP, A2A, HTTP, stdio, and event transport roles. Distinguish Agent Skills instruction packaging from callable tools and task protocols; diagnose diagrams that confuse discovery, execution, and authorization.
 
 ### 2. Build and Inspect an MCP Server
 
@@ -58,11 +57,11 @@ Expose a read-only tool and resource through a local MCP server. Inspect initial
 
 ### 3. Consume MCP with Explicit Trust
 
-Build a client that validates server identity, capabilities, schemas, outputs, and permissions. Test tool-description poisoning and untrusted content.
+Build a client that validates server identity, capabilities, schemas, outputs, and permissions. Test tool-description poisoning and capability changes; use a local HTTP authorization fixture to check token audience, consent, and rejection of token passthrough separately from stdio process trust.
 
 ### 4. Exchange Tasks Between Agents
 
-Implement discovery, task submission, progress, artifacts, cancellation, and terminal status through an A2A-style interface. Preserve caller identity and authorization context.
+Implement discovery, task submission, progress, artifacts, cancellation, and terminal status through an explicitly declared subset of a pinned A2A revision. Preserve caller identity and authorization context; distinguish an educational simulation from demonstrated interoperability.
 
 ## 4. Challenge preview: Build a Secure Interoperability Boundary
 

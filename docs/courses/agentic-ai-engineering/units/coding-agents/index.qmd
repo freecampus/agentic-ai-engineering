@@ -58,7 +58,7 @@ Clarify acceptance criteria, reproduce the problem, identify likely files and te
 
 ### 3. Edit, Test, and Review in Isolation
 
-Apply patches in a branch/worktree or sandbox, run focused then broad checks, inspect diffs, and avoid unrelated changes. Handle generated files and formatting deliberately.
+Apply patches in a branch/worktree and a separately enforced execution boundary, run focused then broad checks, and inspect diffs. Compare individual tool calls with bounded programmatic tool composition; preserve per-operation authorization, timeouts, cancellation, and audit events.
 
 ### 4. Evaluate Coding Agents Beyond Passing Tests
 

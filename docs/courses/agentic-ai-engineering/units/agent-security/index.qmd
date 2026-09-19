@@ -58,11 +58,11 @@ Treat external text as data, constrain tool capabilities, enforce policy outside
 
 ### 3. Sandbox Code, Browsing, and Network Access
 
-Apply filesystem, process, network, resource, and credential boundaries with cross-platform local fallbacks. Block path traversal, SSRF, shell injection, and unsafe downloads.
+Apply filesystem, process, network, resource, and credential boundaries with cross-platform local fallbacks. Block path traversal, SSRF, shell injection, and unsafe downloads; audit OpenClaw sandbox and tool-policy boundaries without assuming a default install is isolated.
 
 ### 4. Protect Identity, Secrets, Tenants, and Dependencies
 
-Use scoped short-lived credentials, delegated identity, secret stores, tenant isolation, dependency pinning, SBOMs, signatures, and vulnerability response.
+Use scoped short-lived credentials, delegated identity, secret stores, tenant isolation, dependency pinning, SBOMs, signatures, and vulnerability response. Treat third-party skills and plugins as supply-chain inputs with provenance, review, revocation, and a tested permission boundary.
 
 ## 4. Challenge preview: Red-Team and Repair an Exposed Agent
 

@@ -22,6 +22,10 @@ simplest adequate architecture; autonomy must earn its complexity.
   sequence, outcomes, effort, milestone/challenge relationships, and counts.
 - `docs/courses/agentic-ai-engineering/_outcomes.yml` maps every planned lesson
   and challenge to unit and graduate outcomes.
+- `docs/courses/agentic-ai-engineering/_technology.yml` records dated primary
+  sources, owning lessons, review deadlines, and unvalidated/validated
+  integration state. It is research metadata, not extra lessons or runtime
+  dependencies.
 - QMD files are the canonical teaching sources. Notebooks are generated.
 - `docs/_quarto.yml` owns visible navigation. It must link only to existing
   pages.
@@ -150,6 +154,16 @@ custom CSS.
 - Compare against non-agentic baselines and do not treat a single success as
   evidence of reliability. Keep held-out evaluation and safety gates
   independent.
+- Teach skills, agent harnesses, and current products through course fixtures
+  first. OpenClaw/Hermes live integrations are optional after Units 15–16; use
+  disposable verified isolation, synthetic identities, restricted egress/mounts,
+  reviewed procedures, and enforced budgets. Never equate a skill update with
+  model training, a worktree with a sandbox, or replay with demonstrated
+  security.
+- Review technology-register entries every 90 days, before publication, and on
+  relevant security/breaking/license changes. Record exact tested versions and
+  review evidence before declaring an integration validated; withhold unsafe or
+  unmaintained examples. See the public contributing guide for the full policy.
 
 ## Metadata and shared includes
 
@@ -238,18 +252,19 @@ Pre-commit hooks must use `language: system`, with dependencies supplied by the
 Conda/Poetry toolchain, not isolated hook environments. Preserve existing unused
 environment directories; never delete them automatically.
 
-The restricted environment could not connect to PyPI during `poetry lock`. With
-registry access, generate and inspect `poetry.lock`, version it, and require
-`poetry check --lock --strict` before installation in both workflows. Until
-then, CI resolves declared ranges and transitive reproducibility is not
-established. Do not fabricate a lockfile or borrow the reference course's
-dependency lock.
+A tracked `poetry.lock` exists; the initial registry failure is historical.
+Check its agreement with `pyproject.toml` using `poetry check --lock --strict`
+before installation. Preserve unrelated user lockfile changes; regenerate only
+as deliberate dependency maintenance and inspect the result. Explicit CI lock
+enforcement and clean supported-platform installation evidence remain release
+work. A passing metadata check is not proof of reproducibility. Do not fabricate
+a lockfile or borrow the reference course's dependency lock.
 
 ```bash
 conda env create -f conda.yaml  # First setup only
 conda activate fc-agentic
 python scripts/check_environment.py
-poetry check --strict
+poetry check --lock --strict
 poetry install --all-extras --with docs
 python scripts/check_environment.py
 poetry run pytest -q

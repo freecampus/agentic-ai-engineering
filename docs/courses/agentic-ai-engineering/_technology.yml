@@ -1,0 +1,188 @@
+# Documentation research, not proof of tested integrations or additional lessons.
+schema_version: 1
+course_id: agentic-ai-engineering
+review_interval_days: 90
+review_triggers:
+  - before-authoring-or-publication
+  - security-advisory
+  - breaking-change
+  - deprecation
+  - license-or-provider-policy-change
+entries:
+  - id: agent-skills
+    role: mechanism-reference
+    owner: course maintainers
+    documentation_reviewed_on: "2026-09-19"
+    review_due_on: "2026-12-18"
+    source_revision: null
+    integration_status: not-validated
+    validated_version: null
+    validation_evidence: []
+    required_live_dependency: false
+    lesson_ids:
+      - context-engineering.classify-context-by-purpose-and-trust
+      - context-engineering.select-and-order-the-working-set
+      - agent-memory.separate-memory-types-and-lifecycles
+      - agent-memory.decide-what-may-be-written
+      - open-protocols.separate-protocol-transport-runtime-and-framework
+      - agent-security.protect-identity-secrets-tenants-and-dependencies
+    primary_sources:
+      - https://agentskills.io/specification
+    notes:
+      Portable procedural packages; allowed-tools support is experimental, not universal
+      enforcement.
+  - id: openclaw
+    role: optional-case-study
+    owner: course maintainers
+    documentation_reviewed_on: "2026-09-19"
+    review_due_on: "2026-12-18"
+    source_revision: null
+    integration_status: not-validated
+    validated_version: null
+    validation_evidence: []
+    required_live_dependency: false
+    lesson_ids:
+      - framework-adapters.inspect-what-a-framework-does-for-you
+      - agent-security.sandbox-code-browsing-and-network-access
+      - durable-execution.use-leases-heartbeats-deadlines-and-cancellation
+      - agent-services.isolate-tenants-tasks-and-resources
+      - release-and-recovery.define-slos-alerts-runbooks-and-postmortems
+    primary_sources:
+      - https://docs.openclaw.ai/concepts/architecture
+      - https://docs.openclaw.ai/gateway/sandboxing
+      - https://docs.openclaw.ai/gateway/security
+    notes:
+      Static architecture/configuration early; optional isolated integration only after
+      Units 15–16. One trusted boundary per gateway, not hostile multi-tenancy.
+  - id: hermes-agent
+    role: optional-case-study
+    owner: course maintainers
+    documentation_reviewed_on: "2026-09-19"
+    review_due_on: "2026-12-18"
+    source_revision: null
+    integration_status: not-validated
+    validated_version: null
+    validation_evidence: []
+    required_live_dependency: false
+    lesson_ids:
+      - agent-memory.separate-memory-types-and-lifecycles
+      - agent-memory.decide-what-may-be-written
+      - framework-adapters.inspect-what-a-framework-does-for-you
+      - agent-improvement.optimize-prompts-and-programs-on-training-data
+      - agent-improvement.detect-reward-hacking-and-unsafe-self-improvement
+      - release-and-recovery.version-models-prompts-tools-policies-and-data
+    primary_sources:
+      - https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
+      - https://hermes-agent.nousresearch.com/docs/user-guide/features/memory
+      - https://hermes-agent.nousresearch.com/docs/user-guide/security
+      - https://hermes-agent.nousresearch.com/docs/developer-guide/architecture
+    notes:
+      Nous Research Hermes Agent. Compare no skill, reviewed skill, and generated skill;
+      procedural changes are not weight training or proven gains.
+  - id: mcp
+    role: mechanism-reference
+    owner: course maintainers
+    documentation_reviewed_on: "2026-09-19"
+    review_due_on: "2026-12-18"
+    source_revision: "2026-07-28"
+    integration_status: not-validated
+    validated_version: null
+    validation_evidence: []
+    required_live_dependency: false
+    lesson_ids:
+      - open-protocols.separate-protocol-transport-runtime-and-framework
+      - open-protocols.consume-mcp-with-explicit-trust
+    primary_sources:
+      - https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices
+    notes:
+      Match SDK/transport to the selected specification; synthetic authorization fixtures
+      are not a production identity provider.
+  - id: a2a
+    role: mechanism-reference
+    owner: course maintainers
+    documentation_reviewed_on: "2026-09-19"
+    review_due_on: "2026-12-18"
+    source_revision: 1.0.0
+    integration_status: not-validated
+    validated_version: null
+    validation_evidence: []
+    required_live_dependency: false
+    lesson_ids:
+      - open-protocols.separate-protocol-transport-runtime-and-framework
+      - open-protocols.exchange-tasks-between-agents
+    primary_sources:
+      - https://a2a-protocol.org/v1.0.0/specification/
+    notes: Declare the supported subset and distinguish simulation from tested interoperability.
+  - id: long-running-harnesses
+    role: mechanism-reference
+    owner: course maintainers
+    documentation_reviewed_on: "2026-09-19"
+    review_due_on: "2026-12-18"
+    source_revision: null
+    integration_status: not-validated
+    validated_version: null
+    validation_evidence: []
+    required_live_dependency: false
+    lesson_ids:
+      - minimal-agent-runtime.implement-the-decide-act-observe-loop
+      - context-engineering.compress-without-inventing-state
+      - durable-execution.checkpoint-serializable-state-and-artifacts
+    primary_sources:
+      - https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+    notes:
+      Engineering hypothesis for verified progress across contexts; no commercial harness
+      required.
+  - id: advanced-tool-use
+    role: mechanism-reference
+    owner: course maintainers
+    documentation_reviewed_on: "2026-09-19"
+    review_due_on: "2026-12-18"
+    source_revision: null
+    integration_status: not-validated
+    validated_version: null
+    validation_evidence: []
+    required_live_dependency: false
+    lesson_ids:
+      - tool-capability-boundaries.write-tool-contracts-models-can-use
+      - context-engineering.select-and-order-the-working-set
+      - coding-agents.edit-test-and-review-in-isolation
+    primary_sources:
+      - https://www.anthropic.com/engineering/advanced-tool-use
+    notes:
+      Discovery first; programmatic composition only after execution isolation. Vendor
+      measurements require independent course ablations.
+  - id: agent-evaluations
+    role: mechanism-reference
+    owner: course maintainers
+    documentation_reviewed_on: "2026-09-19"
+    review_due_on: "2026-12-18"
+    source_revision: null
+    integration_status: not-validated
+    validated_version: null
+    validation_evidence: []
+    required_live_dependency: false
+    lesson_ids:
+      - agent-evaluation.define-metrics-from-the-task-contract
+      - agent-evaluation.compare-systems-with-uncertainty
+    primary_sources:
+      - https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
+    notes:
+      Verify original metric definitions; grade environment outcomes and isolate model/harness
+      changes.
+  - id: tgi
+    role: legacy-comparison
+    owner: course maintainers
+    documentation_reviewed_on: "2026-09-19"
+    review_due_on: "2026-12-18"
+    source_revision: null
+    integration_status: not-validated
+    validated_version: null
+    validation_evidence: []
+    required_live_dependency: false
+    lesson_ids:
+      - open-model-inference.serve-models-for-throughput
+    primary_sources:
+      - https://huggingface.co/docs/text-generation-inference/main/index
+    notes:
+      Maintenance-only per reviewed upstream notice. Verify a maintained vLLM/SGLang release
+      for a new lab; no serving engine validated yet.

@@ -35,6 +35,10 @@ add autonomy only when evidence justifies it.
 - **Draft effort:** 240–360 hours plus optional extensions. Activity estimates,
   milestone overlap, and the 40–70 hour capstone need calibration during authoring;
   this is not a validated total workload.
+- Adding the current activity ranges without overlap deductions gives roughly
+  261–462 hours before cumulative reviews. This arithmetic is a reconciliation
+  warning, not a new validated estimate; learner pilots must resolve the range
+  and pacing before release.
 - Standard: 30–36 weeks at 7–10 hours/week; intensive: 18–22 weeks at 12–16 hours/week;
   extended: 9–12 months. Adjust to actual lab time, not reading speed.
 
@@ -74,6 +78,13 @@ add autonomy only when evidence justifies it.
 Use deterministic fixtures first. Inspect actions, state, tool results, traces,
 metrics, and concise external rationales—not private chain-of-thought. Network
 experiments will have fixture fallbacks; paid providers are never needed for core work.
+
+Planned case studies include OpenClaw for persistent-assistant architecture and
+operations, and Hermes Agent for memory and reusable procedures. Learn the
+mechanisms through course fixtures first; live integrations are optional after
+the safety prerequisites, not required accounts or validated labs today. New
+tools must earn adoption through the same baselines, tests, and permission
+boundaries as the framework-free implementation.
 
 ## Projects and recognition
 

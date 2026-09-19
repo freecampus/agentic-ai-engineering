@@ -246,10 +246,12 @@ courses:
             order: 20
             status: planned
             path: courses/agentic-ai-engineering/units/minimal-agent-runtime/implement-the-decide-act-observe-loop.qmd
-            summary:
-              Write the smallest complete agent loop in plain Python. Trace normal execution,
-              a tool error, and a model request for an unavailable capability.
-            evidence: tested runtime with fake model and tool ports.
+            summary: >-
+              Write the smallest complete agent loop in plain Python. Identify the model,
+              agent harness, tools, and environment separately; trace normal execution, a
+              tool error, and an unavailable capability.
+            evidence: >-
+              tested runtime with fake model and tool ports.
           - id: minimal-agent-runtime.make-termination-and-budgets-enforceable
             title: Make Termination and Budgets Enforceable
             order: 30
@@ -356,11 +358,13 @@ courses:
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/tool-capability-boundaries/write-tool-contracts-models-can-use.qmd
-            summary:
-              Design names, descriptions, schemas, examples, preconditions, and postconditions
-              that separate model-facing affordances from implementation details. Measure how ambiguous
-              schemas affect tool selection.
-            evidence: contract tests and selection evaluation.
+            summary: >-
+              Design names, descriptions, schemas, examples, preconditions, and
+              postconditions that separate model-facing affordances from implementation
+              details. Measure ambiguous tool selection and distinguish discovering a tool
+              from permission to execute it.
+            evidence: >-
+              contract tests and selection evaluation.
           - id: tool-capability-boundaries.normalize-errors-timeouts-and-cancellation
             title: Normalize Errors, Timeouts, and Cancellation
             order: 20
@@ -408,9 +412,7 @@ courses:
         overview: courses/agentic-ai-engineering/units/context-engineering/index.qmd
         prerequisite_unit_ids:
           - tool-capability-boundaries
-        outcome:
-          Assemble a bounded, provenance-aware context from instructions, state, data,
-          and tool results while managing conflicts, trust, and compression.
+        outcome: Assemble a bounded, provenance-aware context from instructions, state, data, tools, and skill packages while managing discovery, conflicts, trust, and compression.
         estimated_effort: 8–14 hours
         lessons:
           - id: context-engineering.classify-context-by-purpose-and-trust
@@ -418,30 +420,38 @@ courses:
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/context-engineering/classify-context-by-purpose-and-trust.qmd
-            summary:
+            summary: >-
               Separate system policy, developer instruction, user request, retrieved data,
-              tool output, memory, and generated scratch artifacts. Resolve priority without treating
-              untrusted content as instruction.
-            evidence: context manifest with source and trust labels.
+              tool output, memory, and generated artifacts. Classify repository instruction
+              files and SKILL.md procedures by provenance; neither a filename nor skill
+              metadata grants execution authority.
+            evidence: >-
+              context manifest with source and trust labels.
           - id: context-engineering.select-and-order-the-working-set
             title: Select and Order the Working Set
             order: 20
             status: planned
             path: courses/agentic-ai-engineering/units/context-engineering/select-and-order-the-working-set.qmd
-            summary:
+            summary: >-
               Implement relevance, recency, authority, diversity, and token-budget rules.
-              Test lost-in-the-middle behavior and ordering sensitivity.
-            evidence: context-selection evaluation.
+              Compare eager loading with tool discovery and progressive disclosure of skill
+              descriptions, instructions, and references; measure ordering sensitivity and
+              missed capabilities as well as token savings.
+            evidence: >-
+              context-selection evaluation with discovery recall, token accounting, and
+              task-success tradeoffs.
           - id: context-engineering.compress-without-inventing-state
             title: Compress Without Inventing State
             order: 30
             status: planned
             path: courses/agentic-ai-engineering/units/context-engineering/compress-without-inventing-state.qmd
-            summary:
-              Compare truncation, extractive selection, structured summaries, and hierarchical
-              compression. Preserve decisions, unresolved questions, provenance, and constraints
-              across compression.
-            evidence: compression fidelity tests.
+            summary: >-
+              Compare truncation, extractive selection, structured summaries, and
+              hierarchical compression. Preserve decisions, unresolved questions,
+              provenance, and constraints across context resets; distinguish a readable
+              handoff from authoritative runtime state.
+            evidence: >-
+              compression fidelity tests.
           - id: context-engineering.detect-conflict-contamination-and-context-rot
             title: Detect Conflict, Contamination, and Context Rot
             order: 40
@@ -529,9 +539,7 @@ courses:
         overview: courses/agentic-ai-engineering/units/agent-memory/index.qmd
         prerequisite_unit_ids:
           - grounded-retrieval
-        outcome:
-          Design working, episodic, semantic, and procedural memory with controlled writes,
-          retrieval, consolidation, privacy, deletion, and poisoning defenses.
+        outcome: Design working, episodic, semantic, and procedural memory, including versioned skills, with controlled writes, retrieval, consolidation, privacy, deletion, and poisoning defenses.
         estimated_effort: 8–14 hours
         lessons:
           - id: agent-memory.separate-memory-types-and-lifecycles
@@ -539,20 +547,24 @@ courses:
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/agent-memory/separate-memory-types-and-lifecycles.qmd
-            summary:
+            summary: >-
               Map working state, event history, user facts, learned procedures, and cached
-              artifacts to distinct stores and lifetimes. Avoid treating the entire transcript as
-              memory.
-            evidence: memory architecture and retention table.
+              artifacts to distinct stores and lifetimes. Represent reusable procedures as
+              versioned skills, separate them from factual memory and model-weight updates,
+              and avoid treating the entire transcript as memory.
+            evidence: >-
+              memory architecture and retention table.
           - id: agent-memory.decide-what-may-be-written
             title: Decide What May Be Written
             order: 20
             status: planned
             path: courses/agentic-ai-engineering/units/agent-memory/decide-what-may-be-written.qmd
-            summary:
-              Implement consent, validation, salience, confidence, source, TTL, and sensitivity
-              policies. Reject speculative or sensitive facts from automatic long-term storage.
-            evidence: memory-write policy tests.
+            summary: >-
+              Implement consent, validation, salience, confidence, source, TTL, and
+              sensitivity policies. Reject speculative or sensitive facts and stage
+              generated skill changes for review before they can affect future tasks.
+            evidence: >-
+              memory-write policy tests.
           - id: agent-memory.retrieve-consolidate-and-resolve-contradictions
             title: Retrieve, Consolidate, and Resolve Contradictions
             order: 30
@@ -647,9 +659,7 @@ courses:
         overview: courses/agentic-ai-engineering/units/framework-adapters/index.qmd
         prerequisite_unit_ids:
           - agentic-design-patterns
-        outcome:
-          Explain what agent frameworks provide, migrate a stable application through adapters,
-          and quantify abstraction benefits and costs.
+        outcome: Distinguish frameworks, agent harnesses, and complete assistant applications; migrate a stable application through adapters and quantify abstraction benefits and costs.
         estimated_effort: 8–14 hours
         lessons:
           - id: framework-adapters.inspect-what-a-framework-does-for-you
@@ -657,10 +667,13 @@ courses:
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/framework-adapters/inspect-what-a-framework-does-for-you.qmd
-            summary:
+            summary: >-
               Trace model messages, state serialization, tool dispatch, retries, callbacks,
-              and persistence through a framework. Identify defaults that alter behavior.
-            evidence: framework execution map.
+              and persistence through a framework. Distinguish framework, agent harness, and
+              complete assistant application using OpenClaw and Hermes architecture case
+              studies; identify defaults that alter behavior.
+            evidence: >-
+              framework execution map.
           - id: framework-adapters.define-ports-for-models-tools-state-and-tracing
             title: Define Ports for Models, Tools, State, and Tracing
             order: 20
@@ -707,9 +720,7 @@ courses:
         overview: courses/agentic-ai-engineering/units/open-protocols/index.qmd
         prerequisite_unit_ids:
           - framework-adapters
-        outcome:
-          Explain and implement MCP and agent-to-agent interfaces with authentication,
-          lifecycle management, versioning, and hostile-component defenses.
+        outcome: Explain and implement pinned MCP and A2A interfaces with authorization, lifecycle management, declared conformance limits, and hostile-component defenses; distinguish protocols from skill packaging.
         estimated_effort: 8–14 hours
         lessons:
           - id: open-protocols.separate-protocol-transport-runtime-and-framework
@@ -717,10 +728,13 @@ courses:
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/open-protocols/separate-protocol-transport-runtime-and-framework.qmd
-            summary:
+            summary: >-
               Map OpenAPI, JSON Schema, MCP, A2A, HTTP, stdio, and event transport roles.
-              Diagnose integration diagrams that confuse discovery with execution or authentication.
-            evidence: layered interoperability diagram.
+              Distinguish Agent Skills instruction packaging from callable tools and task
+              protocols; diagnose diagrams that confuse discovery, execution, and
+              authorization.
+            evidence: >-
+              layered interoperability diagram.
           - id: open-protocols.build-and-inspect-an-mcp-server
             title: Build and Inspect an MCP Server
             order: 20
@@ -735,20 +749,27 @@ courses:
             order: 30
             status: planned
             path: courses/agentic-ai-engineering/units/open-protocols/consume-mcp-with-explicit-trust.qmd
-            summary:
+            summary: >-
               Build a client that validates server identity, capabilities, schemas, outputs,
-              and permissions. Test tool-description poisoning and untrusted content.
-            evidence: malicious-server test suite.
+              and permissions. Test tool-description poisoning and capability changes; use a
+              local HTTP authorization fixture to check token audience, consent, and
+              rejection of token passthrough separately from stdio process trust.
+            evidence: >-
+              malicious-server and authorization-boundary test suite with denied-action
+              transcripts.
           - id: open-protocols.exchange-tasks-between-agents
             title: Exchange Tasks Between Agents
             order: 40
             status: planned
             path: courses/agentic-ai-engineering/units/open-protocols/exchange-tasks-between-agents.qmd
-            summary:
+            summary: >-
               Implement discovery, task submission, progress, artifacts, cancellation, and
-              terminal status through an A2A-style interface. Preserve caller identity and authorization
-              context.
-            evidence: cross-agent lifecycle trace.
+              terminal status through an explicitly declared subset of a pinned A2A
+              revision. Preserve caller identity and authorization context; distinguish an
+              educational simulation from demonstrated interoperability.
+            evidence: >-
+              cross-agent lifecycle trace and a versioned supported/unsupported-feature
+              matrix.
         challenge:
           id: open-protocols.challenge
           title: Build a Secure Interoperability Boundary
@@ -836,10 +857,13 @@ courses:
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/agent-evaluation/define-metrics-from-the-task-contract.qmd
-            summary:
+            summary: >-
               Translate success and harm into observable measures. Separate final-answer
-              quality from trajectory correctness, policy compliance, and resource use.
-            evidence: metric specification with gaming risks.
+              quality from trajectory correctness, policy compliance, and resource use;
+              verify actual environment state rather than trusting an agent claim that an
+              action completed.
+            evidence: >-
+              metric specification with gaming risks.
           - id: agent-evaluation.build-representative-evaluation-data
             title: Build Representative Evaluation Data
             order: 20
@@ -863,10 +887,14 @@ courses:
             order: 40
             status: planned
             path: courses/agentic-ai-engineering/units/agent-evaluation/compare-systems-with-uncertainty.qmd
-            summary:
-              Run repeated trials, estimate confidence intervals, analyze paired differences,
-              and avoid declaring tiny noisy gains. Construct quality–latency–cost frontiers.
-            evidence: reproducible comparison report.
+            summary: >-
+              Run repeated trials, estimate confidence intervals, analyze paired
+              differences, and avoid declaring tiny noisy gains. Distinguish pass@k from
+              pass^k, reset trial state, and separate model changes from harness changes
+              when constructing quality-latency-cost frontiers.
+            evidence: >-
+              reproducible paired comparison with repeated-success metrics, uncertainty, and
+              model/harness ablations.
         challenge:
           id: agent-evaluation.challenge
           title: Build an Evaluation Harness Before Improving the Agent
@@ -974,20 +1002,25 @@ courses:
             order: 30
             status: planned
             path: courses/agentic-ai-engineering/units/agent-security/sandbox-code-browsing-and-network-access.qmd
-            summary:
+            summary: >-
               Apply filesystem, process, network, resource, and credential boundaries with
-              cross-platform local fallbacks. Block path traversal, SSRF, shell injection, and unsafe
-              downloads.
-            evidence: sandbox escape test results.
+              cross-platform local fallbacks. Block path traversal, SSRF, shell injection,
+              and unsafe downloads; audit OpenClaw sandbox and tool-policy boundaries
+              without assuming a default install is isolated.
+            evidence: >-
+              sandbox escape test results.
           - id: agent-security.protect-identity-secrets-tenants-and-dependencies
             title: Protect Identity, Secrets, Tenants, and Dependencies
             order: 40
             status: planned
             path: courses/agentic-ai-engineering/units/agent-security/protect-identity-secrets-tenants-and-dependencies.qmd
-            summary:
+            summary: >-
               Use scoped short-lived credentials, delegated identity, secret stores, tenant
               isolation, dependency pinning, SBOMs, signatures, and vulnerability response.
-            evidence: access matrix and supply-chain audit.
+              Treat third-party skills and plugins as supply-chain inputs with provenance,
+              review, revocation, and a tested permission boundary.
+            evidence: >-
+              access matrix and supply-chain audit.
         challenge:
           id: agent-security.challenge
           title: Red-Team and Repair an Exposed Agent
@@ -1094,11 +1127,13 @@ courses:
             order: 30
             status: planned
             path: courses/agentic-ai-engineering/units/coding-agents/edit-test-and-review-in-isolation.qmd
-            summary:
-              Apply patches in a branch/worktree or sandbox, run focused then broad checks,
-              inspect diffs, and avoid unrelated changes. Handle generated files and formatting
-              deliberately.
-            evidence: patch, tests, and review checklist.
+            summary: >-
+              Apply patches in a branch/worktree and a separately enforced execution
+              boundary, run focused then broad checks, and inspect diffs. Compare individual
+              tool calls with bounded programmatic tool composition; preserve per-operation
+              authorization, timeouts, cancellation, and audit events.
+            evidence: >-
+              patch, tests, and review checklist.
           - id: coding-agents.evaluate-coding-agents-beyond-passing-tests
             title: Evaluate Coding Agents Beyond Passing Tests
             order: 40
@@ -1186,9 +1221,7 @@ courses:
         overview: courses/agentic-ai-engineering/units/durable-execution/index.qmd
         prerequisite_unit_ids:
           - browser-multimodal-agents
-        outcome:
-          Preserve progress across crashes, retries, duplicates, delays, and changing external
-          state without repeating irreversible actions.
+        outcome: Preserve verified progress across process and context resets, retries, duplicate triggers, delays, and changing external state without repeating irreversible actions.
         estimated_effort: 8–14 hours
         lessons:
           - id: durable-execution.checkpoint-serializable-state-and-artifacts
@@ -1196,19 +1229,24 @@ courses:
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/durable-execution/checkpoint-serializable-state-and-artifacts.qmd
-            summary:
-              Define checkpoint boundaries, event history, artifact references, schema versions,
-              and resume semantics. Detect non-serializable hidden framework state.
-            evidence: stop/restart parity test.
+            summary: >-
+              Define checkpoint boundaries, event history, artifact references, schema
+              versions, and resume semantics. Test both process restarts and fresh model
+              contexts; reconstruct progress from verified artifacts rather than trusting
+              summaries or hidden framework state.
+            evidence: >-
+              stop/restart and fresh-context parity tests with verified progress artifacts.
           - id: durable-execution.use-leases-heartbeats-deadlines-and-cancellation
             title: Use Leases, Heartbeats, Deadlines, and Cancellation
             order: 20
             status: planned
             path: courses/agentic-ai-engineering/units/durable-execution/use-leases-heartbeats-deadlines-and-cancellation.qmd
-            summary:
+            summary: >-
               Coordinate ownership of long work, detect abandoned workers, renew leases,
-              propagate deadlines, and cancel nested operations safely.
-            evidence: worker-failure simulation.
+              propagate deadlines, and cancel nested operations safely. Distinguish worker-liveness heartbeats from scheduled assistant wakeups; bound duplicate
+              triggers, overlapping runs, and unattended actions.
+            evidence: >-
+              worker-failure simulation.
           - id: durable-execution.survive-duplicate-delivery-and-partial-effects
             title: Survive Duplicate Delivery and Partial Effects
             order: 30
@@ -1245,9 +1283,7 @@ courses:
         overview: courses/agentic-ai-engineering/units/agent-improvement/index.qmd
         prerequisite_unit_ids:
           - durable-execution
-        outcome:
-          Optimize prompts, policies, and small models with train/validation/test separation
-          while detecting overfitting, leakage, reward hacking, and unsafe self-modification.
+        outcome: Optimize prompts, procedures, policies, and small models with train/validation/test separation while detecting overfitting, leakage, reward hacking, and unsafe self-modification.
         estimated_effort: 8–14 hours
         lessons:
           - id: agent-improvement.optimize-prompts-and-programs-on-training-data
@@ -1255,10 +1291,14 @@ courses:
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/agent-improvement/optimize-prompts-and-programs-on-training-data.qmd
-            summary:
+            summary: >-
               Define a search space, objective, constraints, and held-out split. Compare
-              manual iteration with automated prompt/program optimization.
-            evidence: experiment log and untouched test set.
+              manual and automated prompt/program optimization, including a Hermes-inspired
+              experiment with no skills, a fixed reviewed skill, and a generated skill;
+              distinguish procedural adaptation from weight training.
+            evidence: >-
+              optimization log with skill lineage, frozen holdout, ablations, and measured
+              regressions.
           - id: agent-improvement.learn-routing-and-selection-policies
             title: Learn Routing and Selection Policies
             order: 20
@@ -1283,20 +1323,19 @@ courses:
             order: 40
             status: planned
             path: courses/agentic-ai-engineering/units/agent-improvement/detect-reward-hacking-and-unsafe-self-improvement.qmd
-            summary:
+            summary: >-
               Study process/outcome rewards, credit assignment, evaluator exploitation, test
-              tampering, and optimization pressure. Require isolated experiments, immutable gates,
-              and rollback.
-            evidence: reward-hacking case analysis and controls.
+              tampering, and optimization pressure. Stage memory and skill changes in
+              isolated candidates; require immutable external gates, independent approval,
+              revocation, and rollback before promotion.
+            evidence: >-
+              reward-hacking case analysis and controls.
         challenge:
           id: agent-improvement.challenge
           title: Build a Durable Specialist
           status: planned
           path: courses/agentic-ai-engineering/units/agent-improvement/challenge.qmd
-          summary:
-            Create a coding, browser, or data specialist that resumes after failure and
-            improves one measured component using a training split. Demonstrate held-out gains
-            without weakening safety gates.
+          summary: Create a coding, browser, or data specialist that resumes after failure and evaluates a bounded improvement using a training split. Report held-out gains, regressions, or an inconclusive result without weakening safety gates; promote only evidence-backed candidates.
           estimated_time: 90–180 minutes
       - number: 21
         id: open-model-inference
@@ -1335,10 +1374,12 @@ courses:
             order: 30
             status: planned
             path: courses/agentic-ai-engineering/units/open-model-inference/serve-models-for-throughput.qmd
-            summary:
-              Use an open serving engine such as vLLM, TGI, or SGLang; study continuous batching,
-              KV cache, parallelism, and backpressure.
-            evidence: load-test curves and saturation point.
+            summary: >-
+              Use a maintained open serving engine such as vLLM or SGLang; study continuous
+              batching, KV cache, parallelism, and backpressure. Treat maintenance-only TGI
+              as a legacy/migration comparison, not the default new deployment.
+            evidence: >-
+              load-test curves and saturation point.
           - id: open-model-inference.route-cache-and-fall-back-deliberately
             title: Route, Cache, and Fall Back Deliberately
             order: 40
@@ -1403,10 +1444,13 @@ courses:
             order: 40
             status: planned
             path: courses/agentic-ai-engineering/units/agent-services/isolate-tenants-tasks-and-resources.qmd
-            summary:
-              Propagate identity and quotas; partition data and artifacts; restrict worker
-              capabilities; and test cross-tenant access attempts.
-            evidence: isolation test suite.
+            summary: >-
+              Propagate identity and quotas, partition data and artifacts, restrict worker
+              capabilities, and test cross-tenant access attempts. Contrast a trusted
+              single-operator/team assistant gateway with an adversarial multi-tenant
+              service; do not infer isolation from separate sessions.
+            evidence: >-
+              isolation test suite.
         challenge:
           id: agent-services.challenge
           title: Operate a Resumable Multi-User Service
@@ -1424,9 +1468,7 @@ courses:
         overview: courses/agentic-ai-engineering/units/release-and-recovery/index.qmd
         prerequisite_unit_ids:
           - agent-services
-        outcome:
-          Version every behavior-shaping artifact, enforce CI gates, release gradually,
-          monitor SLOs and drift, and respond to incidents with rollback and learning.
+        outcome: Version every behavior-shaping artifact, including skills and approved memory state; enforce CI gates, release gradually, monitor SLOs and drift, and respond to incidents with rollback and learning.
         estimated_effort: 8–14 hours
         lessons:
           - id: release-and-recovery.version-models-prompts-tools-policies-and-data
@@ -1434,10 +1476,14 @@ courses:
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/release-and-recovery/version-models-prompts-tools-policies-and-data.qmd
-            summary:
-              Create a run manifest linking code commit, environment, model, prompt, schemas,
-              tool versions, policies, and dataset. Reproduce a prior evaluation from the manifest.
-            evidence: reproducibility check.
+            summary: >-
+              Create a run manifest linking code, environment, model, harness, prompt,
+              schemas, tool and protocol versions, policies, skills, approved memory
+              snapshots, and dataset. Reproduce a prior evaluation and identify which
+              behavior assets must roll back together.
+            evidence: >-
+              reproducibility check with a complete behavior-asset manifest and rollback
+              dependency map.
           - id: release-and-recovery.build-ci-evaluation-and-security-gates
             title: Build CI Evaluation and Security Gates
             order: 20
@@ -1462,11 +1508,13 @@ courses:
             order: 40
             status: planned
             path: courses/agentic-ai-engineering/units/release-and-recovery/define-slos-alerts-runbooks-and-postmortems.qmd
-            summary:
+            summary: >-
               Set indicators for task success, unsafe action, latency, cost, availability,
-              and escalation. Respond to a simulated incident and write a blameless, evidence-rich
-              postmortem.
-            evidence: incident timeline and corrective actions.
+              and escalation. Respond to a simulated incident, including a poisoned skill
+              update or unattended assistant action, and write an evidence-rich postmortem
+              with containment and rollback.
+            evidence: >-
+              incident timeline and corrective actions.
         challenge:
           id: release-and-recovery.challenge
           title: Stop a Bad Release Before It Spreads

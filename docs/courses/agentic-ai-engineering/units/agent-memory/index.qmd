@@ -1,7 +1,6 @@
 ---
 title: Build Memory That Earns Its Cost Overview
-description: Design working, episodic, semantic, and procedural memory with controlled writes,
-  retrieval, consolidation, privacy, deletion, and poisoning defenses.
+description: Design working, episodic, semantic, and procedural memory, including versioned skills, with controlled writes, retrieval, consolidation, privacy, deletion, and poisoning defenses.
 content_kind: unit-overview
 content_status: planned
 order: 0
@@ -22,7 +21,7 @@ copy, not a completed instructional lab.
 
 ## 1. What you will be able to do
 
-Design working, episodic, semantic, and procedural memory with controlled writes, retrieval, consolidation, privacy, deletion, and poisoning defenses.
+Design working, episodic, semantic, and procedural memory, including versioned skills, with controlled writes, retrieval, consolidation, privacy, deletion, and poisoning defenses.
 
 **Phase:** II. Tools and knowledge  
 **Overview:** 20–40 minutes  
@@ -50,11 +49,11 @@ Keep credentials and personal data out of notebooks, traces, and submitted artif
 
 ### 1. Separate Memory Types and Lifecycles
 
-Map working state, event history, user facts, learned procedures, and cached artifacts to distinct stores and lifetimes. Avoid treating the entire transcript as memory.
+Map working state, event history, user facts, learned procedures, and cached artifacts to distinct stores and lifetimes. Represent reusable procedures as versioned skills, separate them from factual memory and model-weight updates, and avoid treating the entire transcript as memory.
 
 ### 2. Decide What May Be Written
 
-Implement consent, validation, salience, confidence, source, TTL, and sensitivity policies. Reject speculative or sensitive facts from automatic long-term storage.
+Implement consent, validation, salience, confidence, source, TTL, and sensitivity policies. Reject speculative or sensitive facts and stage generated skill changes for review before they can affect future tasks.
 
 ### 3. Retrieve, Consolidate, and Resolve Contradictions
 

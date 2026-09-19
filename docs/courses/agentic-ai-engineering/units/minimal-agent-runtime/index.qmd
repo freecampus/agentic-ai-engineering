@@ -54,7 +54,7 @@ Design typed task, message, tool-call, observation, budget, and result records. 
 
 ### 2. Implement the Decide–Act–Observe Loop
 
-Write the smallest complete agent loop in plain Python. Trace normal execution, a tool error, and a model request for an unavailable capability.
+Write the smallest complete agent loop in plain Python. Identify the model, agent harness, tools, and environment separately; trace normal execution, a tool error, and an unavailable capability.
 
 ### 3. Make Termination and Budgets Enforceable
 

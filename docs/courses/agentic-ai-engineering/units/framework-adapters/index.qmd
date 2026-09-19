@@ -1,7 +1,6 @@
 ---
 title: Understand Frameworks Without Becoming Dependent on Them Overview
-description: Explain what agent frameworks provide, migrate a stable application through adapters,
-  and quantify abstraction benefits and costs.
+description: Distinguish frameworks, agent harnesses, and complete assistant applications; migrate a stable application through adapters and quantify abstraction benefits and costs.
 content_kind: unit-overview
 content_status: planned
 order: 0
@@ -22,7 +21,7 @@ copy, not a completed instructional lab.
 
 ## 1. What you will be able to do
 
-Explain what agent frameworks provide, migrate a stable application through adapters, and quantify abstraction benefits and costs.
+Distinguish frameworks, agent harnesses, and complete assistant applications; migrate a stable application through adapters and quantify abstraction benefits and costs.
 
 **Phase:** III. Architecture  
 **Overview:** 20–40 minutes  
@@ -50,7 +49,7 @@ Keep credentials and personal data out of notebooks, traces, and submitted artif
 
 ### 1. Inspect What a Framework Does for You
 
-Trace model messages, state serialization, tool dispatch, retries, callbacks, and persistence through a framework. Identify defaults that alter behavior.
+Trace model messages, state serialization, tool dispatch, retries, callbacks, and persistence through a framework. Distinguish framework, agent harness, and complete assistant application using OpenClaw and Hermes architecture case studies; identify defaults that alter behavior.
 
 ### 2. Define Ports for Models, Tools, State, and Tracing
 

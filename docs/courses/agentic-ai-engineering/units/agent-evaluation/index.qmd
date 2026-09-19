@@ -46,11 +46,11 @@ Keep credentials and personal data out of notebooks, traces, and submitted artif
 | 1. Define Metrics from the Task Contract | Metric specification with gaming risks. |
 | 2. Build Representative Evaluation Data | Dataset card and coverage matrix. |
 | 3. Combine Deterministic, Model, and Human Graders | Grader agreement and disagreement analysis. |
-| 4. Compare Systems with Uncertainty | Reproducible comparison report. |
+| 4. Compare Systems with Uncertainty | Reproducible paired comparison with repeated-success metrics, uncertainty, and model/harness ablations. |
 
 ### 1. Define Metrics from the Task Contract
 
-Translate success and harm into observable measures. Separate final-answer quality from trajectory correctness, policy compliance, and resource use.
+Translate success and harm into observable measures. Separate final-answer quality from trajectory correctness, policy compliance, and resource use; verify actual environment state rather than trusting an agent claim that an action completed.
 
 ### 2. Build Representative Evaluation Data
 
@@ -62,7 +62,7 @@ Prefer exact and executable checks where possible; design rubrics and blinded pa
 
 ### 4. Compare Systems with Uncertainty
 
-Run repeated trials, estimate confidence intervals, analyze paired differences, and avoid declaring tiny noisy gains. Construct quality–latency–cost frontiers.
+Run repeated trials, estimate confidence intervals, analyze paired differences, and avoid declaring tiny noisy gains. Distinguish pass@k from pass^k, reset trial state, and separate model changes from harness changes when constructing quality-latency-cost frontiers.
 
 ## 4. Challenge preview: Build an Evaluation Harness Before Improving the Agent
 
