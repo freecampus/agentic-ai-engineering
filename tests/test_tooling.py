@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -73,15 +76,24 @@ def test_workflows_activate_conda_and_install_poetry_dependencies_without_venvs(
         for step in job["steps"]
         if step.get("uses") == "conda-incubator/setup-miniconda@v3"
     )
-    assert setup["with"]["environment-file"] == "conda.yaml"
+    assert setup["with"]["environment-file"] == (
+        ".cache/conda-ci.yaml" if name == "ci" else "conda.yaml"
+    )
     assert setup["with"]["activate-environment"] == "fc-agentic"
     assert setup["with"]["auto-activate-base"] is False
     assert setup["with"]["miniforge-version"] == "latest"
-    assert setup["with"]["python-version"] == (
-        "${{ matrix.python-version }}" if name == "ci" else "3.12"
-    )
     if name == "ci":
         assert job["strategy"]["matrix"]["python-version"] == ["3.10", "3.12", "3.14"]
+        assert "python-version" not in setup["with"]
+        prepare = next(
+            step
+            for step in job["steps"]
+            if step.get("name") == "Prepare the matrix Conda environment"
+        )
+        assert prepare["env"]["PYTHON_VERSION"] == "${{ matrix.python-version }}"
+        assert job["steps"].index(prepare) < job["steps"].index(setup)
+    else:
+        assert setup["with"]["python-version"] == "3.12"
     assert not any(
         step.get("uses", "").startswith(("actions/setup-python", "actions/setup-node"))
         for step in job["steps"]
@@ -99,6 +111,72 @@ def test_workflows_activate_conda_and_install_poetry_dependencies_without_venvs(
     assert "poetry sync" not in commands
     for local_only in ("plan.check", "plan.refresh", "check_lesson_plan.py"):
         assert local_only not in commands
+
+
+def run_ci_environment_preparation(
+    tmp_path: Path, source: str, version: str
+) -> subprocess.CompletedProcess[str]:
+    """Execute the real pre-Conda workflow command, not a duplicate transformer."""
+    bash = shutil.which("bash")
+    if not bash or not shutil.which("awk"):
+        pytest.skip("The Ubuntu CI bootstrap regression needs bash and awk")
+    workflow = yaml.safe_load(Path(".github/workflows/ci.yml").read_text())
+    prepare = next(
+        step
+        for step in workflow["jobs"]["checks"]["steps"]
+        if step.get("name") == "Prepare the matrix Conda environment"
+    )
+    (tmp_path / "conda.yaml").write_text(source, encoding="utf-8")
+    return subprocess.run(
+        [bash, "--noprofile", "--norc", "-e", "-c", prepare["run"]],
+        cwd=tmp_path,
+        env={**os.environ, "PYTHON_VERSION": version},
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+
+
+@pytest.mark.parametrize("version", ["3.10", "3.12", "3.14"])
+def test_ci_environment_has_one_matrix_pin_and_preserves_local_defaults(
+    tmp_path: Path, version: str
+) -> None:
+    source = Path("conda.yaml").read_text(encoding="utf-8")
+    result = run_ci_environment_preparation(tmp_path, source, version)
+    assert result.returncode == 0, result.stderr
+    generated = yaml.safe_load((tmp_path / ".cache/conda-ci.yaml").read_text())
+    expected = yaml.safe_load(source)
+    assert expected["dependencies"].count("python=3.12") == 1
+    expected["dependencies"] = [
+        f"python={version}" if dep == "python=3.12" else dep
+        for dep in expected["dependencies"]
+    ]
+    assert generated == expected  # All other tools, channels, and settings survive.
+    python_specs = [
+        dep
+        for dep in generated["dependencies"]
+        if isinstance(dep, str) and re.match(r"^python(?:[=<>!~\s]|$)", dep)
+    ]
+    assert python_specs == [f"python={version}"]
+    assert (tmp_path / "conda.yaml").read_text(encoding="utf-8") == source
+
+
+@pytest.mark.parametrize("fault", ["missing", "duplicate", "conflicting"])
+def test_ci_environment_preparation_rejects_ambiguous_python_specs(
+    tmp_path: Path, fault: str
+) -> None:
+    source = Path("conda.yaml").read_text(encoding="utf-8")
+    replacement = {
+        "missing": "",
+        "duplicate": "  - python=3.12\n  - python=3.12\n",
+        "conflicting": "  - python=3.12\n  - python>=3.14\n",
+    }[fault]
+    broken = source.replace("  - python=3.12\n", replacement)
+    result = run_ci_environment_preparation(tmp_path, broken, "3.10")
+    assert result.returncode != 0
+    assert "Expected exactly one Python dependency" in result.stderr
+    assert (tmp_path / "conda.yaml").read_text(encoding="utf-8") == broken
 
 
 def test_task_runner_and_hooks_use_the_existing_conda_environment() -> None:

@@ -67,6 +67,12 @@ activation is unavailable, initialize your shell following
 [Conda's environment guide](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html).
 Set your editor's interpreter to this same Conda environment.
 
+CI derives `.cache/conda-ci.yaml` from this same specification, replacing only
+the Python dependency with the matrix version (3.10, 3.12, or 3.14). The
+generated file is the sole Python pin passed to setup-miniconda; `conda.yaml`
+keeps the local Python 3.12 default. Missing or duplicate Python entries stop
+the bootstrap.
+
 The shared `poetry.toml` disables virtualenv creation and in-project virtualenv
 selection. The environment check rejects a nested Python venv, conflicting
 Poetry settings, or Python/Poetry pointing outside the active Conda environment.

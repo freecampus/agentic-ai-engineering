@@ -25,15 +25,35 @@ jobs:
       POETRY_NO_INTERACTION: "1"
     steps:
       - uses: actions/checkout@v4
+      - name: Prepare the matrix Conda environment
+        env:
+          PYTHON_VERSION: ${{ matrix.python-version }}
+        # Keep the local 3.12 default; do not combine it with an action override.
+        # Only shell tooling is needed before the Conda environment exists.
+        run: |
+          mkdir -p .cache
+          awk -v version="$PYTHON_VERSION" '
+            /^[[:space:]]*-[[:space:]]*python([=<>!~[:space:]]|$)/ {
+              print "  - python=" version
+              count++
+              next
+            }
+            { print }
+            END {
+              if (count != 1) {
+                print "Expected exactly one Python dependency in conda.yaml" > "/dev/stderr"
+                exit 1
+              }
+            }
+          ' conda.yaml > .cache/conda-ci.yaml
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-version: latest
-          environment-file: conda.yaml
+          environment-file: .cache/conda-ci.yaml
           activate-environment: fc-agentic
           auto-activate-base: false
           channels: conda-forge,nodefaults
           conda-solver: libmamba
-          python-version: ${{ matrix.python-version }}
       - name: Verify Conda and Poetry use the same environment
         run: python scripts/check_environment.py
       - name: Install course and development tools
