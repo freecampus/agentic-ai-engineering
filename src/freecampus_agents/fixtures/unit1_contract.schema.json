@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Unit 1 task contract structural shape",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "success",
+    "allowed",
+    "forbidden",
+    "approval_required",
+    "max_actions",
+    "deadline",
+    "escalation"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "escalation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "success": {
+      "enum": ["answer_with_source", "deliver_draft"]
+    },
+    "allowed": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["read_public", "send_draft"]
+      }
+    },
+    "forbidden": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["read_public", "send_draft"]
+      }
+    },
+    "approval_required": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["read_public", "send_draft"]
+      }
+    },
+    "max_actions": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "deadline": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

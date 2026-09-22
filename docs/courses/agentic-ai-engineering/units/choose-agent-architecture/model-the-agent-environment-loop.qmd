@@ -1,0 +1,531 @@
+---
+title: Model the Agent–Environment Loop
+description: Trace a blocked grid and a read-only tool world; distinguish hidden state,
+  observations, beliefs, costs, and terminal failure without inventing missing evidence.
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: choose-agent-architecture
+unit_number: 1
+categories:
+- agentic-ai-engineering
+- choose-agent-architecture
+order: 20
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-architecture/model-the-agent-environment-loop.ipynb
+notebook_package: true
+execute:
+  echo: true
+lesson_id: choose-agent-architecture.model-the-agent-environment-loop
+lesson_order: 20
+---
+
+::: {.lesson-meta}
+- **Level:** Foundations; explicit state and evidence, not reinforcement-learning training.
+- **Active time:** 105–150 minutes, including two trace labs and failure diagnosis.
+- **Prerequisites:** Lesson 1.1's authority/feedback/termination distinction; Python records, conditionals, and assertions.
+- **Measurable outcome:** Produce checked pre-state/action/post-state/observation traces for two worlds without giving a controller access to hidden truth.
+- **Evidence:** A transition table, one diagram, terminal-state tests, and a missing-observation incident record.
+- **Environment:** Python 3.10+; offline bundled package; no network, account, GPU, or paid inference.
+:::
+
+::: {.callout-note}
+## Review draft
+This activity awaits independent teaching and accessibility review. Use the local
+review notebook; public completion and hosted Colab access are not enabled.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. Separate what happened from what the controller knows
+
+A café delivery cart reports its location after each move. One report disappears.
+Did the cart stay still, hit a wall, or move successfully without reporting? A
+help-desk assistant faces the same kind of uncertainty when a tool request
+returns no usable observation. The physical cart and the software tool differ,
+but the bookkeeping problem is shared.
+
+Before executing, answer:
+
+1. Is the environment's full state the same as the controller's latest observation?
+2. Can a blocked action consume a budget even though the position is unchanged?
+3. Does receiving no observation prove that no action occurred?
+4. Can a terminal state represent failure rather than success?
+
+We will use a fully visible **audit record** to check a toy environment. That is
+instructor/test evidence, not information a partially informed controller may
+silently read. When writing policy code, pass only the observations it is allowed
+to receive. This separation prevents accidental “superpowers” in an evaluation.
+
+## 2. Name the records and the two functions between them
+
+Use these symbols as compact labels, not a prerequisite in advanced mathematics:
+
+| Symbol | Meaning in this lesson | Grid example | Tool-world example |
+|---|---|---|---|
+| $x_t$ | Actual environment state before step $t$ | Position, attempts, running/terminal status | Reads used, evidence returned, status |
+| $o_t$ | Observation made available to the controller | Position report, or missing | Public text, or missing |
+| $h_t$ | Controller's retained history/state | Observed positions and last action | Prior request and tool result |
+| $a_t$ | Requested action | `right` | `read:hours` |
+| $T(x_t,a_t)$ | Transition: how the world changes | Move or remain blocked; increment attempts | Increment read count; return available evidence |
+| $O(x_{t+1},a_t)$ | Observation rule | Report the result, unless the fixture drops it | Expose a result or simulate a missing result |
+| $c_t$ | Cost charged for the step | One attempted move | One read, zero for finish |
+
+A policy chooses an action from its available history: $a_t = \pi(h_t)$. The
+world transitions, produces an observation, and the controller updates its
+history. A **belief** is a claim about what the state might be; it need not equal
+truth. We use `None` for unknown rather than introducing probability distributions.
+The perception/action terminology follows the introductory
+[agent–environment treatment in AIMA](https://aima.cs.berkeley.edu/4th-ed/pdfs/newchap02.pdf).
+Our record layout and missing-message fixtures are course-specific designs.
+
+::: {.concept-diagram}
+```{mermaid}
+%%| echo: false
+%%| eval: true
+flowchart LR
+    H["Controller history h"] --> P["Policy selects action a"]
+    P --> R["Runtime checks permission and bounds"]
+    R --> E["Environment changes state x"]
+    E --> O["Observation o may be missing"]
+    O --> H
+    E -.-> A["Audit state: tests only"]
+```
+:::
+
+Read the diagram as two paths. The solid feedback path supplies the controller;
+the dotted audit path supplies our checker. Feeding audit state into the policy
+would change the task from partially observed to fully observed. A passing trace
+under that easier task would not establish success on the original one.
+
+The **objective** is what should be achieved, such as reaching the goal. A
+**terminal state** says no further action is allowed in this run. Success,
+exhaustion, cancellation, and insufficient evidence can all be terminal. Never
+compress these meanings into one boolean named `done` and then count all `True`
+values as successes.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-model-the-agent-environment-loop-concept",
+  "title": "Checkpoint: explain the mechanism",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-model-the-agent-environment-loop-concept-1",
+      "prompt": "Which record may contain information that a partially informed policy must not receive?",
+      "options": [
+        "The explicitly allowed observation.",
+        "The full pre-state/post-state audit transition.",
+        "The policy own recorded previous action.",
+        "The documented task objective."
+      ],
+      "answer_index": 1,
+      "explanation": "Audit truth is available to the checker, not automatically to the controller. Leaking it makes the evaluated task easier."
+    },
+    {
+      "id": "u01-model-the-agent-environment-loop-concept-2",
+      "prompt": "The grid position is unchanged after a blocked move. What else changes?",
+      "options": [
+        "The goal disappears.",
+        "The move becomes free because it failed.",
+        "Attempts increase and one cost unit is charged.",
+        "The run automatically counts as successful."
+      ],
+      "answer_index": 2,
+      "explanation": "State includes counters as well as position. A failed attempt is still work."
+    },
+    {
+      "id": "u01-model-the-agent-environment-loop-concept-3",
+      "prompt": "What is the safest meaning of a terminal status?",
+      "options": [
+        "The objective was necessarily achieved.",
+        "The observation can no longer be missing.",
+        "The controller may restart its allowance automatically.",
+        "No more actions may run; inspect the separate outcome for success or failure."
+      ],
+      "answer_index": 3,
+      "explanation": "Success and exhausted/insufficient-evidence states can all be terminal."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 3. Trace an attempted move, including the blocked case
+
+The grid has three columns (`x = 0, 1, 2`) and two rows (`y = 0, 1`). Coordinates
+start at the top left. The start is `(0, 0)`, the goal `(2, 0)`, and `(1, 0)` is
+blocked. Down increases `y`. The objective is to reach the goal within six
+attempts. Each attempted move costs one, including a wall collision. Actions are
+limited to `up`, `down`, `left`, and `right`; there is no action that edits walls.
+
+```text
+start   wall   goal
+  .      .      .
+```
+
+Predict all five rows for `right, down, right, right, up`. Write the expected
+position, cumulative attempts, and status before running:
+
+```python
+from freecampus_agents.environments import Grid, GridState
+
+world = Grid()
+state = GridState()
+trace = []
+for action in ("right", "down", "right", "right", "up"):
+    transition = world.step(state, action)
+    trace.append(transition)
+    state = transition.after
+    print(transition)
+assert state.position == (2, 0)
+assert state.status == "success"
+assert sum(row.cost for row in trace) == 5
+assert trace[0].before.position == trace[0].after.position
+assert trace[0].after.attempts == trace[0].before.attempts + 1
+```
+
+| Attempt | Before → action → after position | Observation outcome | Status |
+|---|---|---|---|
+| 1 | `(0,0)` → right → `(0,0)` | blocked | running |
+| 2 | `(0,0)` → down → `(0,1)` | moved | running |
+| 3 | `(0,1)` → right → `(1,1)` | moved | running |
+| 4 | `(1,1)` → right → `(2,1)` | moved | running |
+| 5 | `(2,1)` → up → `(2,0)` | moved | success |
+
+The first transition changes the *full state* even though it does not change the
+position. A position-only log would conceal the consumed attempt. The distinction
+matters whenever calls, time, money, or retry quotas are state.
+
+Inspect the executable transition in its actual module:
+
+```python
+import inspect
+print(inspect.getsource(Grid.step))
+```
+
+Read in order: reject a terminal input; reject an inconsistent running record;
+validate the action name; compute the target; check bounds and walls; increment
+attempts; determine status; emit or suppress the observation. Reaching the goal
+on the last permitted attempt is success, because the objective is checked before
+exhaustion. That precedence is a contract choice, not an unavoidable law.
+
+The [dataclasses](https://docs.python.org/3/library/dataclasses.html) are frozen
+named records. `before` and `after` are distinct values,
+so an old trace does not change when you advance to the next state. Frozen records
+are useful bookkeeping; they are not a defense against arbitrary Python code.
+
+## 4. Make stopping explicit and keep missing evidence missing
+
+First predict two failures: another move after success, and repeated attempts to
+walk through a wall under a two-attempt limit. Catch only the expected exception;
+an unexpected exception should still fail the notebook.
+
+```python
+try:
+    world.step(state, "down")
+except RuntimeError as error:
+    print("Expected terminal rejection:", error)
+else:
+    raise AssertionError("A completed run accepted another action")
+
+short_world = Grid(limit=2)
+short_state = GridState()
+for _ in range(2):
+    short_state = short_world.step(short_state, "right").after
+assert short_state.status == "exhausted"
+assert short_state.position != short_world.goal
+```
+
+No action is legal *after terminal exhaustion*. That does not make exhaustion a
+successful outcome. Similarly, a running system with an empty action menu needs
+an explicit failure/escalation rule, not an automatic success label.
+
+Now suppress a report from a move that actually succeeds:
+
+```python
+from freecampus_agents.environments import update_position
+
+missing_row = world.step(GridState(), "down", missing=True)
+last_seen = (0, 0)
+belief = update_position(last_seen, missing_row.observation)
+assert missing_row.after.position == (0, 1)  # Audit assertion, not a policy input.
+assert missing_row.observation is None
+assert belief is None
+print("Actual:", missing_row.after.position, "controller knows:", belief)
+```
+
+The correct update here is “current position unknown,” not “still at `(0,0)`.”
+Keeping a `last_seen` value is fine if it is labeled historical. Calling it the
+current position asserts more than the evidence supports. Do not “repair” the
+policy by passing `missing_row.after` into it; that would leak audit truth.
+
+This fixture simulates a *missing* observation, not noisy localization. In a noisy
+sensor extension, the observation could be present and wrong. Record that as a
+separate assumption; validating a record's shape would not establish its truth.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-model-the-agent-environment-loop-evidence",
+  "title": "Checkpoint: interpret the evidence",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-model-the-agent-environment-loop-evidence-1",
+      "prompt": "The move down has no report, but audit state shows (0,1). What should the controller record?",
+      "options": [
+        "Current position unknown; retain any earlier position only as last seen.",
+        "Current position is definitely (0,0).",
+        "Read the audit record and pretend the sensor supplied it.",
+        "Missing observations imply blocked moves."
+      ],
+      "answer_index": 0,
+      "explanation": "The policy lacks current evidence. The audit proves what happened only to the tester."
+    },
+    {
+      "id": "u01-model-the-agent-environment-loop-evidence-2",
+      "prompt": "The five-move trace reaches the goal after one collision. What is its total move cost?",
+      "options": [
+        "Four units, counting only successful moves.",
+        "Five units, because every attempted move costs one.",
+        "One unit, counting only the final move.",
+        "Zero units, because this is an offline simulator."
+      ],
+      "answer_index": 1,
+      "explanation": "Synthetic cost is part of the explicit contract and counts the blocked attempt too."
+    },
+    {
+      "id": "u01-model-the-agent-environment-loop-evidence-3",
+      "prompt": "A read consumes the one-read allowance but yields no text; finish returns insufficient_evidence. What was established?",
+      "options": [
+        "The opening hours were verified.",
+        "The missing read never happened.",
+        "The run stopped without evidence-backed success.",
+        "An empty action list is a success certificate."
+      ],
+      "answer_index": 2,
+      "explanation": "The trace distinguishes a consumed attempt from an answered task."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 5. Trace a read-only tool with the same vocabulary
+
+The second environment has only two actions: `read:hours` and `finish`. Its
+objective is to finish with observed opening hours. It permits one read and no
+writes. A missing result still consumes the read allowance. Finishing without
+evidence produces terminal `insufficient_evidence`, not a fabricated answer.
+
+Predict the number of transitions, reads, and cost for this run:
+
+```python
+from freecampus_agents.environments import ToolState, tool_step
+
+tool_state = ToolState()
+tool_trace = []
+for action in ("read:hours", "finish"):
+    row = tool_step(tool_state, action)
+    tool_trace.append(row)
+    tool_state = row.after
+    print(row)
+assert tool_state.status == "success"
+assert tool_state.reads == 1
+assert sum(row.cost for row in tool_trace) == 1
+assert tool_state.evidence == "Open Saturday 10:00–14:00."
+
+lost = tool_step(ToolState(), "read:hours", missing=True)
+closed = tool_step(lost.after, "finish")
+assert lost.after.reads == 1
+assert closed.after.status == "insufficient_evidence"
+assert closed.after.evidence is None
+```
+
+Map the events rather than merely noticing that both examples have loops:
+
+| Question | Grid | Read-only tool |
+|---|---|---|
+| What changes? | Position, attempts, status | Read count, evidence, status |
+| What can be missing? | Position report | Returned public text |
+| What consumes cost? | Every attempted move | Every permitted read attempt |
+| What is forbidden? | Unknown move; post-terminal action | Unknown tool; second read; post-terminal action |
+| What establishes success? | Goal reached within allowance | Finish with observed text |
+
+The tool example stores the observed text in the run state because the terminal
+predicate depends on it. This is an explicit simulation boundary, not a claim
+that all real services store an assistant's history. In a larger system, runtime
+state, service state, and controller memory would be separate records.
+
+## 6. Build a checker that cannot mistake silence for success
+
+::: {.callout-tip}
+## Lab: two checked transition tables
+Build a table for each world with `before`, `action`, `after`, `observation`, and
+`cost`. Draw the shared feedback diagram in your own words. Write a grid checker
+and a controller-state update that use the right information at each boundary.
+:::
+
+Your grid checker must reject a broken chain, not only check the last position.
+Your controller update must take observations, not a full transition. Your
+terminal check must prove no further action occurred. Start with this deliberately
+wrong update and preserve its failed assertion:
+
+```python
+def stale_update(previous, observation):
+    return previous if observation is None else observation.position
+
+try:
+    assert stale_update((0, 0), None) is None
+except AssertionError:
+    print("Expected failure: last seen was mislabeled as current truth")
+else:
+    raise AssertionError("The faulty update was not detected")
+```
+
+Acceptance checks:
+
+1. Every row has explicit pre-state/action/post-state/observation; adjacent rows
+   chain exactly, attempts and costs agree, and the final status is classified.
+2. Both worlds reject actions after a terminal outcome, including terminal failure.
+3. A missing report leaves current-position knowledge unknown; the controller
+   function never receives the audit state.
+
+<details>
+<summary>Hint and worked checker—open after implementing yours</summary>
+
+Compare whole records, not just coordinates. Validate each transition against the
+known simulator separately from updating the controller's knowledge.
+
+```python
+def check_grid_trace(rows, environment):
+    assert rows, "No evidence"
+    for index, row in enumerate(rows):
+        if index:
+            assert rows[index - 1].after == row.before
+        expected = environment.step(
+            row.before, row.action, missing=row.observation is None
+        )
+        assert row == expected
+        assert row.after.attempts == row.before.attempts + 1
+        assert row.cost == 1
+    assert rows[-1].after.status in {"success", "exhausted"}
+
+check_grid_trace(trace, world)
+# Separate literal checks keep simulator agreement from being the only oracle.
+assert [row.after.position for row in trace] == [
+    (0, 0), (0, 1), (1, 1), (2, 1), (2, 0)
+]
+assert update_position((0, 0), None) is None
+for terminal, action in [(tool_state, "read:hours"), (closed.after, "finish")]:
+    try:
+        tool_step(terminal, action)
+    except RuntimeError:
+        pass
+    else:
+        raise AssertionError("Tool world acted after terminal state")
+
+from dataclasses import replace
+broken_trace = [replace(trace[0], cost=0), *trace[1:]]
+try:
+    check_grid_trace(broken_trace, world)
+except AssertionError:
+    print("Injected free-collision bug detected")
+else:
+    raise AssertionError("The checker missed an altered cost")
+print("Transition and observation checks passed")
+```
+
+The checker is an audit tool allowed to see complete records. The policy update
+is deliberately much narrower. Passing the checker does not give the policy
+permission to consume its inputs.
+
+</details>
+
+## 7. Investigate a delayed observation without inventing a cause
+
+A report for action 3 arrives after action 4. Your log contains one recent
+position but no correlation identifier. List at least two explanations: a delayed
+report of an earlier move, or a prompt report of a later move. Add the minimum
+instrumentation needed to distinguish them: action ID, observation's action ID,
+sequence number, and separate dispatch/receipt timestamps. Do not infer causal
+order solely from arrival order.
+
+This is a transfer design exercise, not an invitation to add concurrency to this
+lesson. Distributed execution is a later layer. Here, explain how your state
+update would reject or label stale evidence and when it would stop for lack of
+reliable current information.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-model-the-agent-environment-loop-failure",
+  "title": "Checkpoint: diagnose the failure",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-model-the-agent-environment-loop-failure-1",
+      "prompt": "A checker accepts a trace with cost zero on the wall collision. What should be repaired?",
+      "options": [
+        "Change the expected total to four to make it pass.",
+        "Give the controller the hidden wall map without disclosure.",
+        "Ignore failed transitions in the evidence bundle.",
+        "Check per-transition cost and cumulative attempts, not only the final position."
+      ],
+      "answer_index": 3,
+      "explanation": "The final position can be correct while the cost contract is violated."
+    },
+    {
+      "id": "u01-model-the-agent-environment-loop-failure-2",
+      "prompt": "An observation for action 3 arrives after action 4. What instrumentation best disambiguates it?",
+      "options": [
+        "Action/observation correlation IDs and separate dispatch and receipt ordering.",
+        "Only the final answer length.",
+        "One timestamp with no action identity.",
+        "A stronger instruction to report promptly."
+      ],
+      "answer_index": 0,
+      "explanation": "Arrival order alone does not identify which action produced the report."
+    },
+    {
+      "id": "u01-model-the-agent-environment-loop-failure-3",
+      "prompt": "Which signature best preserves the policy information boundary?",
+      "options": [
+        "update(complete_environment_truth, hidden_goal_map)",
+        "update(previous_belief, allowed_observation)",
+        "update(audit_transition) with undocumented access to after",
+        "update(expected_test_answer)"
+      ],
+      "answer_index": 1,
+      "explanation": "The update should accept the evidence the controller is entitled to observe, not evaluation-only truth."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 8. Record the evidence boundary
+
+Save the two trace tables, your diagram, the injected failure, repaired checks,
+and a paragraph distinguishing actual state, last observed state, and current
+belief. Report success and terminal failure separately. Record attempted actions
+as well as successful ones; otherwise a run can appear cheap by hiding failure.
+
+**Key points:** observations are not full truth; a state includes budgets as well
+as visible position; missing evidence is not evidence of no effect; terminal is
+not synonymous with successful; audit visibility must not leak into policy inputs.
+
+Continue to [Bound Autonomy with Task Contracts](bound-autonomy-with-task-contracts.qmd),
+where these stopping conditions become enforceable task rules. Return to the
+[unit overview](index.qmd) to check the evidence sequence.
+
+### Sources and fixture provenance
+
+Primary references checked 2026-09-21. The references linked at their point of
+use support definitions and design vocabulary, not claims of tested live-product
+integration. The Lantern story, grid/tool worlds, contracts, request data,
+quizzes, and worked solutions are original synthetic BSD-3-Clause course material.
+Reusable code and fixtures live in `src/freecampus_agents/`; no external text,
+customer records, credentials, or model-generated reasoning traces are bundled.

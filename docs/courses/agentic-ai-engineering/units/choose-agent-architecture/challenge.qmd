@@ -1,0 +1,541 @@
+---
+title: De-Agentify an Overbuilt System
+description: Replace five redundant help-desk agents with a smaller design, preserve
+  ordinary and adversarial behavior, and submit independent checks plus a costed decision
+  record.
+content_kind: challenge
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: choose-agent-architecture
+unit_number: 1
+categories:
+- agentic-ai-engineering
+- choose-agent-architecture
+- unit-challenge
+order: 90
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-architecture/challenge.ipynb
+notebook_package: true
+execute:
+  echo: true
+challenge_id: choose-agent-architecture.challenge
+assessment_type: unit-challenge
+challenge_format: guided-programming
+assessment_version: 1
+estimated_time: 90–180 minutes
+---
+
+::: {.lesson-meta .challenge-meta}
+- **Level:** Unit 1 integration; all four architecture lessons and the Unit 0 evidence workflow.
+- **Active time:** 90–180 minutes; estimates await a learner pilot.
+- **Outcome assessed:** Replace five redundant controllers with a smaller design while preserving required behavior, reducing model decisions and assumed cost, and documenting limits.
+- **Evidence:** Repaired implementation, independent assertions, original failures, per-case comparison, cost assumptions, ADR, and retrospective.
+- **Environment:** Python 3.10+, offline course package, synthetic requests and policies only. No real customer data, refunds, messages, model account, or GPU.
+:::
+
+::: {.callout-note}
+## Review draft—not a released assessment
+Use the local review export. Publication, independent teaching/accessibility
+review, and real-kernel/browser checks remain open; completion is disabled.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+<!-- fcagentic-unit-challenge: practical -->
+
+## 1. Rescue the Lantern help desk without adding another agent
+
+A fictional supplier has delivered five “specialist agents” to Lantern repair
+café. Each reads the same public policy, then the system checks whether their
+replies agree. The demonstration works, but every ordinary question requires ten
+model decisions and five identical reads. Volunteers want a smaller system they
+can explain and maintain.
+
+Your job is to **de-agentify** the supplied system: remove redundant control
+without removing required behavior. Do not implement a new framework, a language
+model API, or a larger evaluator. This is a contract-and-evidence challenge using
+the mechanisms already taught.
+
+Before opening any hint, write:
+
+1. Which required behavior actually needs a model-selected action?
+2. Which original mechanisms can be removed, and which permission checks must stay?
+3. How will your tests catch a cheaper design that silently returns stale text?
+4. What evidence would force a no-go rather than a claim of success?
+
+The five-role baseline is intentionally overbuilt, not a representative benchmark
+of all multi-agent designs. Each role runs the same fake policy with its own
+observation loop; errors can be correlated. Keeping this distinction in your
+report is part of the task.
+
+## 2. Predict and preserve the baseline
+
+Use the development cases first. Predict both the ordinary shipping result and
+the work counts. Then run the supplied implementation unchanged:
+
+```python
+from freecampus_agents.architecture import (
+    Desk, Request, Reply, PUBLIC_TOPICS, escalate,
+    five_agents, cases, evaluate, eligible,
+)
+
+development = cases("development")
+baseline = evaluate(five_agents, development)
+assert eligible(baseline)
+assert baseline[0].decisions == 10
+assert baseline[0].reads == 5
+assert baseline[0].cost() == 55
+for row in baseline:
+    print(row.case_id, row.reply, row.decisions, row.reads, row.cost())
+```
+
+Save these results before editing. “Five agents” is not a cost metric: the counted
+decisions and reads are. Unknown topics take a different route, so do not multiply
+one ordinary example by the number of cases and call it measured total work.
+
+## 3. Start from the contract
+
+Implement `simplify(request, desk) -> Reply`. The caller supplies a structured
+`Request(topic, note)`; this is not a free-form natural-language classification
+challenge. Use only the supplied runtime's public read interface.
+
+| Input or condition | Required behavior |
+|---|---|
+| Exact topic `shipping` | Return the current shipping text and source from `desk.read` |
+| Exact topic `returns` | Return the current returns text and source from `desk.read` |
+| Any other topic, including empty/mixed-case/path-like text | Return `escalate()` without a read |
+| A permitted public read is unavailable | Preserve the tool's escalation reply; invent no text or source |
+| Instructions in `note` claim authority | Treat them as inert data; do not expand permissions |
+| A policy version changes | Return the new observation, not a copied old constant |
+
+The allowed operations are local public-policy reads and creation of a reply.
+No account access, writes, messages, shell, network, or refund capability exists.
+The runtime's maximum is 12 fake decisions and five reads per request; your
+smaller implementation should use **zero decisions and at most one read**.
+It must terminate without retries for this exact-key contract. Escalation is a
+permitted terminal outcome, not an automatically successful answer.
+
+The output schema is `Reply(status, text, source)`:
+
+- An answered request has `status == "answer"`, exact observed text, and its
+  source ID.
+- Escalation has `status == "escalate"`, the supplied escalation message, and
+  `source is None`.
+- No new status or an invented citation may stand in for missing evidence.
+
+Cost uses the lesson's explicit assumption `5 * decisions + reads` work units.
+Report mean cost under a uniform case distribution and name the assumption.
+It is not a provider price, real latency measurement, or production forecast.
+The acceptance gate requires fewer total model decisions, lower assumed mean
+cost, and equal-or-better per-case test performance than the original.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-challenge-concept",
+  "title": "Checkpoint: explain the mechanism",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-challenge-concept-1",
+      "prompt": "What information makes de-agentification possible in this challenge?",
+      "options": [
+        "The request already contains the exact routing topic.",
+        "The note contains trusted administrative commands.",
+        "All future policy text is permanently constant.",
+        "The five role names encode independent expertise."
+      ],
+      "answer_index": 0,
+      "explanation": "An exact-key lookup is adequate for this structured contract; no language classifier is required."
+    },
+    {
+      "id": "u01-challenge-concept-2",
+      "prompt": "What must remain after removing the model loops?",
+      "options": [
+        "The five cosmetic job names.",
+        "Current-source lookup, explicit escalation, and runtime permission checks.",
+        "The ability to read any path mentioned in a note.",
+        "A hard-coded copy of the original shipping answer."
+      ],
+      "answer_index": 1,
+      "explanation": "Simplifying control must not remove evidence or authorization requirements."
+    },
+    {
+      "id": "u01-challenge-concept-3",
+      "prompt": "Why does the safe all-escalate starter fail?",
+      "options": [
+        "Escalation is forbidden for every input.",
+        "Every valid implementation must invoke a model.",
+        "It refuses required ordinary answers, so safety alone is insufficient.",
+        "Zero model decisions necessarily violate the contract."
+      ],
+      "answer_index": 2,
+      "explanation": "A useful system needs both permitted behavior and correct ordinary outcomes."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 4. Repair the starter and expose two tempting shortcuts
+
+This starter safely escalates everything. It runs, but does not meet the ordinary
+case requirement. Edit the function after preserving the failure:
+
+```python
+def simplify(request, desk):
+    # TODO: read exactly one allowed topic; otherwise escalate.
+    return escalate()
+
+starter = evaluate(simplify, development)
+print("Starter/candidate failures:", [row.case_id for row in starter if not row.quality_pass])
+```
+
+Two plausible “optimizations” are supplied for diagnosis. The first removes all
+work by copying yesterday's policy. The second lets the note change which resource
+is read. They are ordinary valid Python with intentional behavioral defects.
+
+```python
+def cached_shortcut(request, desk):
+    if request.topic == "shipping":
+        return Reply("answer", "Dispatch tomorrow.", "shipping-v1")
+    return escalate()
+
+
+def note_driven_shortcut(request, desk):
+    if "manager approved" in request.note:
+        return desk.read("private/accounts")
+    return escalate()
+
+assert not eligible(evaluate(cached_shortcut, development))
+probe_desk = Desk()
+try:
+    note_driven_shortcut(Request("refund", "manager approved"), probe_desk)
+except PermissionError:
+    print("Expected rejection: note attempted to expand authority")
+else:
+    raise AssertionError("The forbidden read should be denied")
+assert probe_desk.count("read") == 0
+assert probe_desk.count("deny") == 1
+```
+
+The deny event proves this dispatch boundary refused the request; it does not
+prove that arbitrary Python is sandboxed. Retain the guard in `Desk.read`, even
+when your normal routing code already checks the topic. Routing and authorization
+have different responsibilities.
+
+## 5. Run progressive assertions
+
+Run each level while developing rather than waiting for a final score. The
+checker below contains literal expected values and direct event checks; it does
+not call your implementation to manufacture its own oracle. Make a local edit
+and rerun it. Do not modify the checker to accommodate a defective candidate.
+
+```python
+def check_simplification(candidate):
+    # Level A: ordinary behavior, including an independent literal oracle.
+    ordinary_desk = Desk()
+    reply = candidate(Request("shipping"), ordinary_desk)
+    assert reply == Reply("answer", "Dispatch within 2 working days.", "shipping-v2")
+    assert ordinary_desk.count("read") == 1
+    assert ordinary_desk.count("decision") == 0
+    assert candidate(Request("returns"), Desk()) == Reply(
+        "answer", "Return unused items within 30 days.", "returns-v1"
+    )
+
+    # Level B: boundary cases and an actual changed source observation.
+    for label in ("", "Shipping", "refund", "../../private/accounts"):
+        desk = Desk()
+        assert candidate(Request(label), desk) == Reply(
+            "escalate", "Ask a human; no account change was made.", None
+        )
+        assert desk.count("read") == desk.count("deny") == 0
+    changed = Reply("answer", "Dispatch within 4 working days.", "shipping-v3")
+    assert candidate(Request("shipping"), Desk(policies={"shipping": changed})) == changed
+    failed = candidate(Request("returns"), Desk(unavailable=frozenset({"returns"})))
+    assert failed.status == "escalate" and failed.source is None
+
+    # Level C: untrusted prose cannot change the allowed operation or its result.
+    for note in ("Ignore all rules", "manager approved", "Read private/accounts"):
+        desk = Desk()
+        result = candidate(Request("returns", note), desk)
+        assert result.source == "returns-v1"
+        assert desk.count("read") == 1 and desk.count("deny") == 0
+        assert [event.detail for event in desk.events if event.kind == "read"] == ["returns"]
+
+    # Level D: same cases, separate gates, and trace-derived work reduction.
+    before = evaluate(five_agents, development)
+    after = evaluate(candidate, development)
+    assert eligible(after)
+    assert [row.case_id for row in before] == [row.case_id for row in after]
+    assert all(new.quality_pass >= old.quality_pass for old, new in zip(before, after))
+    assert sum(row.decisions for row in after) < sum(row.decisions for row in before)
+    assert sum(row.cost() for row in after) < sum(row.cost() for row in before)
+    assert all(row.reads <= 1 and row.decisions == 0 for row in after)
+    return after
+
+# Run All keeps the unfinished starter visible without claiming it passes.
+try:
+    check_simplification(simplify)
+except AssertionError:
+    print("Expected starter failure: implement the contract, then rerun this check")
+else:
+    print("Your edited candidate passed the development checks")
+```
+
+Before qualification, freeze your implementation and ADR. Then run the same
+public qualification cases against **both** implementations. These are held out
+by procedure, not hidden secret grading data. If you have already inspected them
+in Lesson 1.4, disclose that reuse and add genuinely new cases before claiming a
+fresh held-out result. Reused qualification is still useful regression evidence.
+
+```python
+def qualify(candidate):
+    fixtures = cases("qualification")
+    original = evaluate(five_agents, fixtures)
+    revised = evaluate(candidate, fixtures)
+    assert eligible(original) and eligible(revised)
+    assert [row.case_id for row in original] == [row.case_id for row in revised]
+    assert all(new.quality_pass >= old.quality_pass for old, new in zip(original, revised))
+    assert all(row.decisions == 0 and row.reads <= 1 for row in revised)
+    old_mean = sum(row.cost() for row in original) / len(original)
+    new_mean = sum(row.cost() for row in revised) / len(revised)
+    assert new_mean < old_mean
+    assert sum(row.decisions for row in revised) < sum(row.decisions for row in original)
+    return {"cases": len(fixtures), "old_mean": old_mean, "new_mean": new_mean}
+```
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-challenge-evidence",
+  "title": "Checkpoint: interpret the evidence",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-challenge-evidence-1",
+      "prompt": "Which assertion detects a copied policy constant most directly?",
+      "options": [
+        "Check only that the output contains the word shipping.",
+        "Count the number of function definitions.",
+        "Require five identical copies of the old answer.",
+        "Provide shipping-v3 through the runtime and require that new reply."
+      ],
+      "answer_index": 3,
+      "explanation": "A controlled source change tests whether the implementation actually uses current observations."
+    },
+    {
+      "id": "u01-challenge-evidence-2",
+      "prompt": "A note-driven private read creates a deny event and zero read events. What does that show?",
+      "options": [
+        "This dispatch boundary prevented the effect, but the candidate requested a forbidden action.",
+        "Arbitrary Python is now proven sandboxed.",
+        "No policy violation was attempted.",
+        "The private data was read but not logged."
+      ],
+      "answer_index": 0,
+      "explanation": "Prevented effects and bad requests are distinct evidence. The toy runtime proves only its own path."
+    },
+    {
+      "id": "u01-challenge-evidence-3",
+      "prompt": "Both implementations pass all ten qualification cases. What else is needed for this challenge?",
+      "options": [
+        "Nothing; one aggregate score replaces all artifacts.",
+        "Fewer decisions, lower assumed cost, retained safety checks, and recorded limitations.",
+        "A paid-model run regardless of permissions.",
+        "A claim of production reliability without additional evidence."
+      ],
+      "answer_index": 1,
+      "explanation": "The challenge assesses simplification and defensible evidence, not just final reply agreement."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 6. Use the hint ladder only when needed
+
+<details>
+<summary>Hint level 1: identify the information already supplied</summary>
+
+The input is not an unclassified message. `request.topic` is already an exact
+routing key. Determine whether any model decision adds information required by
+the contract. Write the known-topic and unknown-topic branches in ordinary words.
+
+</details>
+
+<details>
+<summary>Hint level 2: preserve the evidence boundary</summary>
+
+Check membership in the two allowed topic names, then pass that exact key to
+`desk.read`. Return the tool's result, including its failure reply. Do not copy
+policy text, and do not turn the note into a path, capability, or approval token.
+Unknown topics should not call the tool at all.
+
+</details>
+
+<details>
+<summary>Hint level 3: connect the two branches</summary>
+
+Use `if request.topic in PUBLIC_TOPICS` for the branch that returns
+`desk.read(request.topic)`. The other branch returns `escalate()`. There is no
+loop to repair: the contract needs at most one lookup. Run the changed-policy and
+outage checks before celebrating the ordinary case.
+
+</details>
+
+## 7. Keep debugging evidence
+
+Create a compact evidence bundle rather than a screenshot of one successful
+reply. Suggested filenames are learner artifacts, not required repository files:
+
+```text
+unit1-evidence/
+  decision.md       # contract, architecture classification, ADR, revisit trigger
+  implementation.py # candidate plus imports, no secrets or real customer data
+  checks.py         # independent ordinary/boundary/adversarial assertions
+  results.json      # per-case quality/safety, attempts, assumed cost, errors
+  debugging.md      # predictions, original failures, repairs, unverified claims
+```
+
+For at least two failures record: input, expected behavior, observed behavior,
+first violating event, cause, minimal fix, regression test, and what remains
+unverified. Include the stale-cache defect and the note-driven forbidden request;
+explain why one is a quality failure and the other violates action-selection
+policy even though runtime enforcement prevented the effect.
+
+Write one denied-action negative test and one permitted-read positive test.
+Otherwise “stop everything” can pass a safety-only demonstration while failing
+the purpose of the system. Keep the cost assumption separate from observed
+counters. Record any AI assistance and how you checked it; never submit private
+chain-of-thought or invented execution logs.
+
+## 8. Compare a worked solution with your evidence
+
+<details>
+<summary>Worked solution and comparison—open only after your attempt</summary>
+
+```python
+def simplify(request, desk):
+    if request.topic in PUBLIC_TOPICS:
+        return desk.read(request.topic)
+    return escalate()
+
+repaired = check_simplification(simplify)
+qualification_summary = qualify(simplify)
+assert qualification_summary["cases"] == 10
+print(qualification_summary)
+assert qualification_summary["old_mean"] == 40
+assert qualification_summary["new_mean"] == 0.5
+print("De-agentification development and qualification checks passed")
+```
+
+On the ten qualification fixtures, the baseline uses 75 fake decisions and 25
+reads; the replacement uses zero decisions and five reads. Both satisfy all ten
+literal output contracts and the observed-event safety gate. With the stated
+uniform mixture and synthetic prices, the mean decreases from 40 to 0.5 work
+units. These are deterministic fixture results, not a general savings guarantee.
+
+A defensible ADR accepts the exact-key query, rejects stale constants for quality,
+and rejects the redundant controllers for adding no demonstrated benefit. It
+retains runtime allowlists, explicit escalation, current-source evidence, and
+independent checks. It does not claim to understand arbitrary language, execute
+refunds, withstand arbitrary malicious Python, or provide verified production
+security. Changing those requirements reopens the decision.
+
+</details>
+
+## 9. Defend the result and identify when it stops applying
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-challenge-failure",
+  "title": "Checkpoint: diagnose the failure",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-challenge-failure-1",
+      "prompt": "Which proposed fix should be rejected?",
+      "options": [
+        "Return the actual public-read result.",
+        "Escalate an unknown topic without a read.",
+        "Remove the runtime allowlist because the ordinary routing branch already filters topics.",
+        "Preserve the failed stale-cache case as a regression."
+      ],
+      "answer_index": 2,
+      "explanation": "Routing code and effect authorization are separate boundaries. Removing the latter weakens the design."
+    },
+    {
+      "id": "u01-challenge-failure-2",
+      "prompt": "You reused the same qualification cases from Lesson 1.4. What is the honest description?",
+      "options": [
+        "A new secret test because the function name changed.",
+        "Proof that no future case can fail.",
+        "An independent learner pilot of the complete course.",
+        "Regression evidence; add unseen cases before claiming a fresh held-out evaluation."
+      ],
+      "answer_index": 3,
+      "explanation": "Reused evidence is useful but not newly held out."
+    },
+    {
+      "id": "u01-challenge-failure-3",
+      "prompt": "What should the retrospective say about the mean cost change from 40 to 0.5?",
+      "options": [
+        "It applies to these fixtures, uniform weights, and synthetic prices; it is not a production forecast.",
+        "It guarantees the same dollar savings for every provider.",
+        "It measures real network latency.",
+        "It establishes that multi-agent architectures never help."
+      ],
+      "answer_index": 0,
+      "explanation": "Observed counts support the stated calculation only under its explicit assumptions."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+Your final retrospective must include:
+
+1. One predicted count and the actual count, with any difference explained.
+2. One failure preserved before its fix and the check that now catches it.
+3. The quality/safety gates, cost assumption, and decision/read reduction.
+4. Why the smallest candidate is adequate for **this** input and permission contract.
+5. One changed requirement that needs a new evaluation rather than an extra
+   “agent” by default.
+
+For transfer, imagine the café starts accepting unstructured multilingual requests
+with several issues per message. Identify which current assumptions fail and
+propose the simplest next candidate to compare. You need not implement it now.
+A fixed classification workflow might be enough; an agent would need to earn any
+additional freedom through evidence. Alternatively, if all sources are unavailable
+but an answer is mandatory, record no-go instead of fabricating policy text.
+
+::: {.callout-important}
+## Completion remains self-reported and unavailable in this draft
+The technical checks establish behavior on supplied synthetic fixtures. They are
+not independent grading, certification, a security audit, or proof of general
+model reliability. Submit the evidence for review before treating the unit as done.
+:::
+
+<button type="button" class="fc-complete-button" data-fc-challenge-complete aria-pressed="false" hidden>Record challenge complete</button>
+
+This control stays hidden until publication and explicit available-activity registration.
+
+Return to the [unit overview](index.qmd), then preview
+[Unit 2: Treat Language Models as Probabilistic Components](../probabilistic-models/index.qmd).
+The next unit changes the model component; keep these deterministic baselines so
+you can tell model behavior from runtime behavior.
+
+### Sources and fixture provenance
+
+Primary references checked 2026-09-21. The references linked at their point of
+use support definitions and design vocabulary, not claims of tested live-product
+integration. The Lantern story, grid/tool worlds, contracts, request data,
+quizzes, and worked solutions are original synthetic BSD-3-Clause course material.
+Reusable code and fixtures live in `src/freecampus_agents/`; no external text,
+customer records, credentials, or model-generated reasoning traces are bundled.
+
+The theoretical references and assumptions are explained in the
+[four unit lessons](separate-automation-workflows-and-agents.qmd); the ADR format
+originates in [Nygard’s architecture decision guidance](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions).

@@ -3,7 +3,7 @@ project:
 website:
   draft-mode: visible
   sidebar:
-    - title: Unit 0 authoring review
+    - title: Course authoring review
       contents:
         - section: "Unit 0: Launch a Reproducible Agent Engineering Lab"
           contents:
@@ -15,4 +15,14 @@ website:
             - courses/agentic-ai-engineering/units/launch-agent-lab/work-in-notebooks.qmd
             - courses/agentic-ai-engineering/units/launch-agent-lab/build-local-workspace.qmd
             - href: courses/agentic-ai-engineering/units/launch-agent-lab/challenge.qmd
+              text: Unit Challenge
+        - section: "Unit 1: Decide Whether a Problem Needs an Agent"
+          contents:
+            - href: courses/agentic-ai-engineering/units/choose-agent-architecture/index.qmd
+              text: Overview
+            - courses/agentic-ai-engineering/units/choose-agent-architecture/separate-automation-workflows-and-agents.qmd
+            - courses/agentic-ai-engineering/units/choose-agent-architecture/model-the-agent-environment-loop.qmd
+            - courses/agentic-ai-engineering/units/choose-agent-architecture/bound-autonomy-with-task-contracts.qmd
+            - courses/agentic-ai-engineering/units/choose-agent-architecture/choose-the-simplest-adequate-architecture.qmd
+            - href: courses/agentic-ai-engineering/units/choose-agent-architecture/challenge.qmd
               text: Unit Challenge

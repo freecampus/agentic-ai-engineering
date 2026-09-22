@@ -67,12 +67,13 @@ def test_review_profile_is_separate_and_links_only_authored_sources():
     assert config["website"]["draft-mode"] == "gone"
     assert profile["website"]["draft-mode"] == "visible"
     assert profile["project"]["output-dir"] == "_review"
-    entries = profile["website"]["sidebar"][0]["contents"][0]["contents"]
-    assert len(entries) == 7
-    for item in entries:
-        assert (
-            Path("docs") / (item["href"] if isinstance(item, dict) else item)
-        ).is_file()
+    sections = profile["website"]["sidebar"][0]["contents"]
+    assert [len(section["contents"]) for section in sections] == [7, 6]
+    for section in sections:
+        for item in section["contents"]:
+            assert (
+                Path("docs") / (item["href"] if isinstance(item, dict) else item)
+            ).is_file()
     workflow = Path(".github/workflows/docs.yml").read_text()
     assert "docs/_site" in workflow
     assert "_review" not in workflow

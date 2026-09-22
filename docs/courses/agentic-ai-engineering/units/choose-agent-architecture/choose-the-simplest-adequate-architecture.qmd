@@ -1,0 +1,520 @@
+---
+title: Choose the Simplest Adequate Architecture
+description: Compare five offline help-desk architectures on fixed quality and safety
+  gates, count model decisions and synthetic costs, and defend an architecture decision.
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: choose-agent-architecture
+unit_number: 1
+categories:
+- agentic-ai-engineering
+- choose-agent-architecture
+order: 40
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-architecture/choose-the-simplest-adequate-architecture.ipynb
+notebook_package: true
+execute:
+  echo: true
+lesson_id: choose-agent-architecture.choose-the-simplest-adequate-architecture
+lesson_order: 40
+---
+
+::: {.lesson-meta}
+- **Level:** Foundations; controlled architecture comparison, not a benchmark of real models.
+- **Active time:** 105–150 minutes, including evaluation, sensitivity analysis, and a decision record.
+- **Prerequisites:** Lessons 1.1–1.3; control authority, trace interpretation, task contracts, and permission checks.
+- **Measurable outcome:** Apply independent quality and safety gates to five designs and justify a minimal adequate choice or an explicit no-go.
+- **Evidence:** Per-case results, cost assumptions, failure-surface inventory, held-out qualification run, and architecture decision record.
+- **Environment:** Python 3.10+ with bundled fixtures; entirely offline; costs are synthetic work units, not prices or measured latency.
+:::
+
+::: {.callout-note}
+## Review draft
+This comparison is authored for independent review. It does not certify an
+architecture or establish real-model reliability. Public completion stays disabled.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. Fix the contract before comparing the designs
+
+Lantern's proposal offers five “specialist agents.” A simpler team proposes one
+public-policy query. Both claim to handle customer questions. That description is
+too vague for a fair comparison: one could silently drop hard cases or permit
+unsafe shortcuts. Write the required behavior before looking at the scores.
+
+The contract is unchanged: exact lowercase topics `shipping` and `returns` read
+the current public fixture and return its exact text/source. Unknown labels and
+unavailable reads escalate with no invented source. Free-text notes cannot grant
+permission. There are no account writes, refunds, shell calls, or external
+network calls. The runtime permits at most 12 fake model decisions and five
+public reads per request; a smaller design need not spend the allowance.
+
+Answer these opening questions:
+
+1. What does “better” mean if a design is cheaper but wrong on one required case?
+2. Which counters describe observed work, and which values are merely assumptions?
+3. Does five-way agreement demonstrate five independent sources of evidence?
+4. When should the comparison return “none,” rather than a winner?
+
+**Adequate** means passing the specified quality *and* safety gates. **Simplest**
+means fewer unnecessary mechanisms among adequate candidates—not always the
+fewest source lines. Permissions, dependencies, decision ports, and failure paths
+are part of complexity too.
+
+## 2. Inspect what the five candidates actually do
+
+```python
+import inspect
+from freecampus_agents.architecture import VARIANTS, five_agents, cases, evaluate, eligible
+
+print(inspect.getsource(five_agents))
+for name, candidate in VARIANTS.items():
+    print(name, candidate.__name__)
+```
+
+| Candidate | Mechanism | What it can get wrong |
+|---|---|---|
+| `rule` | A deliberately stale shipping constant; otherwise escalate | Wrong/current-policy failures; inability to answer returns |
+| `retrieval` | Exact-key current public read with explicit fallback | Tool/data failure, incorrect routing contract |
+| `workflow` | Fixed fake classify → lookup → fake format | Two extra model-stage interfaces without demonstrated benefit |
+| `single-agent` | One controller chooses read/finish/escalate from observations | Unsupported proposal, repeated work, budget exhaustion |
+| `five-agents` | Five separately initialized observation loops; accept agreement | Repeated reads/decisions, correlated errors, coordination failures |
+
+The five controllers have cosmetic role names but identical scripted policies.
+Each has its own local observation variable and makes its own read/finish
+choices. They share one trusted runtime and its global limits. They execute
+sequentially; this is not a parallel speedup demonstration. Their agreement is
+not independent corroboration because they use the same policy and source.
+
+Do not generalize from a deliberately overbuilt baseline to “multi-agent systems
+never help.” Also do not generalize from the deliberately stale `rule` to “rules
+are inadequate.” The winning lookup itself is ordinary deterministic code.
+These candidates isolate particular differences; they are not optimally tuned
+representatives of whole architecture families.
+
+List the **failure surface** before running: input interpretation, each model
+output boundary, each permitted tool attempt, observation handling, coordination,
+and final validation. Count opportunities for a defect, not a supposed empirical
+probability. A component can be present without failing on the current fixture.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-choose-the-simplest-adequate-architecture-concept",
+  "title": "Checkpoint: explain the mechanism",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-concept-1",
+      "prompt": "When should cost ranking occur?",
+      "options": [
+        "Before evaluating required behavior.",
+        "By letting low cost compensate for forbidden actions.",
+        "By preferring the architecture with the most model calls.",
+        "Only after independent quality and safety gates identify adequate candidates."
+      ],
+      "answer_index": 3,
+      "explanation": "A failing candidate is not made adequate by being cheap."
+    },
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-concept-2",
+      "prompt": "Why does five-agent agreement not establish independent corroboration here?",
+      "options": [
+        "All five use the same scripted policy and public source.",
+        "They have too few job titles.",
+        "Agreement always proves the source is false.",
+        "Sequential code cannot record observations."
+      ],
+      "answer_index": 0,
+      "explanation": "Separate local histories do not remove shared causes of error."
+    },
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-concept-3",
+      "prompt": "Which claim does the deliberately stale rule baseline support?",
+      "options": [
+        "Every deterministic architecture is worse than an agent.",
+        "This implementation fails the specified cases, not that all rules are inadequate.",
+        "The query cannot be deterministic.",
+        "The test proves real models outperform rules."
+      ],
+      "answer_index": 1,
+      "explanation": "Architecture-family conclusions require more than one intentionally defective representative."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 3. Compare development cases with separate quality and safety gates
+
+The four development cases include ordinary shipping/returns, an unsupported
+refund request, and an unavailable returns lookup. They contain literal expected
+replies authored separately from the candidates. `evaluate` creates a fresh runtime
+per case so prior state cannot leak between candidates.
+
+Predict which candidates pass every case and which should be cheapest among
+those that pass:
+
+```python
+development = cases("development")
+results_by_name = {
+    name: evaluate(candidate, development)
+    for name, candidate in VARIANTS.items()
+}
+for name, results in results_by_name.items():
+    print(name, {
+        "quality": sum(row.quality_pass for row in results),
+        "safety": sum(row.safety_pass for row in results),
+        "cases": len(results),
+        "decisions": sum(row.decisions for row in results),
+        "reads": sum(row.reads for row in results),
+        "eligible": eligible(results),
+    })
+assert not eligible(results_by_name["rule"])
+assert all(eligible(results_by_name[name]) for name in VARIANTS if name != "rule")
+```
+
+The quality checker compares exact required replies, including status and source.
+The safety checker asks a narrower question: did this supplied runtime record any
+forbidden-action attempt, budget stop, or execution error? Even a *prevented*
+forbidden request fails the behavior gate, because the contract says the controller
+must not request it. That differs from saying an unsafe effect actually occurred.
+Preserve both distinctions in your report.
+
+This observed-event checker cannot prove arbitrary Python is safe. A malicious
+callback could bypass the runtime or falsify its event list. The candidate code
+is trusted teaching code; review the source as well as the trace. Security
+isolation is a later topic, not something this in-process experiment establishes.
+
+Inspect one failure instead of reporting only an average:
+
+```python
+rule_failure = results_by_name["rule"][0]
+print(rule_failure)
+assert rule_failure.reply.text == "Dispatch tomorrow."
+assert rule_failure.quality_pass is False
+assert rule_failure.safety_pass is True
+```
+
+A wrong but permitted reply is a quality failure, not necessarily an authorization
+failure. Multiplying the quality score by a safety score would hide the reason.
+Keep the two gates separate, and never let cheapness compensate for either one.
+
+## 4. Price observed work without pretending it is a bill
+
+Let $d_i$ be counted fake model invocations and $r_i$ counted public read attempts
+for case $i$. Under the explicit teaching assumption that a decision costs five
+work units and a read costs one:
+
+$$C_i = 5d_i + r_i.$$
+
+This is an assumed cost model applied to observed counters. There are no provider
+tokens, dollars, GPU timings, or measured end-to-end latency here. A failed read
+still counts. If repeated decisions use different model sizes in a later system,
+they need different prices rather than one flat multiplier.
+
+```python
+mean_cost = {
+    name: sum(row.cost() for row in results) / len(results)
+    for name, results in results_by_name.items()
+}
+qualified = [name for name, results in results_by_name.items() if eligible(results)]
+chosen = min(qualified, key=mean_cost.__getitem__) if qualified else None
+print("Assumed mean work units:", mean_cost)
+assert chosen == "retrieval"
+assert results_by_name["five-agents"][0].cost() == 55
+assert results_by_name["retrieval"][0].cost() == 1
+```
+
+For one ordinary request, five agents make ten decisions and five reads: 55
+units. The query uses one read: one unit. More work is not automatically useful
+work; all required replies already match.
+
+A uniform mean assumes the fixture cases occur equally often. For a stated
+traffic mixture with weights $w_i \ge 0$ and $\sum_i w_i = 1$, expected cost under
+that *assumed mixture* is $\sum_i w_i C_i$. Do not advertise a production saving
+without a justified traffic distribution and a complete cost model. Human review,
+maintenance, retries, and incident handling are omitted here and should be named.
+
+Run a sensitivity check rather than trusting one arbitrary price ratio:
+
+```python
+for decision_price, read_price in ((1, 1), (5, 1), (20, 2)):
+    priced = {
+        name: sum(row.cost(decision_price, read_price) for row in results_by_name[name])
+        for name in qualified
+    }
+    assert min(priced, key=priced.__getitem__) == "retrieval"
+    print((decision_price, read_price), priced)
+```
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-choose-the-simplest-adequate-architecture-evidence",
+  "title": "Checkpoint: interpret the evidence",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-evidence-1",
+      "prompt": "A run makes ten decisions and five reads. At prices five and one, what is its cost?",
+      "options": [
+        "15 dollars measured from a provider invoice.",
+        "50 units because reads are ignored.",
+        "55 synthetic work units.",
+        "Five units because only successful final replies count."
+      ],
+      "answer_index": 2,
+      "explanation": "Cost is 10*5 + 5*1 under an explicitly assumed model, not actual billing."
+    },
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-evidence-2",
+      "prompt": "The stale rule returns a permitted but incorrect answer. How should this appear?",
+      "options": [
+        "Safety and quality must always have the same result.",
+        "A low work count makes the answer correct.",
+        "The wrong reply proves an account write occurred.",
+        "Quality fails while the observed-action safety gate may pass."
+      ],
+      "answer_index": 3,
+      "explanation": "Separate gates preserve different failure causes."
+    },
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-evidence-3",
+      "prompt": "Why is p raised to the number of stages only illustrative here?",
+      "options": [
+        "It assumes independent required-stage successes and supplied probabilities, neither measured here.",
+        "Multiplication can never describe reliability.",
+        "All agent errors are independent by definition.",
+        "A fake model reveals empirical production success probabilities."
+      ],
+      "answer_index": 0,
+      "explanation": "Correlated errors, recovery, and alternate paths can invalidate the simple product model."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 5. Estimate failure opportunities and name the assumptions
+
+Suppose every required stage independently succeeds with probability $p = 0.98$
+and the run needs all stages to succeed. Then a two-stage chain succeeds with
+$p^2$, while a ten-stage chain succeeds with $p^{10}$. This is an illustrative
+calculation, not a measurement of our fixtures or a universal model of agents:
+
+```python
+p = 0.98
+print("Two required independent stages:", p ** 2)
+print("Ten required independent stages:", p ** 10)
+assert p ** 10 < p ** 2
+```
+
+The independence assumption often fails. Shared sources, shared prompts, and
+common infrastructure can correlate failures. A reviewer might repair an earlier
+error rather than add an independently required stage. Parallel alternatives
+might only require one success. Therefore “more stages always reduces reliability”
+is not a theorem about all architectures. The useful engineering move is to
+identify dependencies and test the actual arrangement.
+
+Create this inventory for your candidates:
+
+| Item to inventory | Example entry | Evidence required to justify adding it |
+|---|---|---|
+| Model decision port | Format a known policy sentence | A formatting requirement the simpler query fails |
+| Permission | Read another source | A task case requiring that source, with scoped access |
+| Dependency | External service | Availability/latency and failure behavior evidence |
+| Fallback | Retry or human escalation | A demonstrated recovery and a bound |
+| Coordination | Combine five controller outputs | A task benefit plus disagreement handling |
+
+The count is an aid to review, not a scalar complexity truth. If a permission is
+unacceptable, its risk is not canceled by reducing one model call elsewhere.
+
+## 6. Freeze a choice, then run qualification and a no-go case
+
+::: {.callout-tip}
+## Lab: a reproducible decision, including its rejected alternatives
+Choose from development evidence and write the candidate, contract, cost
+assumptions, and revision before opening the qualification fixtures. The public
+qualification file is held out by procedure, not secret. If you inspect or tune
+against it first, disclose that and create new cases for another qualification.
+:::
+
+Qualification includes changed policy versions, an empty label, case mismatch,
+tool outage, and instructions hidden in notes. Freeze your choice now; only then
+run the next cell:
+
+```python
+frozen_choice = chosen
+qualification = cases("qualification")
+qualification_results = {
+    name: evaluate(candidate, qualification)
+    for name, candidate in VARIANTS.items()
+}
+assert frozen_choice is not None
+assert eligible(qualification_results[frozen_choice])
+assert {row.case_id for row in qualification_results[frozen_choice]} == {
+    case.id for case in qualification
+}
+for name, rows in qualification_results.items():
+    print(name, "passes", sum(row.quality_pass for row in rows), "/", len(rows))
+```
+
+All variants receive the same cases. A case ID is an evaluation label, not an
+input to a candidate: the architecture receives only `Request` and `Desk`. Do
+not add case-ID-specific branches or tune outputs to expected answers. An
+independent literal oracle is still finite; passing it does not establish general
+language understanding or resistance to arbitrary prompt injection.
+
+Now consider a contract change: the help desk must answer shipping questions
+even during source outage, but unverifiable cached answers are forbidden. None
+of these candidates can meet that requirement. The proper result is a no-go or
+human renegotiation of the service requirement, not “choose the largest agent.”
+
+```python
+from freecampus_agents.architecture import Case, Request, Reply, public_policies
+
+impossible_now = (Case(
+    id="required-answer-during-outage", group="boundary",
+    request=Request("shipping"), unavailable=frozenset({"shipping"}),
+    policies=public_policies(),
+    expected=Reply("answer", "Dispatch within 2 working days.", "shipping-v2"),
+),)
+assert not any(eligible(evaluate(candidate, impossible_now)) for candidate in VARIANTS.values())
+assert eligible(()) is False  # No cases is insufficient evidence, not a perfect score.
+print("No-go: no candidate meets the changed contract")
+```
+
+Acceptance requires: identical qualification cases for every variant; additional
+autonomy either yields a measurable required benefit or is rejected; and empty
+or inadequate evidence can produce no-go. Preserve the failed cases, not just a
+winner's name.
+
+<details>
+<summary>Hint and worked decision rule—open after writing your record</summary>
+
+Filter by both gates before minimizing cost. Never rank failing candidates into
+eligibility.
+
+```python
+def select_candidate(comparison):
+    adequate = {name: rows for name, rows in comparison.items() if eligible(rows)}
+    if not adequate:
+        return None
+    return min(adequate, key=lambda name: sum(row.cost() for row in adequate[name]))
+
+assert select_candidate(qualification_results) == "retrieval"
+assert select_candidate({"no-evidence": ()}) is None
+assert select_candidate({
+    name: evaluate(candidate, impossible_now) for name, candidate in VARIANTS.items()
+}) is None
+print("Architecture selection checks passed")
+```
+
+A worked decision is: accept the exact-key query for structured public-policy
+requests; reject the stale constant for quality; reject the workflow and agent
+variants because they add work without a required benefit on this evidence.
+Withhold approval for natural-language exploratory requests, write actions, and
+outage-time guaranteed answers. They are outside the validated contract.
+
+</details>
+
+## 7. Write an architecture decision record and challenge it
+
+An **architecture decision record (ADR)** preserves context, a decision, and its
+consequences, rather than only the final diagram. The original lightweight format
+is described by [Michael Nygard](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions).
+Use the following course-specific evidence fields:
+
+```text
+Title and status: Exact-key public-policy query — proposed/accepted/no-go
+Context: input boundary, success, forbidden effects, available evidence
+Candidates: rule, query, fixed workflow, single agent, five agents
+Decision: selected candidate, or no-go with the unmet gate
+Evidence: fixture revision, per-case quality/safety, decision/read counts
+Cost assumptions: prices, traffic weights, omitted costs; sensitivity result
+Rejected alternatives: one concrete reason for each
+Consequences: what gets simpler; what capability is deliberately not supplied
+Uncertainty: untested populations, model behavior, platforms, and failure modes
+Revisit trigger: changed input contract, permissions, data source, or service target
+```
+
+Transfer: a new stakeholder forbids external network tools and tightens a latency
+target. Our fixture already uses local data, but that says nothing about a later
+production query service's latency. Identify which part of your decision survives
+and which requires new measurements. Alternatively, the input changes to
+unrestricted multilingual questions: the exact-key interface no longer solves
+the stated problem. Redesign the comparison before adding autonomy.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-choose-the-simplest-adequate-architecture-failure",
+  "title": "Checkpoint: diagnose the failure",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-failure-1",
+      "prompt": "No candidate meets a required answer-during-outage condition. What is the appropriate result?",
+      "options": [
+        "Automatically choose five agents.",
+        "No-go or renegotiate the requirement; do not fabricate an answer.",
+        "Drop the outage case without disclosing it.",
+        "Treat terminal escalation as an evidence-backed answer."
+      ],
+      "answer_index": 1,
+      "explanation": "More autonomy cannot manufacture missing permitted evidence."
+    },
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-failure-2",
+      "prompt": "You inspected qualification fixtures before tuning the design. What should the ADR say?",
+      "options": [
+        "Call the public fixtures secret to preserve the claim.",
+        "Delete the record of the earlier inspection.",
+        "Disclose the exposure and obtain new cases before claiming held-out qualification.",
+        "A held-out label remains valid regardless of tuning."
+      ],
+      "answer_index": 2,
+      "explanation": "Held-out status depends on procedure, not a filename."
+    },
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-failure-3",
+      "prompt": "A stakeholder changes structured topics to unrestricted multilingual questions. What follows?",
+      "options": [
+        "The old exact-key pass proves language understanding.",
+        "Add five agents without measuring any baseline.",
+        "Keep the old contract and quietly reject all new users.",
+        "Reopen the contract and compare the simplest candidates for the new task."
+      ],
+      "answer_index": 3,
+      "explanation": "Evidence is scoped to inputs and requirements. Changed tasks need new evaluation."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 8. Retain a decision that can be revisited
+
+Save the ADR, complete results, cost assumptions, a failure-surface inventory,
+and the no-go example. Note whether qualification was genuinely held out during
+your implementation. Report test performance rather than “reliability” when you
+have only these finite deterministic fixtures.
+
+**Key points:** gate before ranking; separate correctness from permission;
+measure actual attempts; distinguish synthetic costs from real billing; shared
+policies do not provide independent evidence; no-go is a valid engineering result.
+
+Apply all four lessons in [De-Agentify an Overbuilt System](challenge.qmd).
+The [unit overview](index.qmd) summarizes the final evidence bundle.
+
+### Sources and fixture provenance
+
+Primary references checked 2026-09-21. The references linked at their point of
+use support definitions and design vocabulary, not claims of tested live-product
+integration. The Lantern story, grid/tool worlds, contracts, request data,
+quizzes, and worked solutions are original synthetic BSD-3-Clause course material.
+Reusable code and fixtures live in `src/freecampus_agents/`; no external text,
+customer records, credentials, or model-generated reasoning traces are bundled.

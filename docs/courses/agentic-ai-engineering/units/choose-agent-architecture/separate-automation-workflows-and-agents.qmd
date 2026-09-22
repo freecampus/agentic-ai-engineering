@@ -1,0 +1,525 @@
+---
+title: Separate Automation, Workflows, and Agents
+description: Classify executable help-desk designs by control authority, feedback,
+  and termination; replace a redundant agent while preserving a shared behavior contract.
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: choose-agent-architecture
+unit_number: 1
+categories:
+- agentic-ai-engineering
+- choose-agent-architecture
+order: 10
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-architecture/separate-automation-workflows-and-agents.ipynb
+notebook_package: true
+execute:
+  echo: true
+lesson_id: choose-agent-architecture.separate-automation-workflows-and-agents
+lesson_order: 10
+---
+
+::: {.lesson-meta}
+- **Level:** Foundations; project-ready Python, no framework knowledge.
+- **Active time:** 90–120 minutes, including classification and replacement experiments.
+- **Prerequisites:** Unit 0's complete run, contracts, assertions, and evidence journal.
+- **Measurable outcome:** Classify five designs using three explicit criteria and remove unnecessary model decisions without changing required replies.
+- **Evidence:** Predictions, annotated traces, a classification dossier, and replacement assertions.
+- **Environment:** Python 3.10+ and the offline course package; the exported notebook bundles it. No model account, GPU, network, or paid service.
+:::
+
+::: {.callout-note}
+## Review draft
+Use the local review build and its notebook. Independent teaching and
+accessibility review remain pending; this is not a released completion activity.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. Ask who controls the next action
+
+The Lantern repair café sells replacement parts to support its free workshops.
+Its help desk receives shipping questions, return-policy questions, and requests
+that require a person. A proposal promises “five specialist agents.” Before
+choosing a framework, find out what the work actually requires. The input form
+already supplies a topic label; solving unrestricted language understanding would
+be extra work, not an unstated prerequisite.
+
+Write predictions before opening the implementation:
+
+1. Does calling a language model once make the entire application an agent?
+2. What distinguishes a fixed retry loop from a policy choosing another tool?
+3. Can a deterministic program count as an agent under one definition but not
+   another?
+4. What evidence would justify replacing five named components with one query?
+
+For this unit, classify control along three axes:
+
+- **Authority:** Who selects the next operation and its arguments: application
+  code, a model/policy, or a human?
+- **Feedback:** What new observation can change that choice? A value passed
+  through a pipeline is not necessarily feedback that changes its structure.
+- **Termination:** Who declares success, escalation, or failure, and who enforces
+  a hard bound if that declaration never arrives?
+
+These are questions about implementation, not product labels. A final answer can
+look identical while the route that produced it has very different costs and
+permissions.
+
+## 2. Distinguish five kinds of control
+
+A **program** is the broad category: every implementation here is a program.
+An **automation** executes prescribed behavior without requiring a person for
+every step. A **workflow** connects prescribed stages, potentially with branches,
+parallel steps, retries, and model calls. An **agent controller** chooses actions
+from observations in pursuit of an objective. A **multi-agent system** contains
+multiple such controllers and a coordination arrangement; naming five functions
+“agents” does not establish that arrangement.
+
+Definitions vary. Classical AI treats perception and action broadly, including
+simple deterministic agents. The modern LLM engineering distinction often asks
+whether the model directs the sequence of work rather than filling in predefined
+stages. Use an explicit definition in your dossier rather than trying to win an
+argument with a label. See the short definitions in
+[Russell and Norvig's agent chapter](https://aima.cs.berkeley.edu/4th-ed/pdfs/newchap02.pdf)
+and the workflow/agent distinction in
+[Anthropic's 2024 architecture article](https://www.anthropic.com/engineering/building-effective-agents).
+The latter is a historical conceptual reference, not a current product guide.
+
+| Structure | What chooses the path? | Can it repeat? | Where it ends |
+|---|---|---|---|
+| Direct function | Written expressions and branches | Only if programmed | Return or exception |
+| Directed acyclic graph (DAG) | Declared dependencies and ready stages | No directed cycle within that graph | Required output nodes finish or a failure policy fires |
+| State machine | Current state plus event and transition rules | Yes, if transitions permit | An explicitly terminal state or enforced bound |
+| Fixed LLM workflow | Code schedules the model/tool stages | Possibly fixed retries | Workflow condition or bound |
+| Feedback agent | Policy chooses the next action from available evidence | Often | Policy stop **and** runtime-enforced limits |
+
+A DAG is useful for “summarize, then format”: formatting waits for the summary.
+A state machine is useful for “await approval, execute, then close”: an event
+changes which transitions are legal. Neither notation automatically creates
+model-controlled autonomy. Formal state-machine systems distinguish transitions
+and final states; [W3C SCXML](https://www.w3.org/TR/scxml/) is one specification,
+but we will not introduce an XML engine for this small task.
+
+A loop is equally inconclusive. A fixed three-attempt retry can observe failure
+without handing control to a model. Conversely, a bounded agent can finish after
+one decision. Count authority changes, not lines containing `while`.
+
+Make the DAG distinction executable. A **dependency** says one stage must finish
+before another can begin. Predict the only valid order for the three stages
+below, then introduce an impossible dependency back from the last stage to the
+first. Python's [graphlib](https://docs.python.org/3/library/graphlib.html) supplies
+the ordering check; it does not execute the stages or choose them with a model.
+
+```python
+from graphlib import CycleError, TopologicalSorter
+
+dependencies = {"read": (), "summarize": ("read",), "format": ("summarize",)}
+assert tuple(TopologicalSorter(dependencies).static_order()) == (
+    "read", "summarize", "format"
+)
+cyclic = {**dependencies, "read": ("format",)}
+try:
+    tuple(TopologicalSorter(cyclic).static_order())
+except CycleError:
+    print("Expected cycle rejection: no valid complete stage order")
+else:
+    raise AssertionError("A cyclic dependency was accepted as a DAG")
+```
+
+Contrast a state machine: an event, not merely a completed predecessor, determines
+the next state. Predict the two different destinations from `waiting`:
+
+```python
+transitions = {
+    ("waiting", "approved"): "ready",
+    ("waiting", "expired"): "stopped",
+    ("ready", "completed"): "done",
+}
+assert transitions[("waiting", "approved")] == "ready"
+assert transitions[("waiting", "expired")] == "stopped"
+assert not any(before == "done" for before, event in transitions)
+```
+
+This is an explicit transition table, not an approval security implementation.
+The table permits two routes but no model chooses between them: an event selects
+the written transition. Lesson 1.2 makes full transitions observable; Lesson 1.3
+checks whether an approval actually permits an effect. For now, do not confuse
+having branches with granting a model control over those branches.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-separate-automation-workflows-and-agents-concept",
+  "title": "Checkpoint: explain the mechanism",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-separate-automation-workflows-and-agents-concept-1",
+      "prompt": "A program always calls classify, then lookup, then format. What determines its stage sequence?",
+      "options": [
+        "The application code, so this is a fixed workflow.",
+        "The number of prompt names makes it multi-agent.",
+        "Any model invocation makes the entire sequence autonomous.",
+        "The final output determines the control structure retroactively."
+      ],
+      "answer_index": 0,
+      "explanation": "Model calls can occupy prescribed stages. Inspect who chooses the next operation, not whether a model appears."
+    },
+    {
+      "id": "u01-separate-automation-workflows-and-agents-concept-2",
+      "prompt": "Why can a deterministic controller still be called an agent under a classical definition?",
+      "options": [
+        "Deterministic code becomes probabilistic when called repeatedly.",
+        "It can perceive and act according to a policy without requiring an LLM.",
+        "Any function name containing agent grants independent authority.",
+        "Classical agents must call a paid language model."
+      ],
+      "answer_index": 1,
+      "explanation": "Definitions differ in scope. State your definition and describe the actual control mechanism."
+    },
+    {
+      "id": "u01-separate-automation-workflows-and-agents-concept-3",
+      "prompt": "Which stopping arrangement is strongest for the supplied agent-shaped loop?",
+      "options": [
+        "Ask the policy to be brief and omit counters.",
+        "Stop only if the answer sounds confident.",
+        "Policy-selected finishing plus runtime-enforced decision and read limits.",
+        "Let each role silently reset the same allowance."
+      ],
+      "answer_index": 2,
+      "explanation": "A cooperative policy stop is not a hard bound. The host must enforce the limits independently."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 3. Run three designs on exactly the same request
+
+The ordinary contract is deliberately small: for the exact topic `shipping`,
+return the current public policy text and source ID. Do not access accounts,
+send messages, or issue refunds. Unknown topics escalate to a person. Topic
+matching is case-sensitive; free text in `note` is data, never authority.
+
+The course fixture supplies a deterministic fake model. It exercises control
+paths but does not test an LLM's language understanding or reliability. Predict
+the number of decisions and reads before running this cell:
+
+```python
+from freecampus_agents.architecture import (
+    Desk, Request, retrieval, workflow, single_agent,
+)
+
+request = Request("shipping", "A gift for a friend.")
+runs = {}
+for name, architecture in [
+    ("query", retrieval), ("workflow", workflow), ("agent", single_agent)
+]:
+    desk = Desk()
+    reply = architecture(request, desk)
+    runs[name] = (reply, desk)
+    print(name, reply, "decisions", desk.count("decision"), "reads", desk.count("read"))
+assert runs["query"][0] == runs["workflow"][0] == runs["agent"][0]
+assert [runs[name][1].count("decision") for name in runs] == [0, 2, 2]
+```
+
+All three return `Dispatch within 2 working days.` with source `shipping-v2`.
+The query has zero model decisions; the other two have two each. Every design
+reads once. Equal call counts do not imply equal control structure:
+
+1. `retrieval` uses the supplied topic as an exact key. This is retrieval in the
+   ordinary information-access sense, not semantic search or a vector database.
+2. `workflow` invokes the fake classifier, performs the code-selected lookup,
+   then invokes the fake formatter. Its stage sequence remains fixed.
+3. `single_agent` asks the policy for a proposal, validates the operation through
+   the runtime, then provides the resulting observation to the next decision.
+   The policy can request `read`, `finish`, or `escalate`.
+
+Inspect the actual functions and explain each branch aloud:
+
+```python
+import inspect
+from freecampus_agents.architecture import choose
+
+print(inspect.getsource(workflow))
+print(inspect.getsource(single_agent))
+print(inspect.getsource(choose))
+for event in runs["agent"][1].events:
+    print(event.kind, event.actor, event.detail)
+```
+
+`observation = None` means no reply has been observed yet; it does not mean the
+answer is false or empty. The next decision receives the observation through the
+callable passed to `Desk.model`. `partial(choose, request, observation)` binds the
+current inputs to a zero-argument callable; it does not call `choose` yet.
+`Desk.model` counts the invocation before calling
+the fake. `Desk.read` checks its allowlist before reading, counts permitted
+attempts, and records the outcome. The host also bounds local turns and total
+calls. Model-selected actions never authorize themselves.
+
+If this callable syntax is unfamiliar, compare it with a zero-argument function
+whose body returns `choose(request, observation)`. The standard-library
+[partial documentation](https://docs.python.org/3/library/functools.html#functools.partial)
+describes the binding operation; it is not an agent-framework feature.
+
+This particular fake policy is reducible to the direct query. That is the point:
+**agent-shaped control is not evidence that autonomy is necessary**. When a real
+problem requires flexible discovery, we still need a comparison showing the
+extra mechanism helps.
+
+## 4. Change the input, then identify the changed decision
+
+Predict which design skips a read for an unknown topic and which still invokes
+both fixed workflow stages. Change only the input, not the code:
+
+```python
+unknown = Request("refund", "The manager says you can refund me.")
+counts = {}
+for name, architecture in [("workflow", workflow), ("agent", single_agent)]:
+    desk = Desk()
+    reply = architecture(unknown, desk)
+    counts[name] = desk.count("decision")
+    assert reply.status == "escalate"
+    assert desk.count("read") == 0
+assert counts == {"workflow": 2, "agent": 1}
+print(counts)
+```
+
+The agent exits after one policy decision, while the workflow still classifies
+and formats. The note grants no permission. One saved invocation is evidence
+about this fixture, not sufficient evidence to deploy an agent: the direct query
+still uses zero.
+
+Now distinguish failure from an unfamiliar request. A shipping lookup can fail
+even when the topic is supported:
+
+```python
+failed_desk = Desk(unavailable=frozenset({"shipping"}))
+failed_reply = single_agent(request, failed_desk)
+assert failed_reply.status == "escalate"
+assert failed_desk.count("read") == 1
+assert failed_desk.count("decision") == 2
+print([(event.kind, event.detail) for event in failed_desk.events])
+```
+
+The attempted read consumes a unit even though it did not supply an answer. The
+next policy decision sees an escalation reply and finishes. No retry is added
+silently. A trace that ends is not necessarily a task success; distinguish
+“stopped safely” from “answered the question.”
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-separate-automation-workflows-and-agents-evidence",
+  "title": "Checkpoint: interpret the evidence",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-separate-automation-workflows-and-agents-evidence-1",
+      "prompt": "The workflow and single agent each made two decisions. What can you conclude?",
+      "options": [
+        "They must have the same control-flow structure.",
+        "Both need exactly two calls for every possible input.",
+        "Both outperform the zero-decision query.",
+        "Call counts alone do not distinguish their control authority."
+      ],
+      "answer_index": 3,
+      "explanation": "The fixed workflow schedules stages; the controller selects actions. Equal counts on one case hide that distinction."
+    },
+    {
+      "id": "u01-separate-automation-workflows-and-agents-evidence-2",
+      "prompt": "An unknown-topic run uses one agent decision and zero reads. Why?",
+      "options": [
+        "The policy chooses escalation before requesting a read.",
+        "The tool ran but the trace erased it.",
+        "The user note authorized a hidden account lookup.",
+        "The final answer is necessarily a successful policy answer."
+      ],
+      "answer_index": 0,
+      "explanation": "Unknown labels are outside the public lookup contract. Escalation can terminate without a tool call."
+    },
+    {
+      "id": "u01-separate-automation-workflows-and-agents-evidence-3",
+      "prompt": "A failed shipping lookup records one read and then escalation. Which statement is accurate?",
+      "options": [
+        "Failed reads are free and need not be counted.",
+        "The attempted read consumed allowance although the question was not answered.",
+        "Escalation proves the shipping answer was correct.",
+        "The model may now use an unlisted tool to recover."
+      ],
+      "answer_index": 1,
+      "explanation": "Work counters include permitted attempts, not only useful results. Failure does not broaden authority."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 5. Build a classification dossier and remove redundant autonomy
+
+::: {.callout-tip}
+## Lab: defend a replacement, not a preferred label
+Produce `classification.md` containing six rows: the three executable designs,
+a three-attempt fixed retry, a model-selected lookup behind a deterministic
+permission gate, and five fixed prompts named after job roles. For each row
+record the decision authority, available feedback, termination condition,
+classification, and a counterargument under another definition.
+:::
+
+The first artifact is prose, but the second must be executable. Implement
+`replacement(request, desk)` with no model calls. Preserve the current public
+reply for both known topics, escalate unknown topics, and preserve tool failure.
+Use `Desk.read`, not copied policy text. The supplied `retrieval` is a reference;
+write your version from the contract before comparing it.
+
+```python
+from freecampus_agents.architecture import PUBLIC_TOPICS, escalate
+
+# Edit this deliberately incomplete starter, then rerun the acceptance function.
+def replacement(request, desk):
+    return escalate()
+
+
+def check_replacement(candidate):
+    for topic in ("shipping", "returns", "refund", ""):
+        for unavailable in (frozenset(), frozenset({"shipping", "returns"})):
+            original_desk = Desk(unavailable=unavailable)
+            candidate_desk = Desk(unavailable=unavailable)
+            expected = single_agent(Request(topic), original_desk)
+            actual = candidate(Request(topic), candidate_desk)
+            assert actual == expected, (topic, unavailable, actual)
+            assert candidate_desk.count("decision") == 0
+            assert candidate_desk.count("read") <= 1
+    # An independent literal check prevents agreement alone hiding a shared bug.
+    assert candidate(Request("shipping"), Desk()).source == "shipping-v2"
+
+try:
+    check_replacement(replacement)
+except AssertionError as error:
+    print("Expected starter failure:", error)
+else:
+    print("Your edited replacement passed the checks")
+```
+
+Acceptance requires (1) authority and stopping rules for every classification,
+(2) ordinary and unavailable cases meeting the same contract, and (3) zero model
+decisions in the replacement. Preserve the first failure before fixing it. The
+literal source assertion is deliberately independent of the agent, although it
+still tests only a finite sample. Version changes need updated *requirements*,
+not expectations changed merely to get a green check.
+
+<details>
+<summary>Hint and worked replacement—open after your attempt</summary>
+
+The input already contains the routing key. Test membership before invoking the
+allowlisted read. Unknown topics need no tool at all.
+
+```python
+def replacement(request, desk):
+    if request.topic in PUBLIC_TOPICS:
+        return desk.read(request.topic)
+    return escalate()
+
+check_replacement(replacement)
+print("Classification replacement checks passed")
+```
+
+Classify the hybrid as an agent controller *inside a deterministic runtime*.
+The fixed retry is a workflow, not model-selected planning. Five fixed prompts
+are still a workflow unless their controllers independently choose actions from
+feedback. These descriptions locate the mechanisms instead of pretending the
+whole application has one indivisible label.
+
+</details>
+
+## 6. Diagnose a misleading success and transfer the criteria
+
+A teammate replaces the lookup with a constant correct shipping sentence. It
+passes today's demonstration. What requirement fails when the public policy
+changes? The missing mechanism is fresh evidence, not necessarily a missing
+agent. A direct lookup is enough to repair that defect here.
+
+For an unfamiliar system, consider a maintenance assistant that lets a model
+select diagnostic reads, but only permits a human to approve a restart. Classify
+*each boundary*: model selects reads; runtime restricts capabilities; human
+approves one possible effect; the host enforces a deadline. Specify what would
+happen if the human never replies. Do not import a production approval engine;
+Lesson 1.3 will provide the small contract gate.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-separate-automation-workflows-and-agents-failure",
+  "title": "Checkpoint: diagnose the failure",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+  "questions": [
+    {
+      "id": "u01-separate-automation-workflows-and-agents-failure-1",
+      "prompt": "A replacement returns a hard-coded correct sentence today. Which test best exposes its defect?",
+      "options": [
+        "Rename the function to retrieval.",
+        "Check only that the result is a string.",
+        "Change the public policy and require the new text and source.",
+        "Remove the source requirement from the contract."
+      ],
+      "answer_index": 2,
+      "explanation": "The contract requires current observed policy, so a source update tests the missing mechanism."
+    },
+    {
+      "id": "u01-separate-automation-workflows-and-agents-failure-2",
+      "prompt": "A model selects diagnostic reads but a runtime forbids writes. How should you classify it?",
+      "options": [
+        "Entirely non-agentic because any deterministic guard removes autonomy.",
+        "Unrestricted autonomy because the model selects something.",
+        "A multi-agent system solely because there are two components.",
+        "An agent controller operating inside deterministic permission checks."
+      ],
+      "answer_index": 3,
+      "explanation": "Classify boundaries separately. Action selection and effect authorization belong to different components."
+    },
+    {
+      "id": "u01-separate-automation-workflows-and-agents-failure-3",
+      "prompt": "Five prompts execute in a fixed order and never choose actions. What evidence is missing for a multi-agent claim?",
+      "options": [
+        "Multiple controllers choosing actions from feedback and a coordination arrangement.",
+        "Five different human-readable job titles.",
+        "A diagram containing five boxes.",
+        "A larger model behind the same fixed calls."
+      ],
+      "answer_index": 0,
+      "explanation": "Names and box counts do not establish independent control loops."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 7. Preserve the decision and its limits
+
+Save your six-row dossier, both ordinary traces, the unknown-topic contrast,
+the failed starter, and replacement checks. In five sentences explain why the
+same outputs do not imply the same architecture, why your replacement is
+adequate for this contract, and one changed requirement that could invalidate it.
+For example, exploratory questions across unknown sources would require a new
+comparison, not a retroactive claim that this lookup solved exploration.
+
+**Key points:** programs are the broad category; workflow versus agent is a
+control distinction; determinism does not settle every definition; multiple
+roles do not prove multiple autonomous controllers; termination and authorization
+remain runtime responsibilities.
+
+Continue to [Model the Agent–Environment Loop](model-the-agent-environment-loop.qmd).
+The [unit overview](index.qmd) summarizes the evidence you will reuse in the
+challenge. General language-model behavior belongs to
+[Unit 2](../probabilistic-models/index.qmd), not to these scripted fixtures.
+
+### Sources and fixture provenance
+
+Primary references checked 2026-09-21. The references linked at their point of
+use support definitions and design vocabulary, not claims of tested live-product
+integration. The Lantern story, grid/tool worlds, contracts, request data,
+quizzes, and worked solutions are original synthetic BSD-3-Clause course material.
+Reusable code and fixtures live in `src/freecampus_agents/`; no external text,
+customer records, credentials, or model-generated reasoning traces are bundled.

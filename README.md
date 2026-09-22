@@ -16,6 +16,12 @@ They await independent teaching/accessibility review and are not counted as
 published lessons. See the
 [Unit 0 authoring report](reports/unit0-authoring-review.md).
 
+Unit 1 now has four detailed lesson drafts and **De-Agentify an Overbuilt
+System**, with theory, offline experiments, 45 checkpoint questions, hidden
+worked solutions, and a costed architecture decision. These also remain
+unpublished review drafts. See the
+[Unit 1 authoring report](reports/unit1-authoring-review.md).
+
 ## Explore the course
 
 - [Website source](docs/index.qmd)
@@ -130,7 +136,7 @@ Browser OJS quizzes become offline Markdown questions with hidden answers in
 notebook exports. Overview notebooks remain clearly labeled orientation
 material.
 
-### Review Unit 0 without publishing it
+### Review Units 0–1 without publishing them
 
 ```bash
 conda activate fc-agentic
@@ -142,11 +148,17 @@ Open
 `docs/_review/courses/agentic-ai-engineering/units/launch-agent-lab/meet-a-tiny-agent.html`
 using a local web server (OJS modules require HTTP), for example
 `python -m http.server 8000 --bind 127.0.0.1 --directory docs/_review`. The
-review sidebar contains the five lessons and Unit Challenge. Matching notebooks
-are under
+review sidebar contains both units' lessons and Unit Challenges. Matching Unit 0
+notebooks are under
 `docs/_review/notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/`.
 Upload an exported notebook manually to Colab or open it in Jupyter. Hidden
 solutions remain collapsed Markdown, not code executed by Run All.
+
+For Unit 1, start at
+`docs/_review/courses/agentic-ai-engineering/units/choose-agent-architecture/separate-automation-workflows-and-agents.html`.
+Its five notebooks are under
+`docs/_review/notebooks/courses/agentic-ai-engineering/units/choose-agent-architecture/`
+(alongside the overview notebook).
 
 Normal `docs.build` omits draft content and notebook exports. The separate
 review output is ignored and never deployed by the docs workflow. Do not publish

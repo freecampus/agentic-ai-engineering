@@ -219,7 +219,7 @@ __marimo__/
 
 .codex/
 PLAN*.md
-
+./reports/*
 
 .quarto-tmp/
 pytest-of-*/

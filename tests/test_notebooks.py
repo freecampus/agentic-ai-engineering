@@ -75,7 +75,8 @@ def test_smoke_notebook_executes_in_isolated_python_without_the_installed_packag
     script = "\n\n".join(cells)
     # -I ignores PYTHONPATH and the working directory; setup must supply the package.
     result = subprocess.run(
-        [sys.executable, "-I", "-c", script],
+        [sys.executable, "-I"],
+        input=script,
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -149,16 +150,21 @@ def test_yaml_front_matter_requires_a_mapping() -> None:
 
 UNIT0 = Path("docs/courses/agentic-ai-engineering/units/launch-agent-lab")
 UNIT0_DRAFTS = sorted(path for path in UNIT0.glob("*.qmd") if path.stem != "index")
+UNIT1 = Path("docs/courses/agentic-ai-engineering/units/choose-agent-architecture")
+UNIT1_DRAFTS = sorted(path for path in UNIT1.glob("*.qmd") if path.stem != "index")
 
 
 def test_draft_exports_are_explicit_and_never_target_the_public_site(tmp_path):
     assert len(UNIT0_DRAFTS) == 6
+    assert len(UNIT1_DRAFTS) == 5
+    assert not set(UNIT1_DRAFTS) & set(builder.public_qmd_files())
+    assert set(UNIT1_DRAFTS) <= set(builder.public_qmd_files(include_drafts=True))
     assert not set(UNIT0_DRAFTS) & set(builder.public_qmd_files())
     assert set(UNIT0_DRAFTS) <= set(builder.public_qmd_files(include_drafts=True))
     with pytest.raises(ValueError, match="separate review"):
         builder.build_notebooks(include_drafts=True)
     written = builder.build_notebooks(output_root=tmp_path, include_drafts=True)
-    assert len(written) == 36
+    assert len(written) == 41
     for path in written:
         nbformat.validate(nbformat.read(path, as_version=4))
 
@@ -179,8 +185,12 @@ def test_hidden_solutions_stay_hidden_reading_material_not_run_all_cells():
     assert "```python\nanswer = 99\n```" in markdown
 
 
-@pytest.mark.parametrize("source", UNIT0_DRAFTS, ids=lambda path: path.stem)
-def test_unit0_notebooks_run_cellwise_in_fresh_python_without_site_packages(
+@pytest.mark.parametrize(
+    "source",
+    UNIT0_DRAFTS + UNIT1_DRAFTS,
+    ids=lambda path: f"{path.parent.name}-{path.stem}",
+)
+def test_authored_notebooks_run_cellwise_in_fresh_python_without_site_packages(
     source, tmp_path
 ):
     notebook = builder.qmd_to_notebook(source)
@@ -200,7 +210,8 @@ def test_unit0_notebooks_run_cellwise_in_fresh_python_without_site_packages(
         "print('CLEAN_CELL_RUN_OK')\n"
     )
     result = subprocess.run(
-        [sys.executable, "-I", "-S", "-c", script],
+        [sys.executable, "-I", "-S"],
+        input=script,
         cwd=tmp_path,
         env={**os.environ, "TMPDIR": str(tmp_path), "TEMP": str(tmp_path)},
         capture_output=True,
@@ -216,14 +227,20 @@ def test_unit0_notebooks_run_cellwise_in_fresh_python_without_site_packages(
     )
     assert "Review draft, not a published assessment" in markdown
     assert "[Source page]" not in markdown
-    assert markdown.count("<summary>Check your answer</summary>") == 6
+    assert markdown.count("<summary>Check your answer</summary>") == (
+        9 if source in UNIT1_DRAFTS else 6
+    )
     assert "<script" not in markdown
     for heading in re.findall(r"^## .+$", source.read_text(encoding="utf-8"), re.M):
         assert heading in markdown
 
 
-@pytest.mark.parametrize("source", UNIT0_DRAFTS, ids=lambda path: path.stem)
-def test_unit0_worked_examples_and_hidden_solutions_execute_separately(
+@pytest.mark.parametrize(
+    "source",
+    UNIT0_DRAFTS + UNIT1_DRAFTS,
+    ids=lambda path: f"{path.parent.name}-{path.stem}",
+)
+def test_authored_worked_examples_and_hidden_solutions_execute_separately(
     source, tmp_path
 ):
     text = source.read_text(encoding="utf-8")
@@ -234,7 +251,8 @@ def test_unit0_worked_examples_and_hidden_solutions_execute_separately(
         "".join(builder.package_setup_cell()["source"]) + "\n\n" + "\n\n".join(code)
     )
     result = subprocess.run(
-        [sys.executable, "-I", "-S", "-c", script],
+        [sys.executable, "-I", "-S"],
+        input=script,
         cwd=tmp_path,
         env={**os.environ, "TMPDIR": str(tmp_path), "TEMP": str(tmp_path)},
         capture_output=True,
@@ -250,4 +268,22 @@ def test_unit0_worked_examples_and_hidden_solutions_execute_separately(
         "build-local-workspace": "Unsupported mode rejected",
         "challenge": "Denial, malformed result, and decision budget checks passed",
     }
+    if source in UNIT1_DRAFTS:
+        expected = {
+            "separate-automation-workflows-and-agents": (
+                "Classification replacement checks passed"
+            ),
+            "model-the-agent-environment-loop": (
+                "Transition and observation checks passed"
+            ),
+            "bound-autonomy-with-task-contracts": (
+                "Contract authorization checks passed"
+            ),
+            "choose-the-simplest-adequate-architecture": (
+                "Architecture selection checks passed"
+            ),
+            "challenge": (
+                "De-agentification development and qualification checks passed"
+            ),
+        }
     assert expected[source.stem] in result.stdout

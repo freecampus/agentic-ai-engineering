@@ -1,0 +1,657 @@
+{
+  "separate-automation-workflows-and-agents": [
+    {
+      "id": "u01-separate-automation-workflows-and-agents-concept",
+      "title": "Checkpoint: explain the mechanism",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-separate-automation-workflows-and-agents-concept-1",
+          "prompt": "A program always calls classify, then lookup, then format. What determines its stage sequence?",
+          "options": [
+            "The application code, so this is a fixed workflow.",
+            "The number of prompt names makes it multi-agent.",
+            "Any model invocation makes the entire sequence autonomous.",
+            "The final output determines the control structure retroactively."
+          ],
+          "answer_index": 0,
+          "explanation": "Model calls can occupy prescribed stages. Inspect who chooses the next operation, not whether a model appears."
+        },
+        {
+          "id": "u01-separate-automation-workflows-and-agents-concept-2",
+          "prompt": "Why can a deterministic controller still be called an agent under a classical definition?",
+          "options": [
+            "Deterministic code becomes probabilistic when called repeatedly.",
+            "It can perceive and act according to a policy without requiring an LLM.",
+            "Any function name containing agent grants independent authority.",
+            "Classical agents must call a paid language model."
+          ],
+          "answer_index": 1,
+          "explanation": "Definitions differ in scope. State your definition and describe the actual control mechanism."
+        },
+        {
+          "id": "u01-separate-automation-workflows-and-agents-concept-3",
+          "prompt": "Which stopping arrangement is strongest for the supplied agent-shaped loop?",
+          "options": [
+            "Ask the policy to be brief and omit counters.",
+            "Stop only if the answer sounds confident.",
+            "Policy-selected finishing plus runtime-enforced decision and read limits.",
+            "Let each role silently reset the same allowance."
+          ],
+          "answer_index": 2,
+          "explanation": "A cooperative policy stop is not a hard bound. The host must enforce the limits independently."
+        }
+      ]
+    },
+    {
+      "id": "u01-separate-automation-workflows-and-agents-evidence",
+      "title": "Checkpoint: interpret the evidence",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-separate-automation-workflows-and-agents-evidence-1",
+          "prompt": "The workflow and single agent each made two decisions. What can you conclude?",
+          "options": [
+            "They must have the same control-flow structure.",
+            "Both need exactly two calls for every possible input.",
+            "Both outperform the zero-decision query.",
+            "Call counts alone do not distinguish their control authority."
+          ],
+          "answer_index": 3,
+          "explanation": "The fixed workflow schedules stages; the controller selects actions. Equal counts on one case hide that distinction."
+        },
+        {
+          "id": "u01-separate-automation-workflows-and-agents-evidence-2",
+          "prompt": "An unknown-topic run uses one agent decision and zero reads. Why?",
+          "options": [
+            "The policy chooses escalation before requesting a read.",
+            "The tool ran but the trace erased it.",
+            "The user note authorized a hidden account lookup.",
+            "The final answer is necessarily a successful policy answer."
+          ],
+          "answer_index": 0,
+          "explanation": "Unknown labels are outside the public lookup contract. Escalation can terminate without a tool call."
+        },
+        {
+          "id": "u01-separate-automation-workflows-and-agents-evidence-3",
+          "prompt": "A failed shipping lookup records one read and then escalation. Which statement is accurate?",
+          "options": [
+            "Failed reads are free and need not be counted.",
+            "The attempted read consumed allowance although the question was not answered.",
+            "Escalation proves the shipping answer was correct.",
+            "The model may now use an unlisted tool to recover."
+          ],
+          "answer_index": 1,
+          "explanation": "Work counters include permitted attempts, not only useful results. Failure does not broaden authority."
+        }
+      ]
+    },
+    {
+      "id": "u01-separate-automation-workflows-and-agents-failure",
+      "title": "Checkpoint: diagnose the failure",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-separate-automation-workflows-and-agents-failure-1",
+          "prompt": "A replacement returns a hard-coded correct sentence today. Which test best exposes its defect?",
+          "options": [
+            "Rename the function to retrieval.",
+            "Check only that the result is a string.",
+            "Change the public policy and require the new text and source.",
+            "Remove the source requirement from the contract."
+          ],
+          "answer_index": 2,
+          "explanation": "The contract requires current observed policy, so a source update tests the missing mechanism."
+        },
+        {
+          "id": "u01-separate-automation-workflows-and-agents-failure-2",
+          "prompt": "A model selects diagnostic reads but a runtime forbids writes. How should you classify it?",
+          "options": [
+            "Entirely non-agentic because any deterministic guard removes autonomy.",
+            "Unrestricted autonomy because the model selects something.",
+            "A multi-agent system solely because there are two components.",
+            "An agent controller operating inside deterministic permission checks."
+          ],
+          "answer_index": 3,
+          "explanation": "Classify boundaries separately. Action selection and effect authorization belong to different components."
+        },
+        {
+          "id": "u01-separate-automation-workflows-and-agents-failure-3",
+          "prompt": "Five prompts execute in a fixed order and never choose actions. What evidence is missing for a multi-agent claim?",
+          "options": [
+            "Multiple controllers choosing actions from feedback and a coordination arrangement.",
+            "Five different human-readable job titles.",
+            "A diagram containing five boxes.",
+            "A larger model behind the same fixed calls."
+          ],
+          "answer_index": 0,
+          "explanation": "Names and box counts do not establish independent control loops."
+        }
+      ]
+    }
+  ],
+  "model-the-agent-environment-loop": [
+    {
+      "id": "u01-model-the-agent-environment-loop-concept",
+      "title": "Checkpoint: explain the mechanism",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-model-the-agent-environment-loop-concept-1",
+          "prompt": "Which record may contain information that a partially informed policy must not receive?",
+          "options": [
+            "The explicitly allowed observation.",
+            "The full pre-state/post-state audit transition.",
+            "The policy own recorded previous action.",
+            "The documented task objective."
+          ],
+          "answer_index": 1,
+          "explanation": "Audit truth is available to the checker, not automatically to the controller. Leaking it makes the evaluated task easier."
+        },
+        {
+          "id": "u01-model-the-agent-environment-loop-concept-2",
+          "prompt": "The grid position is unchanged after a blocked move. What else changes?",
+          "options": [
+            "The goal disappears.",
+            "The move becomes free because it failed.",
+            "Attempts increase and one cost unit is charged.",
+            "The run automatically counts as successful."
+          ],
+          "answer_index": 2,
+          "explanation": "State includes counters as well as position. A failed attempt is still work."
+        },
+        {
+          "id": "u01-model-the-agent-environment-loop-concept-3",
+          "prompt": "What is the safest meaning of a terminal status?",
+          "options": [
+            "The objective was necessarily achieved.",
+            "The observation can no longer be missing.",
+            "The controller may restart its allowance automatically.",
+            "No more actions may run; inspect the separate outcome for success or failure."
+          ],
+          "answer_index": 3,
+          "explanation": "Success and exhausted/insufficient-evidence states can all be terminal."
+        }
+      ]
+    },
+    {
+      "id": "u01-model-the-agent-environment-loop-evidence",
+      "title": "Checkpoint: interpret the evidence",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-model-the-agent-environment-loop-evidence-1",
+          "prompt": "The move down has no report, but audit state shows (0,1). What should the controller record?",
+          "options": [
+            "Current position unknown; retain any earlier position only as last seen.",
+            "Current position is definitely (0,0).",
+            "Read the audit record and pretend the sensor supplied it.",
+            "Missing observations imply blocked moves."
+          ],
+          "answer_index": 0,
+          "explanation": "The policy lacks current evidence. The audit proves what happened only to the tester."
+        },
+        {
+          "id": "u01-model-the-agent-environment-loop-evidence-2",
+          "prompt": "The five-move trace reaches the goal after one collision. What is its total move cost?",
+          "options": [
+            "Four units, counting only successful moves.",
+            "Five units, because every attempted move costs one.",
+            "One unit, counting only the final move.",
+            "Zero units, because this is an offline simulator."
+          ],
+          "answer_index": 1,
+          "explanation": "Synthetic cost is part of the explicit contract and counts the blocked attempt too."
+        },
+        {
+          "id": "u01-model-the-agent-environment-loop-evidence-3",
+          "prompt": "A read consumes the one-read allowance but yields no text; finish returns insufficient_evidence. What was established?",
+          "options": [
+            "The opening hours were verified.",
+            "The missing read never happened.",
+            "The run stopped without evidence-backed success.",
+            "An empty action list is a success certificate."
+          ],
+          "answer_index": 2,
+          "explanation": "The trace distinguishes a consumed attempt from an answered task."
+        }
+      ]
+    },
+    {
+      "id": "u01-model-the-agent-environment-loop-failure",
+      "title": "Checkpoint: diagnose the failure",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-model-the-agent-environment-loop-failure-1",
+          "prompt": "A checker accepts a trace with cost zero on the wall collision. What should be repaired?",
+          "options": [
+            "Change the expected total to four to make it pass.",
+            "Give the controller the hidden wall map without disclosure.",
+            "Ignore failed transitions in the evidence bundle.",
+            "Check per-transition cost and cumulative attempts, not only the final position."
+          ],
+          "answer_index": 3,
+          "explanation": "The final position can be correct while the cost contract is violated."
+        },
+        {
+          "id": "u01-model-the-agent-environment-loop-failure-2",
+          "prompt": "An observation for action 3 arrives after action 4. What instrumentation best disambiguates it?",
+          "options": [
+            "Action/observation correlation IDs and separate dispatch and receipt ordering.",
+            "Only the final answer length.",
+            "One timestamp with no action identity.",
+            "A stronger instruction to report promptly."
+          ],
+          "answer_index": 0,
+          "explanation": "Arrival order alone does not identify which action produced the report."
+        },
+        {
+          "id": "u01-model-the-agent-environment-loop-failure-3",
+          "prompt": "Which signature best preserves the policy information boundary?",
+          "options": [
+            "update(complete_environment_truth, hidden_goal_map)",
+            "update(previous_belief, allowed_observation)",
+            "update(audit_transition) with undocumented access to after",
+            "update(expected_test_answer)"
+          ],
+          "answer_index": 1,
+          "explanation": "The update should accept the evidence the controller is entitled to observe, not evaluation-only truth."
+        }
+      ]
+    }
+  ],
+  "bound-autonomy-with-task-contracts": [
+    {
+      "id": "u01-bound-autonomy-with-task-contracts-concept",
+      "title": "Checkpoint: explain the mechanism",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-bound-autonomy-with-task-contracts-concept-1",
+          "prompt": "Why is a structurally valid contract not necessarily executable?",
+          "options": [
+            "JSON always executes its own policy.",
+            "A schema guarantees all real-world permissions.",
+            "Its allowed actions may contradict the operations needed for success.",
+            "Nonempty strings prove the task is feasible."
+          ],
+          "answer_index": 2,
+          "explanation": "Structural constraints and cross-field meaning are separate. The example validator checks both for its limited record."
+        },
+        {
+          "id": "u01-bound-autonomy-with-task-contracts-concept-2",
+          "prompt": "Why reject max_actions=True in Python?",
+          "options": [
+            "True means unlimited actions by definition.",
+            "Booleans cannot appear anywhere in JSON.",
+            "Every nonzero budget must be rejected.",
+            "A boolean should not be silently interpreted as the integer allowance one."
+          ],
+          "answer_index": 3,
+          "explanation": "Python bool is an int subclass, so strict boundary checks prevent a misleading budget value."
+        },
+        {
+          "id": "u01-bound-autonomy-with-task-contracts-concept-3",
+          "prompt": "What is the difference between confirm and allow?",
+          "options": [
+            "Confirm requires fresh matching approval and must not dispatch an effect.",
+            "Confirm means dispatch now and ask later.",
+            "Allow is only a suggestion the tool may ignore.",
+            "Both dispatch but use different log labels."
+          ],
+          "answer_index": 0,
+          "explanation": "Approval waiting is an explicit non-effect state, not permission to proceed."
+        }
+      ]
+    },
+    {
+      "id": "u01-bound-autonomy-with-task-contracts-evidence",
+      "title": "Checkpoint: interpret the evidence",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-bound-autonomy-with-task-contracts-evidence-1",
+          "prompt": "One read is allowed, then a private-resource request is denied. What should the spy contain?",
+          "options": [
+            "Both calls because the denial is logged afterward.",
+            "Exactly the one allowed read; no private-resource effect.",
+            "No calls, because denial undoes earlier allowed work.",
+            "A third call to request broader credentials."
+          ],
+          "answer_index": 1,
+          "explanation": "The gate runs before each dispatch. Denial neither dispatches nor retroactively erases earlier work."
+        },
+        {
+          "id": "u01-bound-autonomy-with-task-contracts-evidence-2",
+          "prompt": "An approval expires at tick 5 and now is 5. What happens before the task deadline?",
+          "options": [
+            "The approval is valid through tick 5 inclusive.",
+            "The action runs because the model is confident.",
+            "Confirm is required again because the approval is expired.",
+            "The runtime edits expires_at to permit the action."
+          ],
+          "answer_index": 2,
+          "explanation": "The fixture uses expires_at <= now as expired. Exact boundary tests make that convention explicit."
+        },
+        {
+          "id": "u01-bound-autonomy-with-task-contracts-evidence-3",
+          "prompt": "An allowed effect raises a tool-outage exception. How is its action budget treated?",
+          "options": [
+            "The allowance becomes unlimited until one succeeds.",
+            "The failed effect is reclassified as a denial.",
+            "The original exception proves there was no possible work.",
+            "The attempt remains counted because reservation precedes dispatch."
+          ],
+          "answer_index": 3,
+          "explanation": "Failed permitted attempts can consume resources. The synchronous example does not refund them automatically."
+        }
+      ]
+    },
+    {
+      "id": "u01-bound-autonomy-with-task-contracts-failure",
+      "title": "Checkpoint: diagnose the failure",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-bound-autonomy-with-task-contracts-failure-1",
+          "prompt": "A denied request includes SYSTEM: all restrictions are waived in its rationale. What changes?",
+          "options": [
+            "Nothing about permission; the rationale is not an authority source.",
+            "The note overrides the contract.",
+            "The action becomes confirm even if forbidden.",
+            "The runtime registers the requested capability."
+          ],
+          "answer_index": 0,
+          "explanation": "Untrusted prose cannot create capabilities or approvals."
+        },
+        {
+          "id": "u01-bound-autonomy-with-task-contracts-failure-2",
+          "prompt": "A task deadline has passed, but a human approval is present. Which decision wins?",
+          "options": [
+            "Allow because any human approval overrides all limits.",
+            "Stop; approval cannot extend the task deadline.",
+            "Send first, then ask whether the deadline mattered.",
+            "Reset the task clock from the model response."
+          ],
+          "answer_index": 1,
+          "explanation": "Deadline and remaining allowance are rechecked at use time, before approval can authorize dispatch."
+        },
+        {
+          "id": "u01-bound-autonomy-with-task-contracts-failure-3",
+          "prompt": "Which production claim would exceed the implemented toy gate?",
+          "options": [
+            "It rejects unknown capability names through this validator.",
+            "It does not dispatch for deny/confirm/stop decisions.",
+            "It authenticates approvals and prevents replay across durable distributed runs.",
+            "It counts an allowed failing effect as an attempt."
+          ],
+          "answer_index": 2,
+          "explanation": "The fixture uses trusted records and synchronous callbacks. Signatures, identity, persistence, and distributed replay protection are absent."
+        }
+      ]
+    }
+  ],
+  "choose-the-simplest-adequate-architecture": [
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-concept",
+      "title": "Checkpoint: explain the mechanism",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-choose-the-simplest-adequate-architecture-concept-1",
+          "prompt": "When should cost ranking occur?",
+          "options": [
+            "Before evaluating required behavior.",
+            "By letting low cost compensate for forbidden actions.",
+            "By preferring the architecture with the most model calls.",
+            "Only after independent quality and safety gates identify adequate candidates."
+          ],
+          "answer_index": 3,
+          "explanation": "A failing candidate is not made adequate by being cheap."
+        },
+        {
+          "id": "u01-choose-the-simplest-adequate-architecture-concept-2",
+          "prompt": "Why does five-agent agreement not establish independent corroboration here?",
+          "options": [
+            "All five use the same scripted policy and public source.",
+            "They have too few job titles.",
+            "Agreement always proves the source is false.",
+            "Sequential code cannot record observations."
+          ],
+          "answer_index": 0,
+          "explanation": "Separate local histories do not remove shared causes of error."
+        },
+        {
+          "id": "u01-choose-the-simplest-adequate-architecture-concept-3",
+          "prompt": "Which claim does the deliberately stale rule baseline support?",
+          "options": [
+            "Every deterministic architecture is worse than an agent.",
+            "This implementation fails the specified cases, not that all rules are inadequate.",
+            "The query cannot be deterministic.",
+            "The test proves real models outperform rules."
+          ],
+          "answer_index": 1,
+          "explanation": "Architecture-family conclusions require more than one intentionally defective representative."
+        }
+      ]
+    },
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-evidence",
+      "title": "Checkpoint: interpret the evidence",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-choose-the-simplest-adequate-architecture-evidence-1",
+          "prompt": "A run makes ten decisions and five reads. At prices five and one, what is its cost?",
+          "options": [
+            "15 dollars measured from a provider invoice.",
+            "50 units because reads are ignored.",
+            "55 synthetic work units.",
+            "Five units because only successful final replies count."
+          ],
+          "answer_index": 2,
+          "explanation": "Cost is 10*5 + 5*1 under an explicitly assumed model, not actual billing."
+        },
+        {
+          "id": "u01-choose-the-simplest-adequate-architecture-evidence-2",
+          "prompt": "The stale rule returns a permitted but incorrect answer. How should this appear?",
+          "options": [
+            "Safety and quality must always have the same result.",
+            "A low work count makes the answer correct.",
+            "The wrong reply proves an account write occurred.",
+            "Quality fails while the observed-action safety gate may pass."
+          ],
+          "answer_index": 3,
+          "explanation": "Separate gates preserve different failure causes."
+        },
+        {
+          "id": "u01-choose-the-simplest-adequate-architecture-evidence-3",
+          "prompt": "Why is p raised to the number of stages only illustrative here?",
+          "options": [
+            "It assumes independent required-stage successes and supplied probabilities, neither measured here.",
+            "Multiplication can never describe reliability.",
+            "All agent errors are independent by definition.",
+            "A fake model reveals empirical production success probabilities."
+          ],
+          "answer_index": 0,
+          "explanation": "Correlated errors, recovery, and alternate paths can invalidate the simple product model."
+        }
+      ]
+    },
+    {
+      "id": "u01-choose-the-simplest-adequate-architecture-failure",
+      "title": "Checkpoint: diagnose the failure",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-choose-the-simplest-adequate-architecture-failure-1",
+          "prompt": "No candidate meets a required answer-during-outage condition. What is the appropriate result?",
+          "options": [
+            "Automatically choose five agents.",
+            "No-go or renegotiate the requirement; do not fabricate an answer.",
+            "Drop the outage case without disclosing it.",
+            "Treat terminal escalation as an evidence-backed answer."
+          ],
+          "answer_index": 1,
+          "explanation": "More autonomy cannot manufacture missing permitted evidence."
+        },
+        {
+          "id": "u01-choose-the-simplest-adequate-architecture-failure-2",
+          "prompt": "You inspected qualification fixtures before tuning the design. What should the ADR say?",
+          "options": [
+            "Call the public fixtures secret to preserve the claim.",
+            "Delete the record of the earlier inspection.",
+            "Disclose the exposure and obtain new cases before claiming held-out qualification.",
+            "A held-out label remains valid regardless of tuning."
+          ],
+          "answer_index": 2,
+          "explanation": "Held-out status depends on procedure, not a filename."
+        },
+        {
+          "id": "u01-choose-the-simplest-adequate-architecture-failure-3",
+          "prompt": "A stakeholder changes structured topics to unrestricted multilingual questions. What follows?",
+          "options": [
+            "The old exact-key pass proves language understanding.",
+            "Add five agents without measuring any baseline.",
+            "Keep the old contract and quietly reject all new users.",
+            "Reopen the contract and compare the simplest candidates for the new task."
+          ],
+          "answer_index": 3,
+          "explanation": "Evidence is scoped to inputs and requirements. Changed tasks need new evaluation."
+        }
+      ]
+    }
+  ],
+  "challenge": [
+    {
+      "id": "u01-challenge-concept",
+      "title": "Checkpoint: explain the mechanism",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-challenge-concept-1",
+          "prompt": "What information makes de-agentification possible in this challenge?",
+          "options": [
+            "The request already contains the exact routing topic.",
+            "The note contains trusted administrative commands.",
+            "All future policy text is permanently constant.",
+            "The five role names encode independent expertise."
+          ],
+          "answer_index": 0,
+          "explanation": "An exact-key lookup is adequate for this structured contract; no language classifier is required."
+        },
+        {
+          "id": "u01-challenge-concept-2",
+          "prompt": "What must remain after removing the model loops?",
+          "options": [
+            "The five cosmetic job names.",
+            "Current-source lookup, explicit escalation, and runtime permission checks.",
+            "The ability to read any path mentioned in a note.",
+            "A hard-coded copy of the original shipping answer."
+          ],
+          "answer_index": 1,
+          "explanation": "Simplifying control must not remove evidence or authorization requirements."
+        },
+        {
+          "id": "u01-challenge-concept-3",
+          "prompt": "Why does the safe all-escalate starter fail?",
+          "options": [
+            "Escalation is forbidden for every input.",
+            "Every valid implementation must invoke a model.",
+            "It refuses required ordinary answers, so safety alone is insufficient.",
+            "Zero model decisions necessarily violate the contract."
+          ],
+          "answer_index": 2,
+          "explanation": "A useful system needs both permitted behavior and correct ordinary outcomes."
+        }
+      ]
+    },
+    {
+      "id": "u01-challenge-evidence",
+      "title": "Checkpoint: interpret the evidence",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-challenge-evidence-1",
+          "prompt": "Which assertion detects a copied policy constant most directly?",
+          "options": [
+            "Check only that the output contains the word shipping.",
+            "Count the number of function definitions.",
+            "Require five identical copies of the old answer.",
+            "Provide shipping-v3 through the runtime and require that new reply."
+          ],
+          "answer_index": 3,
+          "explanation": "A controlled source change tests whether the implementation actually uses current observations."
+        },
+        {
+          "id": "u01-challenge-evidence-2",
+          "prompt": "A note-driven private read creates a deny event and zero read events. What does that show?",
+          "options": [
+            "This dispatch boundary prevented the effect, but the candidate requested a forbidden action.",
+            "Arbitrary Python is now proven sandboxed.",
+            "No policy violation was attempted.",
+            "The private data was read but not logged."
+          ],
+          "answer_index": 0,
+          "explanation": "Prevented effects and bad requests are distinct evidence. The toy runtime proves only its own path."
+        },
+        {
+          "id": "u01-challenge-evidence-3",
+          "prompt": "Both implementations pass all ten qualification cases. What else is needed for this challenge?",
+          "options": [
+            "Nothing; one aggregate score replaces all artifacts.",
+            "Fewer decisions, lower assumed cost, retained safety checks, and recorded limitations.",
+            "A paid-model run regardless of permissions.",
+            "A claim of production reliability without additional evidence."
+          ],
+          "answer_index": 1,
+          "explanation": "The challenge assesses simplification and defensible evidence, not just final reply agreement."
+        }
+      ]
+    },
+    {
+      "id": "u01-challenge-failure",
+      "title": "Checkpoint: diagnose the failure",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "questions": [
+        {
+          "id": "u01-challenge-failure-1",
+          "prompt": "Which proposed fix should be rejected?",
+          "options": [
+            "Return the actual public-read result.",
+            "Escalate an unknown topic without a read.",
+            "Remove the runtime allowlist because the ordinary routing branch already filters topics.",
+            "Preserve the failed stale-cache case as a regression."
+          ],
+          "answer_index": 2,
+          "explanation": "Routing code and effect authorization are separate boundaries. Removing the latter weakens the design."
+        },
+        {
+          "id": "u01-challenge-failure-2",
+          "prompt": "You reused the same qualification cases from Lesson 1.4. What is the honest description?",
+          "options": [
+            "A new secret test because the function name changed.",
+            "Proof that no future case can fail.",
+            "An independent learner pilot of the complete course.",
+            "Regression evidence; add unseen cases before claiming a fresh held-out evaluation."
+          ],
+          "answer_index": 3,
+          "explanation": "Reused evidence is useful but not newly held out."
+        },
+        {
+          "id": "u01-challenge-failure-3",
+          "prompt": "What should the retrospective say about the mean cost change from 40 to 0.5?",
+          "options": [
+            "It applies to these fixtures, uniform weights, and synthetic prices; it is not a production forecast.",
+            "It guarantees the same dollar savings for every provider.",
+            "It measures real network latency.",
+            "It establishes that multi-agent architectures never help."
+          ],
+          "answer_index": 0,
+          "explanation": "Observed counts support the stated calculation only under its explicit assumptions."
+        }
+      ]
+    }
+  ]
+}

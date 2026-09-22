@@ -13,9 +13,11 @@ colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-arch
 
 ::: {.callout-important}
 ## Curriculum preview—not a released unit
-The 4 lessons and challenge below are planned. This overview is available
-for orientation; it does not award course progress. The notebook is an orientation
-copy, not a completed instructional lab.
+The 4 lessons and challenge have authored review drafts, but remain planned for
+publication until independent teaching, execution, and accessibility gates pass.
+This overview is available for orientation; it does not award course progress.
+Its notebook is an orientation copy, not a completed instructional lab. Local
+maintainers can inspect the drafts with `poetry run makim docs.review`.
 :::
 
 {{< include ../../../../_includes/colab-link.qmd >}}
@@ -27,7 +29,13 @@ Distinguish programs, workflows, agents, and multi-agent systems; define degrees
 **Phase:** I. Foundations
 **Overview:** 20–40 minutes
 **Planned unit effort:** 8–14 hours, including typing, experiments,
-checks, and a 90–180 minute challenge. Estimates will be recalibrated during authoring.
+checks, and a 90–180 minute challenge. Estimates await a learner pilot.
+
+**Scenario:** Lantern repair café has been offered a five-agent customer help
+desk. You will inspect who controls its actions, trace what it observes, enforce
+a task contract, and replace unnecessary autonomy with a simpler adequate design.
+The input is deliberately structured: a supplied topic and an untrusted note.
+This unit tests control and evidence, not natural-language understanding.
 
 ## 2. Before you begin
 
@@ -38,6 +46,19 @@ shared package. Work in a clean Colab/Jupyter notebook or a local Conda
 environment with Poetry-managed dependencies. The core route will not require
 provider keys or paid inference.
 Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
+
+Bring your Unit 0 launch card and evidence journal. You should be able to import
+the package, inspect a function, predict a short trace, write an assertion, and
+distinguish a permitted action from a requested one. No new agent framework,
+provider SDK, external tool integration, or reinforcement-learning background is
+needed. Keep one notebook per lesson and a folder for the final decision record.
+
+**Vocabulary:** control authority, workflow, policy, observation, environment
+state, terminal outcome, task contract, approval, architecture decision record.
+Each term is explained at its point of use. **Risk preview:** a correct-looking
+answer can conceal a stale source, a missing observation, an unauthorized request,
+or unnecessary work. These offline fixtures enforce narrow dispatch boundaries;
+they are not security sandboxes or evidence of live-model reliability.
 
 ## 3. Planned lesson sequence
 
@@ -68,16 +89,28 @@ Compare a rule, retrieval query, workflow, single agent, and multi-agent system 
 
 Simplify a fictional five-agent customer-request system while preserving required behavior. The solution must demonstrate fewer model decisions, lower expected cost, and equal or better test performance.
 
-The complete challenge contract, starting fixtures, progressive checks, three-level
-hint ladder, and solution path are not authored yet. Do not interpret this outline
-as an executable assessment. A successful-looking output alone will not establish
-reliability: preserve the inputs, limits, observed behavior, and failed cases too.
+The review draft supplies a behavior contract, a five-controller baseline, an
+incomplete starter, ordinary/boundary/adversarial fixtures, progressive checks,
+exactly three hints, and a hidden worked solution. It requires current public
+policy evidence, no forbidden effects, explicit escalation, fewer decisions, and
+lower cost under stated synthetic assumptions. It does not require a live model.
+The challenge is not released or completable yet. A successful-looking output
+alone will not establish reliability: preserve the inputs, limits, observed
+behavior, and failed cases too.
 
 ## 5. Suggested stopping points
 
 Plan one session per lesson. Before changing an implementation, write a prediction;
 after each session, record what ran, what failed, what changed, and what remains
 unverified. Save a clean run and an architecture note before attempting the challenge.
-Finish with a retrospective on quality, failures, latency, cost, and safety.
+Finish with a retrospective on quality, failures, cost assumptions, and safety;
+identify latency as unmeasured rather than inventing a performance claim.
+
+1. After Lesson 1.1: stop with a classification table and a tested zero-decision replacement.
+2. After Lesson 1.2: stop with two checked traces and a missing-observation explanation.
+3. After Lesson 1.3: stop with a validated contract and allow/deny/confirm/stop evidence.
+4. After Lesson 1.4: stop with per-case comparisons and an architecture decision record, including no-go criteria.
+5. After the challenge: retain the original failures, simpler implementation,
+   qualification disclosure, synthetic cost comparison, and one revisit trigger.
 
 [Preview Unit 2: Treat Language Models as Probabilistic Components](../probabilistic-models/index.qmd) or [return to the complete course map](../../index.qmd).
