@@ -1,0 +1,112 @@
+/* Responsive experience */
+
+@media (max-width: 1100px) {
+  .landing-page .hero {
+    grid-template-columns: 1fr 22rem;
+  }
+
+  .fc-course-catalog .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .fc-title-layout {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+
+  .fc-title-actions {
+    flex-direction: row;
+    min-width: 0;
+  }
+
+  .fc-title-actions > * {
+    flex: 1;
+  }
+
+  .landing-page .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-demo {
+    margin: 0 auto;
+    max-width: 34rem;
+    width: 100%;
+  }
+
+  .learning-loop ol {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .faq-hub .course-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .fc-title-copy h1.title {
+    font-size: clamp(2.35rem, 13vw, 3.35rem);
+  }
+
+  .fc-title-actions {
+    flex-direction: column;
+  }
+
+  .landing-page .hero {
+    border-radius: 1.2rem;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(3rem, 16vw, 4.5rem);
+  }
+
+  .fc-demo-window {
+    transform: none;
+  }
+
+  .fc-demo-loop {
+    grid-template-columns: repeat(2, 1fr);
+    transform: none;
+  }
+
+  .fc-resume-panel {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .landing-page .audience-grid .course-card,
+  .landing-page .audience-grid .course-card:first-child,
+  .landing-page .audience-grid .course-card:last-child {
+    border-left: 0;
+    border-top: 1px solid var(--fc-border);
+    padding: 1.25rem 0;
+  }
+
+  .landing-page .audience-grid .course-card:first-child {
+    border-top: 0;
+  }
+
+  .learning-loop ol,
+  .fc-course-catalog .list {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-loop li {
+    min-height: auto;
+  }
+
+  .fc-catalog-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-demo-window,
+  .fc-demo-loop {
+    transform: none;
+  }
+}
