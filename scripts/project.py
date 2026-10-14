@@ -104,8 +104,8 @@ def main() -> None:
     if task in {"test", "all"}:
         run(sys.executable, "-m", "pytest", "-q")
     if task in {"package", "all"}:
-        run("poetry", "check", "--strict")
-        run("poetry", "build")
+        run("uv", "lock", "--check")
+        run("uv", "build")
     if task in {"docs", "preview", "all"}:
         docs()
     if task == "review":

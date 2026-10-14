@@ -17,7 +17,7 @@ The 4 lessons and challenge have authored review drafts, but remain planned for
 publication until independent teaching, execution, and accessibility gates pass.
 This overview is available for orientation; it does not award course progress.
 Its notebook is an orientation copy, not a completed instructional lab. Local
-maintainers can inspect the drafts with `poetry run makim docs.review`.
+maintainers can inspect the drafts with `just review`.
 :::
 
 {{< include ../../../../_includes/colab-link.qmd >}}
@@ -42,8 +42,8 @@ This unit tests control and evidence, not natural-language understanding.
 Complete the preceding unit, [Launch a Reproducible Agent Engineering Lab](../launch-agent-lab/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
 
 Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
-shared package. Work in a clean Colab/Jupyter notebook or a local Conda
-environment with Poetry-managed dependencies. The core route will not require
+shared package. Work in a clean Colab/Jupyter notebook or a local uv-managed
+Python environment. The core route will not require
 provider keys or paid inference.
 Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
 

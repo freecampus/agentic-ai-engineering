@@ -229,7 +229,7 @@ reliably replace objects already imported into a running process.
 For an optional external dependency, inspect the kernel identity first. In a
 Jupyter/IPython session, `%pip` targets the current kernel environment; a bare
 shell `pip` can refer to another interpreter. Neither guarantees network access
-or compatibility. This course's **local development** uses Conda + Poetry only;
+or compatibility. This course's **local development** uses uv and Just;
 do not use notebook installs to mutate the local development environment.
 This unit's core notebook does not need an installation command.
 
@@ -282,7 +282,7 @@ error-handling decision, not a successful registry install.
       "options": [
         "Ignore the error and assume imported objects changed.",
         "Set a random seed to refresh imports.",
-        "Delete the local Conda environment.",
+        "Delete the local .venv.",
         "Restart, run setup once, then run cells in order."
       ],
       "answer_index": 3,

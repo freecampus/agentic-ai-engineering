@@ -18,49 +18,25 @@ jobs:
         python-version: ["3.10", "3.12", "3.14"]
     defaults:
       run:
-        shell: bash -el {0}
-    env:
-      POETRY_VIRTUALENVS_CREATE: "false"
-      POETRY_VIRTUALENVS_IN_PROJECT: "false"
-      POETRY_NO_INTERACTION: "1"
+        shell: bash
     steps:
       - uses: actions/checkout@v4
-      - name: Prepare the matrix Conda environment
-        env:
-          PYTHON_VERSION: ${{ matrix.python-version }}
-        # Keep the local 3.12 default; do not combine it with an action override.
-        # Only shell tooling is needed before the Conda environment exists.
-        run: |
-          mkdir -p .cache
-          awk -v version="$PYTHON_VERSION" '
-            /^[[:space:]]*-[[:space:]]*python([=<>!~[:space:]]|$)/ {
-              print "  - python=" version
-              count++
-              next
-            }
-            { print }
-            END {
-              if (count != 1) {
-                print "Expected exactly one Python dependency in conda.yaml" > "/dev/stderr"
-                exit 1
-              }
-            }
-          ' conda.yaml > .cache/conda-ci.yaml
-      - uses: conda-incubator/setup-miniconda@v3
+      - name: Install uv and set up Python
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
-          miniforge-version: latest
-          environment-file: .cache/conda-ci.yaml
-          activate-environment: fc-agentic
-          auto-activate-base: false
-          channels: conda-forge,nodefaults
-          conda-solver: libmamba
-      - name: Verify Conda and Poetry use the same environment
-        run: python scripts/check_environment.py
-      - name: Install course and development tools
-        # Bootstrap migration: require `poetry check --lock` once the lock is committed.
-        run: |
-          poetry check --strict
-          poetry install --all-extras --with docs
-          python scripts/check_environment.py
+          version: "0.12.23"
+          python-version: ${{ matrix.python-version }}
+      - name: Install Just
+        uses: extractions/setup-just@v4
+        with:
+          just-version: "1.58.0"
+      - name: Set up Node.js for Prettier
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install locked dependencies
+        run: uv sync --locked --all-groups --all-extras
+      - name: Check Justfile formatting
+        run: just --fmt --check
       - name: Lint, test, package, and render
-        run: poetry run makim all.ci
+        run: just ci

@@ -35,7 +35,7 @@ def check_launch_project(root: Path) -> list[str]:
 
     PYTHONPATH explicitly points at the course package already imported by this
     process. This supports offline notebook bundles; it does not validate a
-    Conda/Poetry installation. Environment readiness is a separate gate.
+    local uv installation. Environment readiness is a separate gate.
     """
     entrypoint = root.resolve() / "launch.py"
     package_parent = str(Path(freecampus_agents.__file__).resolve().parent.parent)
