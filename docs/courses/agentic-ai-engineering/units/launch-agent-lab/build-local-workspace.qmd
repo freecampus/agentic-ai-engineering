@@ -2,13 +2,21 @@
 title: Build a Dependable Local Workspace
 description: Reproduce the course environment with uv, a committed lockfile, and Just recipes.
 content_kind: lesson
-content_status: planned
-lesson_id: u00-build-local-workspace
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
 unit_id: launch-agent-lab
-order: 5
-categories: [agentic-ai-engineering, launch-agent-lab, reproducibility]
+unit_number: 0
+categories:
+- agentic-ai-engineering
+- launch-agent-lab
+order: 50
 colab_notebook: notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/build-local-workspace.ipynb
 notebook_package: true
+execute:
+  echo: true
+lesson_id: launch-agent-lab.build-local-workspace
+lesson_order: 50
 ---
 
 ::: {.lesson-meta}
@@ -213,6 +221,32 @@ Do not delete an existing environment just because one command failed. First
 inspect the command, selected interpreter, lock status, and diagnostic. Keep the
 original failure in your notes, make the smallest repair, and rerun the affected
 command.
+
+Optional configuration should not become a hidden dependency. This example uses
+an injected dictionary to demonstrate a fail-closed environment-variable policy
+without reading or printing your real environment:
+
+```python
+def course_mode(settings):
+    mode = settings.get("COURSE_MODE", "offline")
+    if mode != "offline":
+        raise ValueError("This unit supports only offline mode")
+    return mode
+
+assert course_mode({}) == "offline"
+assert course_mode({"COURSE_MODE": "offline"}) == "offline"
+try:
+    course_mode({"COURSE_MODE": "live"})
+except ValueError:
+    print("Unsupported mode rejected before any service call")
+else:
+    raise AssertionError("Live mode unexpectedly accepted")
+```
+
+In an application, the caller could supply `os.environ`. Here that is
+unnecessary: there is no optional credential to provide and no reason to dump
+environment values into the launch card. An absent optional variable should
+have a documented default; a required setting needs an actionable error.
 
 <script type="application/json" class="fcagentic-ojs-quiz-config">
 {
