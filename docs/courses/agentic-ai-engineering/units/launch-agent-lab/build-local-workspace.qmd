@@ -1,68 +1,68 @@
 ---
 title: Build a Dependable Local Workspace
-description: Create the course environment with Git, Conda, `Poetry`, Python, pytest,
-  Ruff, type checking, and environment-variable configuration on Windows, macOS, or
-  Linux. Run the same smoke test locally and in Colab.
+description: Reproduce the course environment with uv, a committed lockfile, and Just recipes.
 content_kind: lesson
-content_status: draft
-draft: true
-course_id: agentic-ai-engineering
+content_status: planned
+lesson_id: u00-build-local-workspace
 unit_id: launch-agent-lab
-unit_number: 0
-categories:
-- agentic-ai-engineering
-- launch-agent-lab
-order: 50
+order: 5
+categories: [agentic-ai-engineering, launch-agent-lab, reproducibility]
 colab_notebook: notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/build-local-workspace.ipynb
 notebook_package: true
-execute:
-  echo: true
-lesson_id: launch-agent-lab.build-local-workspace
-lesson_order: 50
 ---
 
 ::: {.lesson-meta}
-- **Level:** Orientation; project-ready Python and basic terminal use.
-- **Active time:** 120–180 minutes, excluding downloads.
-- **Prerequisites:** Lessons 0.1–0.4; explicit inputs, notebook/kernel state, and evidence records.
-- **Outcome:** Identify the active local interpreter and reproduce the notebook's smoke run through the course's Conda + Poetry toolchain.
-- **Evidence:** A launch card with checkout identity, environment checks, commands, outputs, and platform limitations.
-- **Environment:** A local checkout, Git, and Conda on Windows, macOS, or Linux. Initial dependency installation needs registry access; already installed core examples run offline.
-:::
-
-::: {.callout-note}
-## Review draft
-Use the local review build. Independent teaching/accessibility review and full
-cross-platform setup validation are pending. Notebook execution alone does not
-establish that your local workspace is ready.
+- **Level:** Project-ready Python
+- **Estimated time:** 60–90 minutes
+- **Prerequisites:** Git, Python modules and virtual environments, basic shell use
+- **You will produce:** A verified local setup record and a repeatable smoke run
+- **Practice in:** A local checkout; the course notebook is an orientation copy
 :::
 
 {{< include ../../../../_includes/colab-link.qmd >}}
 
-## 1. Identify what each tool owns
+## 1. The setup contract
 
-A notebook works, but the terminal says `ModuleNotFoundError`. Installing random
-packages until the error disappears can make the problem harder to diagnose.
-First identify which Python is running and which source checkout you intended.
+A reproducible workspace answers four separate questions:
 
-Before running setup, answer:
+1. Which source revision am I using?
+2. Which Python version and project dependencies are selected?
+3. Which command creates the environment from those declarations?
+4. What observable result proves that the intended interpreter and package ran?
 
-1. What changes when you activate a Conda environment?
-2. Does a committed lockfile prove that the current interpreter has those packages?
-3. Why can `python` and `poetry run python` accidentally refer to different environments?
-4. Which check distinguishes a code failure from a missing dependency?
+This repository assigns those jobs to Git, `.python-version`, `pyproject.toml`,
+`uv.lock`, uv, and Just. Git records source revisions. uv selects Python, resolves
+and installs project dependencies, and runs commands in the project environment.
+The committed lockfile records the resolved dependency graph. Just gives the team
+short, shared names for common project commands. The environment guard checks the
+interpreter used by those commands.
 
-Git records source revisions. Conda supplies Python and the bootstrap tooling
-listed in `conda.yaml`. Poetry installs the project and its Python dependencies
-from `pyproject.toml` and the inspected `poetry.lock`. pytest runs behavior checks;
-Ruff checks/formats source; MyPy checks annotated types. No one tool proves all
-of these properties. A formatter is not a correctness evaluator.
+The project has no required runtime dependencies. The `dev` group contains code
+quality and test tools; `docs` contains the Quarto CLI; the `notebooks` extra
+provides local notebook support. Keeping these categories separate makes the
+purpose of each dependency visible in `pyproject.toml`.
 
-This repository deliberately uses **one activated Conda environment**, not an
-extra Python or Poetry virtual environment. `poetry.toml` disables both automatic
-virtualenv creation and in-project selection. Do not run `poetry env use`, create
-a nested venv, or pretend activation by setting `VIRTUAL_ENV`. The guard checks
-the interpreter and actual Conda metadata, not just a prompt label.
+::: {.callout-note}
+A lockfile makes dependency resolution repeatable for the environments it
+covers. It does not prove that every operating system installs successfully, nor
+does a passing smoke run establish agent quality or security.
+:::
+
+## 2. Predict what the guard should accept
+
+Before running anything, inspect `scripts/check_environment.py` and
+`tests/test_environment.py`. Predict which conditions should pass:
+
+- the interpreter selected by `uv run` uses this checkout's `.venv`;
+- the system interpreter happens to report the same Python version;
+- `UV_PROJECT_ENVIRONMENT` explicitly points uv and the guard at another path;
+- the environment directory exists, but the current process uses a different interpreter.
+
+The guard compares the running process's resolved `sys.prefix` with the configured
+project environment. A version string alone cannot identify an environment: two
+installations can use the same Python release while containing different packages.
+The guard checks interpreter selection; `uv sync --locked` is responsible for
+installing the declared dependency set.
 
 <script type="application/json" class="fcagentic-ojs-quiz-config">
 {
@@ -74,13 +74,13 @@ the interpreter and actual Conda metadata, not just a prompt label.
       "id": "u00-build-local-workspace-concept-1",
       "prompt": "What does this repository require before local validation?",
       "options": [
-        "A real activated project Conda environment with Python and Poetry in its prefix.",
-        "Only a prompt displaying the name fc-agentic.",
-        "A nested Poetry venv inside Conda.",
-        "A manually set VIRTUAL_ENV value."
+        "The checkout's uv environment with the intended Python interpreter.",
+        "Only a prompt displaying the repository name.",
+        "A Python interpreter selected outside this checkout.",
+        "A manually set variable pointing to another environment."
       ],
       "answer_index": 0,
-      "explanation": "The guard checks interpreter identity, Conda metadata, and Poetry’s actual selection. Labels are not activation."
+      "explanation": "The guard checks the interpreter selected for this checkout. Labels are not evidence of interpreter identity."
     },
     {
       "id": "u00-build-local-workspace-concept-2",
@@ -100,85 +100,68 @@ the interpreter and actual Conda metadata, not just a prompt label.
 
 {{< include ../../../../_includes/ojs-quiz.qmd >}}
 
-## 2. Prepare the checkout without destroying existing work
+## 3. Create the environment from the repository
 
-Use a terminal, not a Python code cell, for the commands in this section. Start
-from your local course checkout. If you do not have one, obtain it through the
-course repository's normal download/clone process; never replace an existing
-checkout as a troubleshooting step. Inspect before installing:
-
-```bash
-git status --short
-git rev-parse HEAD
-```
-
-Record the commit plus whether there are local edits; a commit hash alone does
-not identify uncommitted code. Read `conda.yaml`, `pyproject.toml`, `poetry.toml`,
-and the lockfile diff when supplied by someone else. Do not reset, clean, or
-remove environments to force agreement with a screenshot.
-
-On macOS/Linux, use a Conda-initialized terminal. On Windows, use a Conda-enabled
-PowerShell or the terminal supplied by your Conda distribution. Quote paths with
-spaces, for example `cd "C:\course work\agentic-ai-engineering"` in PowerShell or
-`cd "/home/you/course work/agentic-ai-engineering"` in a POSIX shell. The following
-Conda/Poetry commands work in either once the shell integration is active:
+Install Git, uv, and Just using their official installation instructions. Node.js
+24 is needed for the repository's Prettier hook; Quarto is needed to build the
+docs. From the repository root, create the declared environment:
 
 ```bash
-conda env create -f conda.yaml
-conda activate fc-agentic
-python scripts/check_environment.py
-poetry check --lock --strict
-poetry install --all-extras --with docs
-python scripts/check_environment.py
+uv sync --locked --all-groups --all-extras
+just environment
+uv run --locked python -m freecampus_agents.lab
 ```
 
-Run `conda env create` **only on first setup**. If `fc-agentic` already exists,
-activate it and inspect it; do not delete it. If `conda activate` is unavailable,
-consult the Conda activation documentation for your shell, reopen that terminal,
-and retry. `base` is not the project environment.
+The sync reads the Python version from `.python-version`, the project and group
+metadata from `pyproject.toml`, and the exact dependency resolution from
+`uv.lock`. The `--locked` flag makes the command stop when the metadata and lock
+file disagree instead of silently rewriting the lock. `just environment` then
+reports the project environment selected for Python commands. The smoke module
+prints a deterministic JSON record with status `complete`, answer `12`, and four
+events.
 
-`poetry check --lock --strict` checks declared metadata and lock consistency.
-It does not prove registry reachability, a successful installation, or identical
-native dependencies on every OS. Installation may fail behind a network policy.
-Save the exact error and mark local setup incomplete; the bundled notebook remains
-an offline learning path, not evidence of a completed local install. Do not
-invent a lockfile or claim a download succeeded. Use `poetry install`, not a
-synchronization command that might remove Conda-owned tooling.
+Use the same sequence in a fresh clone. For routine work, the named Just recipes
+wrap the Python tools with uv:
 
-## 3. Compare interpreters before comparing results
+| Command | Purpose |
+|---|---|
+| `just` | List the available recipes |
+| `just setup` | Sync the locked development and docs environment and all extras |
+| `just environment` | Check interpreter selection for this checkout |
+| `just lint` | Run Ruff checks, formatting, and mypy |
+| `just test` | Run the Python suite |
+| `just package` | Check the lock and build distributions |
+| `just docs` | Render the site and export notebooks |
+| `just review` | Render unpublished lesson drafts locally |
+| `just clean` | Remove known generated output and caches |
 
-Predict whether both reported prefixes should match `CONDA_PREFIX`. Run these
-commands in the same activated terminal:
+A recipe is a convenience name for a reviewed command, not an additional
+package manager. The underlying uv commands remain visible in the root
+`Justfile`, so a learner can inspect exactly what each recipe runs.
+
+## 4. Read and change dependency declarations safely
+
+Make intentional dependency changes in project metadata, then update and review
+the lockfile. For example:
 
 ```bash
-python -c "import sys; print(sys.executable); print(sys.prefix)"
-poetry run python -c "import sys; print(sys.executable); print(sys.prefix)"
-poetry run python -c "import freecampus_agents as p; print(p.__version__); print(p.__file__)"
-poetry run python -m freecampus_agents.lab
+uv add httpx                         # Runtime dependency
+uv add --group dev pytest-xdist      # Development-only dependency
+uv add --group docs sphinx           # Documentation-only dependency
+uv lock
+uv sync --locked --all-groups --all-extras
 ```
 
-Inspect absolute paths privately; redact usernames before sharing. The two Python
-commands must use the actual activated Conda prefix. The package import must come
-from the intended installed checkout, not a forgotten package copy. Expected
-smoke result: `status: complete`, `answer: 12`, and event kinds `task`, `tool_call`,
-`observation`, `final`. Compare the **structured result**, not whitespace in JSON.
+These are examples, not a request to add those packages to this project. For a
+single deliberate upgrade, `uv lock --upgrade-package PACKAGE` updates that
+package within the declared constraints. Inspect both `pyproject.toml` and
+`uv.lock` before committing them together. Do not hand-edit resolved package
+entries: the lock is generated from the declared project metadata.
 
-The following code also runs in the exported notebook. Save its report there and
-locally. Matching task hash and answer is expected; interpreter/platform details
-may differ and should be disclosed, not edited to match.
-
-```python
-import json
-from freecampus_agents.lab import Task, smoke_test
-from freecampus_agents.unit0 import execution_identity
-
-result = smoke_test()
-assert result.answer == 12
-assert [event.kind for event in result.events] == [
-    "task", "tool_call", "observation", "final"
-]
-print(json.dumps({"identity": execution_identity(Task(7, 5)), "run": result.to_dict()}, indent=2))
-```
+The notebook extra is optional for local Jupyter workflows. The hosted course
+notebooks use their bundled source and the Colab runtime; they do not depend on
+the maintainer's local environment. A successful notebook run and a successful
+local setup are separate evidence.
 
 <script type="application/json" class="fcagentic-ojs-quiz-config">
 {
@@ -216,47 +199,20 @@ print(json.dumps({"identity": execution_identity(Task(7, 5)), "run": result.to_d
 
 {{< include ../../../../_includes/ojs-quiz.qmd >}}
 
-## 4. Diagnose the boundary that failed
+## 5. Diagnose setup failures with evidence
 
-| Observation | First question | Appropriate next action |
+| Observation | Likely cause | Next step |
 |---|---|---|
-| `Activate Conda first` | Is this terminal activated? | Activate the actual project environment, then rerun the guard. |
-| `A Python venv is active` | Is another environment nested or selected? | Deactivate it through its normal shell mechanism, then activate Conda. Do not delete it. |
-| Python/Poetry prefix mismatch | Which executable does this shell resolve? | Inspect PATH and Poetry configuration; preserve the guard. |
-| `ModuleNotFoundError` | Did installation succeed for this interpreter? | Inspect install output and import location; do not change application logic. |
-| Input file missing | Is the supplied path explicit and correct? | Supply the real input path; do not fabricate a default success. |
-| Assertion fails after imports succeed | Does implementation meet the case contract? | Preserve expected/actual data and repair the violated behavior. |
+| `just` is not found | Just is not installed or is missing from `PATH` | Install Just, open a new terminal, and run `just` |
+| uv reports a stale lock | Project metadata changed without a matching resolution | Review the metadata change, run `uv lock`, inspect its diff, then retry locked sync |
+| The guard reports a different prefix | The shell or editor launched another Python | Run the command via `uv run` or select this checkout's `.venv` in the editor |
+| Quarto is missing | The external Quarto CLI is not installed | Install Quarto, then run `just docs` again |
+| A registry cannot be reached | Initial package download is unavailable | Record the exact command and error; retry when registry access returns |
 
-The repository tests exercise inactive, nested, and mismatched-interpreter cases
-using isolated test fixtures. Run those tests; do not deliberately corrupt your
-shell to reproduce them. A mocked wrong-prefix test establishes the guard's
-logic, not that Windows/macOS activation was manually verified.
-
-Optional configuration should not become a hidden dependency. This example uses
-an injected dictionary to demonstrate an environment-variable policy without
-reading or printing your real environment:
-
-```python
-def course_mode(settings):
-    mode = settings.get("COURSE_MODE", "offline")
-    if mode != "offline":
-        raise ValueError("This unit supports only offline mode")
-    return mode
-
-assert course_mode({}) == "offline"
-assert course_mode({"COURSE_MODE": "offline"}) == "offline"
-try:
-    course_mode({"COURSE_MODE": "live"})
-except ValueError:
-    print("Unsupported mode rejected before any service call")
-else:
-    raise AssertionError("Live mode unexpectedly accepted")
-```
-
-In an application, the caller could supply `os.environ`. Here that is unnecessary:
-there is no optional credential to provide and no reason to dump environment
-values into the launch card. An absent optional variable should have a documented
-default; a required setting would need an actionable error instead.
+Do not delete an existing environment just because one command failed. First
+inspect the command, selected interpreter, lock status, and diagnostic. Keep the
+original failure in your notes, make the smallest repair, and rerun the affected
+command.
 
 <script type="application/json" class="fcagentic-ojs-quiz-config">
 {
@@ -294,107 +250,32 @@ default; a required setting would need an actionable error instead.
 
 {{< include ../../../../_includes/ojs-quiz.qmd >}}
 
-## 5. Lab: assemble and test the local launch card
+## 6. Record the setup evidence
 
-Use these commands from the repository root after the guard passes. pytest
-collects `tests/test_*.py`; invoking it from a random directory may discover
-nothing or different tests. Zero discovered tests is not a passing lab.
+Use the [engineering journal](../../../../resources/engineering-journal.qmd) to
+record:
 
-```bash
-poetry run pytest -q tests/test_lab.py tests/test_environment.py tests/test_unit0.py
-poetry run ruff check src tests scripts
-poetry run ruff format --check src tests scripts
-poetry run mypy src
-poetry build
-```
+| Field | Evidence to preserve |
+|---|---|
+| Source | Repository revision and local changes |
+| Tools | Operating system, shell, uv, Just, Python, and Quarto versions where used |
+| Environment | `just environment` output and a redacted interpreter path |
+| Dependencies | Whether locked sync completed; include the exact error if it did not |
+| Smoke run | Command, status, answer, and event kinds |
+| Limitations | Platforms, registries, notebook kernels, or browser checks not tried |
 
-For the whole repository, also run `poetry run pytest -q` and
-`poetry run makim docs.build`. Preserve any unrelated baseline failure separately
-rather than claiming all checks passed or changing assertions to hide it.
+A passing smoke record supports only the checked path. It does not validate
+statistical model behavior, arbitrary tool code, clean installation on another
+platform, or notebook execution. Say which evidence you collected and which
+claims remain open.
 
-Your launch card needs these fields:
+### References
 
-```text
-Source: commit ID + clean/dirty state + relevant local edits
-Platform: actual OS, shell, Python, Poetry, Conda identity (redacted paths)
-Install: lock check command/result; install command/result or explicit blocker
-Runtime: smoke command, full event order, answer, task identity
-Quality: test count/result, lint/type/build results, original failure and repair
-Notebook comparison: fresh-kernel result and any version difference
-Assistance: accepted/rejected help and what you independently checked
-Limitations: untested OSes, unavailable registry/service/browser checks
-```
+- [Install uv](https://docs.astral.sh/uv/getting-started/installation/) documents supported installation methods.
+- [uv projects](https://docs.astral.sh/uv/guides/projects/) describes project environments and lockfile workflows.
+- [uv lock and sync](https://docs.astral.sh/uv/reference/cli/#uv-lock) documents lock and synchronization commands.
+- [Install Just](https://just.systems/man/en/chapter_4.html) documents installation options.
+- [Just manual](https://just.systems/man/en/) documents recipes and command execution.
+- Local authority: `.python-version`, `pyproject.toml`, `uv.lock`, `Justfile`, `scripts/check_environment.py`, and `tests/test_environment.py`.
 
-Also prove the path-with-spaces case using a synthetic file:
-
-```python
-from pathlib import Path
-from tempfile import TemporaryDirectory
-from freecampus_agents.unit0 import load_task
-from freecampus_agents.lab import run_agent
-
-with TemporaryDirectory(prefix="course workspace ") as folder:
-    path = Path(folder) / "input with spaces.json"
-    path.write_text('{"left": -5, "right": 5}', encoding="utf-8")
-    assert run_agent(load_task(path)).answer == 0
-    missing = path.with_name("not supplied.json")
-    try:
-        load_task(missing)
-    except FileNotFoundError as error:
-        assert "supply its path" in str(error)
-        print(error)
-    else:
-        raise AssertionError("Missing input unexpectedly accepted")
-```
-
-This checks Python path handling, not every shell's quoting rules. Keep that
-limitation in the card. Run the relevant commands in your actual OS/shell to add
-platform evidence. Colab-only learners can finish the notebook practice, but
-must label the local-environment gate pending.
-
-<details>
-<summary>Hint: troubleshoot setup in dependency order</summary>
-
-Source checkout → shell activation → interpreter identity → lock/install → import
-location → input path → behavior assertions. Fix the earliest failed boundary;
-rerun earlier checks if you change the environment.
-
-</details>
-
-<details>
-<summary>Solution path and acceptance checklist</summary>
-
-A valid card contains actual output, not copied expected output. The environment
-guard succeeds before and after installation; both interpreters resolve inside
-the activated Conda prefix; the package imports; the smoke fixture returns 12;
-the path fixture returns 0; missing input fails clearly; the negative guard tests
-pass; and local/notebook differences are named. A registry failure leaves install
-unverified even when a previously installed environment passes the smoke test.
-
-No single universal transcript is supplied: inventing platform-specific output
-would defeat the exercise. Use the commands above and keep their results.
-
-</details>
-
-## 6. Transfer to another workspace without pretending it was tested
-
-**Transfer:** open a new terminal in a different working directory. Identify what
-must be activated, what must be run from the repository root, and which input can
-be passed by absolute path. Produce one actual run and label all other operating
-systems unverified unless you tested them. Keep any existing environments intact.
-
-**Key points:** activation selects a real environment; locks describe dependencies,
-not successful execution; tests, lint, types, and packaging answer different
-questions; report setup limitations honestly. The next task is the integrated
-Unit Challenge, available in the local review navigation.
-
-### Sources and implementation
-
-- [Conda environment management](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html) documents creation and activation.
-- [Poetry basic usage](https://python-poetry.org/docs/basic-usage/) explains installation and lockfile use; [virtualenv configuration](https://python-poetry.org/docs/configuration/#virtualenvscreate) explains the settings this repository fixes.
-- [pytest assertions](https://docs.pytest.org/en/stable/how-to/assert.html), [Ruff](https://docs.astral.sh/ruff/), and [MyPy getting started](https://mypy.readthedocs.io/en/stable/getting_started.html) define the different checks.
-- Local authority: `conda.yaml`, `poetry.toml`, `pyproject.toml`, `poetry.lock`, `scripts/check_environment.py`, and `tests/test_environment.py`.
-
-Original course code and synthetic fixtures use BSD-3-Clause. Primary references
-checked 2026-09-19. Actual tested versions and platform coverage belong in the
-review report and your launch card, not in a claim that “latest” always works.
+Primary references checked 2026-10-14.

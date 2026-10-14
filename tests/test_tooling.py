@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
-import os
 import re
-import shutil
-import subprocess
 import sys
 from pathlib import Path
 
@@ -17,184 +14,92 @@ else:
     import tomli as tomllib
 
 
-def test_poetry_metadata_preserves_package_extras_and_build_assets() -> None:
+def test_uv_metadata_preserves_package_extras_and_build_assets() -> None:
     config = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
     assert config["project"]["name"] == "freecampus-agents"
-    assert config["project"]["requires-python"] == ">=3.10"
+    assert config["project"]["requires-python"] == ">=3.10,<4"
     assert config["project"]["dependencies"] == []
     assert "notebooks" in config["project"]["optional-dependencies"]
     assert set(config["dependency-groups"]) == {"dev", "docs"}
-    assert config["build-system"]["build-backend"] == "poetry.core.masonry.api"
-    assert config["build-system"]["requires"] == ["poetry-core>=2.4,<3"]
-    poetry = config["tool"]["poetry"]
-    assert poetry["requires-poetry"] == ">=2.4,<3"
-    assert poetry["packages"] == [{"include": "freecampus_agents", "from": "src"}]
-    assert poetry["group"]["docs"]["optional"] is True
-    for path in (
-        "src/freecampus_agents/py.typed",
-        "src/freecampus_agents/fixtures/*.json",
+    assert config["build-system"]["build-backend"] == "uv_build"
+    assert config["build-system"]["requires"] == ["uv_build>=0.12.23,<0.13"]
+    assert config["tool"]["uv"]["required-version"] == ">=0.12.13,<0.14"
+    assert config["tool"]["uv"]["build-backend"] == {
+        "module-name": "freecampus_agents",
+        "module-root": "src",
+    }
+    assert (Path("src/freecampus_agents/py.typed")).is_file()
+    assert list(Path("src/freecampus_agents/fixtures").glob("*.json"))
+    assert "makim" not in str(config).lower()
+    assert "poetry" not in str(config).lower()
+    assert "quarto-cli==1.9.38" in config["dependency-groups"]["docs"]
+    assert "PyYAML>=6,<7" in config["dependency-groups"]["dev"]
+    assert Path("uv.lock").is_file()
+    assert Path(".python-version").read_text(encoding="utf-8").strip() == "3.12"
+    assert not any(Path(name).exists() for name in ("poetry.lock", "poetry.toml"))
+
+
+def test_justfile_exposes_documented_project_recipes() -> None:
+    justfile = Path("Justfile").read_text(encoding="utf-8")
+    for recipe in (
+        "setup:",
+        "environment:",
+        "plan-refresh:",
+        "plan-check:",
+        "lint:",
+        "test:",
+        "package:",
+        "docs:",
+        "review:",
+        "preview:",
+        "hooks:",
+        "clean:",
+        "ci:",
     ):
-        entry = next(item for item in poetry["include"] if item["path"] == path)
-        assert set(entry["format"]) == {"sdist", "wheel"}
-    assert "setuptools" not in config["tool"]
-    assert "pre-commit-hooks==4.6.0" in config["dependency-groups"]["dev"]
-    assert not Path("uv.lock").exists()
-
-
-def test_conda_bootstraps_poetry_without_becoming_a_second_dependency_manager() -> None:
-    config = yaml.safe_load(Path("conda.yaml").read_text(encoding="utf-8"))
-    assert config["name"] == "fc-agentic"
-    assert config["channels"] == ["conda-forge", "nodefaults"]
-    assert set(config["dependencies"]) == {
-        "python=3.12",
-        "poetry>=2.4,<3",
-        "nodejs",
-        "pip",
-    }
-    assert config["variables"] == {
-        "POETRY_VIRTUALENVS_CREATE": "false",
-        "POETRY_VIRTUALENVS_IN_PROJECT": "false",
-    }
-    poetry_config = tomllib.loads(Path("poetry.toml").read_text(encoding="utf-8"))
-    assert poetry_config["virtualenvs"] == {"create": False, "in-project": False}
+        assert recipe in justfile
+    assert "uv run --locked" in justfile
+    assert "makim" not in justfile.lower()
 
 
 @pytest.mark.parametrize("name", ["ci", "docs"])
-def test_workflows_activate_conda_and_install_poetry_dependencies_without_venvs(
-    name: str,
-) -> None:
+def test_workflows_install_uv_just_node_and_locked_dependencies(name: str) -> None:
     workflow = yaml.safe_load(
         Path(f".github/workflows/{name}.yml").read_text(encoding="utf-8")
     )
     job = workflow["jobs"]["checks" if name == "ci" else "build"]
-    assert job["defaults"]["run"]["shell"] == "bash -el {0}"
-    assert job["env"]["POETRY_VIRTUALENVS_CREATE"] == "false"
-    assert job["env"]["POETRY_VIRTUALENVS_IN_PROJECT"] == "false"
-    assert "VIRTUAL_ENV" not in job["env"]
-    setup = next(
-        step
-        for step in job["steps"]
-        if step.get("uses") == "conda-incubator/setup-miniconda@v3"
+    assert job["defaults"]["run"]["shell"] == "bash"
+    uv = next(step for step in job["steps"] if "setup-uv" in step.get("uses", ""))
+    just = next(step for step in job["steps"] if "setup-just" in step.get("uses", ""))
+    node = next(
+        step for step in job["steps"] if step.get("uses") == "actions/setup-node@v4"
     )
-    assert setup["with"]["environment-file"] == (
-        ".cache/conda-ci.yaml" if name == "ci" else "conda.yaml"
-    )
-    assert setup["with"]["activate-environment"] == "fc-agentic"
-    assert setup["with"]["auto-activate-base"] is False
-    assert setup["with"]["miniforge-version"] == "latest"
+    assert uv["with"]["version"] == "0.12.23"
+    assert just["with"]["just-version"] == "1.58.0"
+    assert node["with"]["node-version"] == "24"
+    commands = "\n".join(step.get("run", "") for step in job["steps"])
+    assert "uv sync --locked --all-groups --all-extras" in commands
+    assert "poetry" not in commands.lower()
+    assert "conda" not in commands.lower()
+    assert "makim" not in commands.lower()
     if name == "ci":
         assert job["strategy"]["matrix"]["python-version"] == ["3.10", "3.12", "3.14"]
-        assert "python-version" not in setup["with"]
-        prepare = next(
-            step
-            for step in job["steps"]
-            if step.get("name") == "Prepare the matrix Conda environment"
-        )
-        assert prepare["env"]["PYTHON_VERSION"] == "${{ matrix.python-version }}"
-        assert job["steps"].index(prepare) < job["steps"].index(setup)
+        assert uv["with"]["python-version"] == "${{ matrix.python-version }}"
+        assert "just --fmt --check" in commands
+        assert "just ci" in commands
+        for local_only in ("plan-check", "plan-refresh", "check_lesson_plan.py"):
+            assert local_only not in commands
     else:
-        assert setup["with"]["python-version"] == "3.12"
-    assert not any(
-        step.get("uses", "").startswith(("actions/setup-python", "actions/setup-node"))
-        for step in job["steps"]
-    )
-    commands = "\n".join(step.get("run", "") for step in job["steps"])
-    guard = "python scripts/check_environment.py"
-    assert commands.count(guard) == 2
-    assert commands.index(guard) < commands.index("poetry install")
-    assert commands.rindex(guard) > commands.index("poetry install")
-    assert "pip install" not in commands
-    assert "poetry env use" not in commands
-    assert "poetry check --strict" in commands
-    assert "--with docs" in commands
-    assert "poetry run makim" in commands
-    assert "poetry sync" not in commands
-    for local_only in ("plan.check", "plan.refresh", "check_lesson_plan.py"):
-        assert local_only not in commands
+        assert uv["with"]["python-version"] == "3.12"
+        assert "just docs" in commands
 
 
-def run_ci_environment_preparation(
-    tmp_path: Path, source: str, version: str
-) -> subprocess.CompletedProcess[str]:
-    """Execute the real pre-Conda workflow command, not a duplicate transformer."""
-    bash = shutil.which("bash")
-    if not bash or not shutil.which("awk"):
-        pytest.skip("The Ubuntu CI bootstrap regression needs bash and awk")
-    workflow = yaml.safe_load(Path(".github/workflows/ci.yml").read_text())
-    prepare = next(
-        step
-        for step in workflow["jobs"]["checks"]["steps"]
-        if step.get("name") == "Prepare the matrix Conda environment"
-    )
-    (tmp_path / "conda.yaml").write_text(source, encoding="utf-8")
-    return subprocess.run(
-        [bash, "--noprofile", "--norc", "-e", "-c", prepare["run"]],
-        cwd=tmp_path,
-        env={**os.environ, "PYTHON_VERSION": version},
-        capture_output=True,
-        text=True,
-        timeout=10,
-        check=False,
-    )
-
-
-@pytest.mark.parametrize("version", ["3.10", "3.12", "3.14"])
-def test_ci_environment_has_one_matrix_pin_and_preserves_local_defaults(
-    tmp_path: Path, version: str
-) -> None:
-    source = Path("conda.yaml").read_text(encoding="utf-8")
-    result = run_ci_environment_preparation(tmp_path, source, version)
-    assert result.returncode == 0, result.stderr
-    generated = yaml.safe_load((tmp_path / ".cache/conda-ci.yaml").read_text())
-    expected = yaml.safe_load(source)
-    assert expected["dependencies"].count("python=3.12") == 1
-    expected["dependencies"] = [
-        f"python={version}" if dep == "python=3.12" else dep
-        for dep in expected["dependencies"]
-    ]
-    assert generated == expected  # All other tools, channels, and settings survive.
-    python_specs = [
-        dep
-        for dep in generated["dependencies"]
-        if isinstance(dep, str) and re.match(r"^python(?:[=<>!~\s]|$)", dep)
-    ]
-    assert python_specs == [f"python={version}"]
-    assert (tmp_path / "conda.yaml").read_text(encoding="utf-8") == source
-
-
-@pytest.mark.parametrize("fault", ["missing", "duplicate", "conflicting"])
-def test_ci_environment_preparation_rejects_ambiguous_python_specs(
-    tmp_path: Path, fault: str
-) -> None:
-    source = Path("conda.yaml").read_text(encoding="utf-8")
-    replacement = {
-        "missing": "",
-        "duplicate": "  - python=3.12\n  - python=3.12\n",
-        "conflicting": "  - python=3.12\n  - python>=3.14\n",
-    }[fault]
-    broken = source.replace("  - python=3.12\n", replacement)
-    result = run_ci_environment_preparation(tmp_path, broken, "3.10")
-    assert result.returncode != 0
-    assert "Expected exactly one Python dependency" in result.stderr
-    assert (tmp_path / "conda.yaml").read_text(encoding="utf-8") == broken
-
-
-def test_task_runner_and_hooks_use_the_existing_conda_environment() -> None:
-    tasks = yaml.safe_load(Path(".makim.yaml").read_text(encoding="utf-8"))
-    assert tasks["groups"]["package"]["tasks"]["build"]["run"] == (
-        "python scripts/project.py package"
-    )
-    assert tasks["groups"]["environment"]["tasks"]["check"]["run"] == (
-        "python scripts/check_environment.py"
-    )
+def test_precommit_runs_python_tools_through_uv() -> None:
     hooks = yaml.safe_load(Path(".pre-commit-config.yaml").read_text(encoding="utf-8"))
     assert hooks["fail_fast"] is True
-    guard = hooks["repos"][0]["hooks"][0]
-    assert guard["entry"] == "python scripts/check_environment.py"
-    assert guard["always_run"] is True
-    assert guard["pass_filenames"] is False
     all_hooks = [hook for repo in hooks["repos"] for hook in repo["hooks"]]
     assert all(hook["language"] == "system" for hook in all_hooks)
+    environment = next(hook for hook in all_hooks if hook["id"] == "uv-environment")
+    assert environment["entry"] == "uv run --locked python scripts/check_environment.py"
     formatter = next(hook for hook in all_hooks if hook["id"] == "prettier")
     assert formatter["additional_dependencies"] == []
     assert formatter["entry"] == (
@@ -203,10 +108,10 @@ def test_task_runner_and_hooks_use_the_existing_conda_environment() -> None:
     )
     for hook in all_hooks:
         if hook["id"] in {"ruff-format", "ruff-check", "mypy"}:
-            assert hook["entry"].startswith("poetry run ")
+            assert hook["entry"].startswith("uv run --locked ")
 
 
-def test_full_pipeline_checks_and_builds_with_poetry(
+def test_full_pipeline_checks_and_builds_with_uv(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     spec = importlib.util.spec_from_file_location("project_tasks", "scripts/project.py")
@@ -223,18 +128,18 @@ def test_full_pipeline_checks_and_builds_with_poetry(
         (sys.executable, "scripts/check_environment.py"),
         ("lint",),
         (sys.executable, "-m", "pytest", "-q"),
-        ("poetry", "check", "--strict"),
-        ("poetry", "build"),
+        ("uv", "lock", "--check"),
+        ("uv", "build"),
         ("docs",),
     ]
 
 
-def test_operational_files_do_not_instruct_using_the_retired_manager() -> None:
+def test_repository_no_longer_requires_poetry_conda_or_makim() -> None:
     paths = [
         Path("README.md"),
         Path("AGENTS.md"),
-        Path("conda.yaml"),
-        Path(".makim.yaml"),
+        Path("Justfile"),
+        Path("pyproject.toml"),
         Path(".pre-commit-config.yaml"),
         Path(".github/PULL_REQUEST_TEMPLATE.md"),
         *Path(".github/workflows").glob("*.yml"),
@@ -246,9 +151,12 @@ def test_operational_files_do_not_instruct_using_the_retired_manager() -> None:
     ]
     for path in paths:
         assert not re.search(
-            r"\buv\b|UV_PYTHON|astral-sh/setup-uv",
+            r"\b(poetry|conda|makim)\b",
             path.read_text(encoding="utf-8"),
+            re.IGNORECASE,
         ), path
+    assert not Path("conda.yaml").exists()
+    assert not Path(".makim.yaml").exists()
 
 
 def test_public_guidance_does_not_link_to_ignored_local_plans() -> None:

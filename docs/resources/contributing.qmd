@@ -14,8 +14,8 @@ narrower than its unit outcome. Do not turn all 101 outlines into thin published
 pages.
 
 When using that local tracker, maintain the task's development status, owner,
-date, blockers, and evidence. Explicitly run `poetry run makim plan.refresh` and
-`poetry run makim plan.check` after updates. These commands need the local plan;
+date, blockers, and evidence. Explicitly run `just plan-refresh` and
+`just plan-check` after updates. These commands need the local plan;
 CI and normal pytest runs do not read it. CI tests the validator using synthetic
 records and checks public curriculum relationships using tracked sources.
 A finished brief is not an implemented lesson; unit gates and capstone stages
@@ -54,43 +54,35 @@ exist. Do not enable whole-course completion until the completion contract is re
 
 ## 5. Check from a clean environment
 
-Use Poetry 2.4+ within the 2.x series. A tracked `poetry.lock` now exists;
-validate it against `pyproject.toml` with `poetry check --lock --strict` before
-installation. If they disagree, review and regenerate the lock through the
-dependency-maintenance workflow, not by hand or by borrowing another course's
-lock. Explicit CI lock enforcement and clean supported-platform installation
-evidence remain release work. A passing metadata check alone does not establish
-a fully reproducible release.
+Use uv and the committed `uv.lock` to reproduce the development environment.
+`.python-version` selects Python 3.12 for local setup. `uv sync --locked` checks
+that project metadata and the lock agree without silently changing the lock.
+When dependencies change intentionally, update the lock with `uv lock` and
+review its diff. CI installs with locked metadata across Python 3.10, 3.12, and
+3.14; a successful lock check alone does not establish clean installation or
+cross-platform compatibility.
 
-Conda + Poetry are required locally and in CI. `conda.yaml` supplies Python 3.12,
-Poetry, Node.js, and pip. Poetry installs project dependencies directly into the
-activated Conda environment. The shared `poetry.toml` disables separate virtual
-environments; the environment check rejects nested venvs or mismatched tools.
-Use `poetry install`, not synchronization, to preserve Conda-owned tooling.
-Activate the environment in each terminal and select its Python in your editor.
-Pre-commit hooks use these installed tools rather than creating hook environments.
+Install Git, uv, Just, Node.js 24 (for Prettier), and Quarto (for docs). From the
+repository root, `just setup` installs the locked development and docs groups and
+all extras into the project environment. `just environment` confirms that
+commands use this checkout's `.venv`. Project recipes run Python tools through
+`uv run`; list them with `just`.
 
 ```bash
-conda env create -f conda.yaml  # First setup only
-conda activate fc-agentic
-python scripts/check_environment.py
-poetry check --lock --strict
-poetry install --all-extras --with docs
-python scripts/check_environment.py
-poetry run pytest -q
-poetry run ruff check src tests scripts
-poetry run ruff format --check src tests scripts
-poetry run mypy src
-poetry build
-poetry run makim docs.build
-git diff --check
-poetry run makim clean.tmp
+just setup
+just environment
+just lint
+just test
+just package
+just docs
+just review  # Draft review output is local and not published
+just clean
 ```
 
-The build renders HTML, exports notebooks, and verifies expected output files.
-Open at least one desktop and narrow-screen quiz when browser tooling is available.
-Restart the smoke notebook and run from the top. Report skipped checks and external
-limitations rather than treating unrun checks as passing.
+The docs build renders HTML, exports notebooks, and verifies expected output
+files. Restart the smoke notebook and run it from the top. Open at least one
+desktop and narrow-screen quiz when browser tooling is available. Report skipped
+checks and external limitations rather than treating unrun checks as passing.
 
 ## 6. Keep current-system examples reproducible
 
@@ -155,4 +147,4 @@ published effort range is provisional: pilot the active work and account for
 milestone refinements, reviews, and optional setup separately.
 
 Use the [repository contribution guidance](https://github.com/freecampus/agentic-ai-engineering/blob/main/AGENTS.md)
-and [Poetry's basic usage](https://python-poetry.org/docs/basic-usage/) for further detail.
+and the [uv project guide](https://docs.astral.sh/uv/guides/projects/) for further detail.

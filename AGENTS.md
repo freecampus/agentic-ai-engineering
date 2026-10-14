@@ -104,10 +104,10 @@ preview implemented. Publication status stays in the catalog. A unit is done
 only when its lessons and all unit gates are done. Gate/capstone/release records
 never count as extra lessons.
 
-After status changes, run `poetry run makim plan.refresh`, then
-`poetry run makim plan.check`. Do not hand-edit dashboard totals or use the
-script's structural pass as a substitute for independent teaching/execution
-review. These are explicit local commands, not CI prerequisites. They fail
+After status changes, run `just plan-refresh`, then `just plan-check`. Do not
+hand-edit dashboard totals or use the script's structural pass as a substitute
+for independent teaching/execution review. These are explicit local commands,
+not CI prerequisites. They fail
 clearly if the local lesson plan is absent, without creating placeholders. CI
 checks tracked curriculum relationships and the validator's behavior using
 synthetic test records; it never reads the actual local plans. Keep a local
@@ -237,42 +237,33 @@ environment files.
 
 ## Validation and tooling
 
-Use **Conda + Poetry for all local development and CI**. `conda.yaml` supplies
-Python, Poetry 2.4+ within 2.x, Node.js, and pip; Poetry manages project Python
-dependencies via `pyproject.toml` and (once resolved) `poetry.lock`. Packaging
-uses `poetry-core`. Activate the real project Conda environment, not `base`, and
-run `python scripts/check_environment.py` before installing or validating. Never
-simulate activation by setting `VIRTUAL_ENV`. Python and Poetry must both
-resolve inside the activated Conda prefix.
+Use **uv + Just** for local development and CI. `.python-version` selects the
+default Python; `uv` creates the project `.venv`, resolves dependencies from
+`pyproject.toml`, and keeps the committed `uv.lock` current. `uv_build` packages
+the `src/` layout. Use `uv add` for runtime dependencies and
+`uv add --group dev` or `uv add --group docs` for development tools. After
+changing metadata, run `uv lock`, review the lock diff, then use
+`uv sync --locked --all-groups --all-extras`. Do not hand-edit lockfiles or
+borrow a lockfile from another course.
 
-The tracked `poetry.toml` disables virtualenv creation and in-project selection;
-preserve both settings. Do not use Python/Poetry venvs or `poetry env use`. Use
-`poetry install`, not synchronization, to avoid removing Conda-owned tooling.
-Pre-commit hooks must use `language: system`, with dependencies supplied by the
-Conda/Poetry toolchain, not isolated hook environments. Preserve existing unused
-environment directories; never delete them automatically.
+Install Git, uv, Just, Node.js 24 (for Prettier), and Quarto (for docs). From the
+repository root, run `just setup`; the recipes invoke project tools through
+`uv run`. `just environment` verifies that Python is running from this
+checkout's `.venv`. `just` lists the available recipes. CI explicitly checks
+lock consistency and supported Python versions. A passing lock check alone is
+not proof of clean installation or cross-platform compatibility.
 
-A tracked `poetry.lock` exists; the initial registry failure is historical.
-Check its agreement with `pyproject.toml` using `poetry check --lock --strict`
-before installation. Preserve unrelated user lockfile changes; regenerate only
-as deliberate dependency maintenance and inspect the result. Explicit CI lock
-enforcement and clean supported-platform installation evidence remain release
-work. A passing metadata check is not proof of reproducibility. Do not fabricate
-a lockfile or borrow the reference course's dependency lock.
+Pre-commit hooks use `language: system` and run Python tools through `uv run`.
+Preserve existing unused environment directories; never delete them
+automatically.
 
 ```bash
-conda env create -f conda.yaml  # First setup only
-conda activate fc-agentic
-python scripts/check_environment.py
-poetry check --lock --strict
-poetry install --all-extras --with docs
-python scripts/check_environment.py
-poetry run pytest -q
-poetry run ruff check src tests scripts
-poetry run ruff format --check src tests scripts
-poetry run mypy src
-poetry build
-poetry run makim docs.build
+just setup
+just environment
+just lint
+just test
+just package
+just docs
 ```
 
 Run focused checks during work, then the full suite. Validate catalog counts,
@@ -280,7 +271,7 @@ lesson ownership, status-aware links, outcomes, metadata, quiz JSON and IDs,
 Python fences, Mermaid options, every expected HTML page, and notebook output.
 Run the smoke notebook from a clean process and inspect desktop/narrow-screen
 quizzes when browser tooling is available. Finish with `git diff --check`,
-scoped cleanup via `poetry run makim clean.tmp`, and `git status --short`.
+scoped cleanup via `just clean`, and `git status --short`.
 
 Do not delete virtual environments, unrelated user files, or existing staged
 work. Do not commit generated sites, caches, `_files` directories, build

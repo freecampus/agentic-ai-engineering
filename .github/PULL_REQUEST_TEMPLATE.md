@@ -16,14 +16,12 @@
 
 <!-- List the commands or manual checks used to verify the change. -->
 
-- [ ] Activated the Conda environment and ran
-      `python scripts/check_environment.py`
-- [ ] `poetry check --strict` (add `--lock` after the initial lockfile is
-      generated)
-- [ ] `poetry run makim tests.linter`
-- [ ] `poetry run makim tests.unit`
-- [ ] `poetry run makim package.build`
-- [ ] `poetry run makim docs.build`
+- [ ] `just environment`
+- [ ] `uv lock --check`
+- [ ] `just lint`
+- [ ] `just test`
+- [ ] `just package`
+- [ ] `just docs`
 - [ ] Manual lesson review, if content changed
 
 ## Pull Request checklist
