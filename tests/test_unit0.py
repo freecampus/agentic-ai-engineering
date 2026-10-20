@@ -190,7 +190,6 @@ def test_unit0_checkpoint_banks_match_canonical_sources(slug):
     assert "notebook_package: true" in text
     assert (
         "Primary references checked 2026-09-19" in text
-        or "Primary references checked 2026-10-14" in text
         or "references\nchecked 2026-09-19" in text
     )
 

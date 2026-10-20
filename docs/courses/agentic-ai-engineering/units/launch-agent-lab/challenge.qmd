@@ -30,7 +30,7 @@ estimated_time: 90–180 minutes
 - **Active time:** 90–180 minutes; stop and record an environment blocker rather than hiding it.
 - **Outcome assessed:** Repair a stale notebook and a broken local entry point, enforce the tiny agent's boundaries, and submit reproducible evidence.
 - **Evidence:** A launch card, repaired source/notebook, original failures, independent checks, assistance disclosure, and retrospective.
-- **Environment:** Python and the offline course package; uv + Just for the local setup gate. No GPU, paid service, credential, or real personal data.
+- **Environment:** Python and the offline course package; Conda + Poetry for the local gate. No GPU, paid service, credential, or real personal data.
 :::
 
 ::: {.callout-note}
@@ -62,7 +62,7 @@ Before touching code, answer:
 4. Which checks require a real local environment rather than a bundled notebook?
 
 Deliver one launch card and the minimal repaired artifacts. A notebook-only pass
-is useful progress but does not satisfy the separate uv setup gate.
+is useful progress but does not satisfy the separate Conda/Poetry setup gate.
 Do not write an LLM integration or a generalized agent framework for this task.
 
 ## 2. Predict an ordinary run
@@ -163,7 +163,7 @@ The starter contains:
 | Missing input | Nonzero exit, diagnostic containing `supply its path`, no success JSON, no replacement file. |
 | Repaired notebook | Fresh top-to-bottom run computes current operands; no cached answer or hidden input variable. |
 | Agent policy | Unsupported tool denied before invocation; malformed result rejected before observation; one-decision run ends `budget_exhausted`. |
-| Local gate | Locked dependency install, project-interpreter evidence, and smoke result; label unavailable checks pending. |
+| Local gate | Real Conda activation, matching Python/Poetry, inspected lock/install evidence, smoke result; label unavailable checks pending. |
 | Evidence | Preserve original failure, smallest repair, rerun, source/input identities, disclosure, and limitations. |
 
 The helper supplies tests, not a solution. Read `src/freecampus_agents/launch_project.py`
@@ -187,7 +187,7 @@ does not test package installation**; keep the local environment gate separate.
 4. Test the agent's denial, envelope, and budget boundaries. Reject the synthetic
    shell/download suggestion with a capability-specific explanation.
 5. Run the actual local setup checks from Lesson 0.5, or record the exact blocker.
-   Do not turn a notebook success into unobserved local setup evidence.
+   Do not turn a notebook success into an invented Conda installation result.
 
 ::: {.callout-warning}
 ## Inspect before executing
@@ -327,7 +327,7 @@ attach a launch card with these rows:
 
 | Field | Your evidence, not the sample answer |
 |---|---|
-| Source/environment | Checkout and local edits; Python, uv, and Just versions; OS/shell; redacted interpreter paths. |
+| Source/environment | Checkout and local edits; Python/Poetry/Conda versions; OS/shell; redacted interpreter paths. |
 | Contract/prediction | Explicit path, exact schema, expected sums/events, and budget. |
 | Original failure | Stale notebook output plus the first project-check diagnostic. |
 | Repair | Smallest source diff and why no new capability was needed. |
@@ -404,7 +404,7 @@ for the café's real sum, an ordinary function remains adequate.
       "options": [
         "Yes; the helper proves installation automatically.",
         "Yes, if no exception was printed in the browser.",
-        "No; a locked local install and environment check need separate evidence.",
+        "No; real Conda/Poetry activation and installation need separate evidence.",
         "No; a paid model must also be called."
       ],
       "answer_index": 2,
