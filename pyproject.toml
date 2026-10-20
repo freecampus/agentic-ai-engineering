@@ -35,9 +35,9 @@ dev = [
   "pre-commit>=4,<5",
   "pre-commit-hooks==4.6.0",
   "nbformat>=5,<6",
-  "tomli>=2,<3; python_version < '3.11'",
-  "quarto-cli==1.9.38"
+  "tomli>=2,<3; python_version < '3.11'"
 ]
+docs = ["quarto-cli==1.9.38"]
 
 [build-system]
 requires = ["poetry-core>=2.4,<3"]
