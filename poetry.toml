@@ -1,0 +1,5 @@
+# Shared project policy: use the activated Conda environment, never a Poetry venv.
+# Do not put personal paths, credentials, or repository settings in this file.
+[virtualenvs]
+create = false
+in-project = false

@@ -46,54 +46,86 @@ calls.
 
 ## Local development
 
-Use **uv** for Python and **Just** for project commands. Install Git,
-[uv](https://docs.astral.sh/uv/getting-started/installation/),
-[Just](https://just.systems/man/en/chapter_4.html), and Node.js 24 (for Prettier),
-then run these commands from the repository root. Quarto is installed with the
-docs dependency group.
+**Conda + Poetry are required for development and CI.** Install Conda (for
+example, Miniforge), then run the following from the repository root. Conda owns
+the environment and supplies Python 3.12, Poetry 2.4+ within the 2.x series,
+Node.js, and pip. Poetry installs the project's Python dependencies directly
+into that activated Conda environment—not a separate virtual environment.
 
 ```bash
-uv sync --locked --all-groups --all-extras  # First setup and after dependency changes
-just environment
-uv run --locked python -m freecampus_agents.lab
-just lint
-just test
-just package
-just docs
-just preview
-just hooks  # Optional: install Git pre-commit hooks
+conda env create -f conda.yaml  # First setup only
+conda activate fc-agentic
+python scripts/check_environment.py
+poetry check --lock --strict
+poetry install --all-extras --with docs
+python scripts/check_environment.py
+poetry run python -m freecampus_agents.lab
+poetry run makim tests.linter
+poetry run makim tests.unit
+poetry build
+poetry run makim docs.build
+poetry run makim docs.preview
 ```
 
-uv reads the Python version from `.python-version`, creates `.venv`, and installs
-the exact versions in the tracked `uv.lock`. Use `uv add` to add a runtime
-dependency, `uv add --group dev` for a development dependency, and
-`uv lock --upgrade-package PACKAGE` when deliberately updating one dependency.
-Run `uv sync --locked --all-groups --all-extras` after changing dependencies.
-The environment check confirms commands are using this checkout's uv environment.
+Activate `fc-agentic` in each new terminal; do not work in Conda's `base`
+environment. Use a Conda-initialized terminal on Windows, macOS, or Linux. If
+activation is unavailable, initialize your shell following
+[Conda's environment guide](https://docs.conda.io/projects/conda/en/stable/user-guide/tasks/manage-environments.html).
+Set your editor's interpreter to this same Conda environment.
 
-Just recipes are listed by running `just`; recipes such as `just docs`,
-`just test`, and `just ci` call the project tools through uv. CI checks Python
-3.10, 3.12, and 3.14. Pre-commit hooks use `language: system` and call tools via
-`uv run`; the pinned Prettier command uses Node.js and needs registry access the
-first time it runs. See [uv projects](https://docs.astral.sh/uv/guides/projects/)
-and [pre-commit system hooks](https://pre-commit.com/#system) for details.
+CI derives `.cache/conda-ci.yaml` from this same specification, replacing only
+the Python dependency with the matrix version (3.10, 3.12, or 3.14). The
+generated file is the sole Python pin passed to setup-miniconda; `conda.yaml`
+keeps the local Python 3.12 default. Missing or duplicate Python entries stop
+the bootstrap.
+
+The shared `poetry.toml` disables virtualenv creation and in-project virtualenv
+selection. The environment check rejects a nested Python venv, conflicting
+Poetry settings, or Python/Poetry pointing outside the active Conda environment.
+It runs before CI installation and developer validation tasks. Do not use
+`poetry env use` or `python -m venv` here. Existing environment directories are
+left untouched, not adopted for development.
+
+Poetry may label the active Conda prefix as `VIRTUAL_ENV` inside `poetry run`.
+The check verifies the real interpreter and Conda metadata, rather than treating
+that label alone as evidence of a separate venv. Do not set it manually.
+
+Use `poetry install`, not `poetry sync`: synchronization can remove Conda-owned
+tooling outside the project dependency set. Both CI workflows use `conda.yaml`
+with activated login shells; validation covers Python 3.10, 3.12, and 3.14. Node
+supports browser tests and formatting. Pre-commit hooks use `language: system`
+and Poetry-installed tools, not isolated hook environments; the pinned Prettier
+command uses Conda's npm and needs registry access on its first run. See
+[Poetry's environment settings](https://python-poetry.org/docs/configuration/#virtualenvscreate)
+and [system hooks](https://pre-commit.com/#system) for those behaviors.
 
 The core package has no runtime dependencies; notebook widgets are an extra.
 Hosted Colab notebooks use their supplied runtime and bundled course package;
-they do not require a local uv environment.
+they do not require a local Conda installation.
 
 ### Lockfile validation and release evidence
 
-Commit `uv.lock` so local setups and CI install the same resolved dependencies.
-`uv lock --check` verifies that project metadata and the lockfile agree;
-`uv sync --locked` refuses to update a stale lock silently. Update the lock with
-`uv lock` after intentional dependency changes and review the resulting diff.
-A valid lock alone does not prove clean installation or cross-platform
-compatibility.
+A tracked `poetry.lock` exists. The initial migration's registry failure is
+historical; do not infer the current lock's validity from that record. Run
+`poetry check --lock --strict` in the activated Conda environment before
+installation. A stale lock must be deliberately regenerated and reviewed, never
+hand-edited or copied from another course.
+
+Before claiming a reproducible release, review/integrate dependency changes,
+require explicit `poetry check --lock --strict` before installation in both CI
+workflows, and record clean supported-platform installations using
+`poetry install --all-extras --with docs`. Current workflows still use the older
+metadata-only check; adding explicit lock enforcement remains dependency-release
+work. A valid lock alone does not prove clean installation or cross-platform
+compatibility. See
+[Poetry's basic usage](https://python-poetry.org/docs/basic-usage/) for lockfile
+behavior and
+[dependency groups](https://python-poetry.org/docs/managing-dependencies/) for
+installation options.
 
 ## Website and notebooks
 
-Quarto execution is disabled globally. `just docs` renders the
+Quarto execution is disabled globally. `poetry run makim docs.build` renders the
 site, exports notebooks, and checks that every expected HTML page and notebook
 exists. Published Colab links target this repository's `gh-pages` branch; they
 become usable after deployment. Do not edit `docs/_site` by hand.
@@ -107,8 +139,9 @@ material.
 ### Review Units 0–1 without publishing them
 
 ```bash
-just environment
-just review
+conda activate fc-agentic
+python scripts/check_environment.py
+poetry run makim docs.review
 ```
 
 Open
@@ -130,7 +163,7 @@ Its five notebooks are under
 Normal `docs.build` omits draft content and notebook exports. The separate
 review output is ignored and never deployed by the docs workflow. Do not publish
 it as an alternative way to bypass review. Completion and public Colab launch
-links remain disabled on drafts. `just clean` removes both generated sites.
+links remain disabled on drafts. `makim clean.tmp` removes both generated sites.
 
 Progress storage uses this course's own namespace and only explicit published
 activity IDs. Progress is local and self-reported, not verified grading or a
@@ -168,8 +201,8 @@ fields. Update status (`not_done`, `in_progress`, `in_review`, `implemented`, or
 `blocked`), owner, date, and evidence as work advances. Then explicitly run:
 
 ```bash
-just plan-refresh
-just plan-check
+poetry run makim plan.refresh
+poetry run makim plan.check
 ```
 
 These commands check the real local briefs, catalog alignment, records, and
@@ -187,16 +220,20 @@ and learner self-reported progress remain separate.
 ## Validation and cleanup
 
 ```bash
-just environment
-just lint
-just test
-just package
-just docs
+conda activate fc-agentic
+python scripts/check_environment.py
+poetry check --lock --strict
+poetry run pytest -q
+poetry run ruff check src tests scripts
+poetry run ruff format --check src tests scripts
+poetry run mypy src
+poetry build
+poetry run makim docs.build
 git diff --check
-just clean
+poetry run makim clean.tmp
 ```
 
-Cleanup removes known generated sites, caches, and build outputs, not `.venv` or
-other virtual environments. CI validates pull requests. The docs workflow
+Cleanup removes known generated sites, caches, and build outputs, not Conda or
+legacy virtual environments. CI validates pull requests. The docs workflow
 publishes only main pushes or manual dispatches; package publishing remains
 disabled.

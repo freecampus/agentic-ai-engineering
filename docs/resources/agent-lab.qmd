@@ -39,9 +39,11 @@ kernel and run from the top rather than relying on another notebook's imports.
 **Locally:** from a checkout, run these commands in a terminal, not a Python cell:
 
 ```bash
-uv sync --locked --all-groups --all-extras
-just environment
-uv run --locked python -m freecampus_agents.lab
+conda env create -f conda.yaml  # First setup only
+conda activate fc-agentic
+python scripts/check_environment.py
+poetry install --extras notebooks
+poetry run python -m freecampus_agents.lab
 ```
 
 The final command should print a JSON record with status `complete`, answer `12`,

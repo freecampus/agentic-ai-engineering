@@ -15,26 +15,32 @@ jobs:
     timeout-minutes: 25
     defaults:
       run:
-        shell: bash
+        shell: bash -el {0}
+    env:
+      POETRY_VIRTUALENVS_CREATE: "false"
+      POETRY_VIRTUALENVS_IN_PROJECT: "false"
+      POETRY_NO_INTERACTION: "1"
     steps:
       - uses: actions/checkout@v4
-      - name: Install uv and set up Python
-        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - uses: conda-incubator/setup-miniconda@v3
         with:
-          version: "0.12.23"
+          miniforge-version: latest
+          environment-file: conda.yaml
+          activate-environment: fc-agentic
+          auto-activate-base: false
+          channels: conda-forge,nodefaults
+          conda-solver: libmamba
           python-version: "3.12"
-      - name: Install Just
-        uses: extractions/setup-just@v4
-        with:
-          just-version: "1.58.0"
-      - name: Set up Node.js for Prettier
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-      - name: Install locked dependencies
-        run: uv sync --locked --all-groups --all-extras
+      - name: Verify Conda and Poetry use the same environment
+        run: python scripts/check_environment.py
+      - name: Install documentation tools
+        # Bootstrap migration: require `poetry check --lock` once the lock is committed.
+        run: |
+          poetry check --strict
+          poetry install --with docs
+          python scripts/check_environment.py
       - name: Render and export notebooks
-        run: just docs
+        run: poetry run makim docs.build
       - uses: actions/upload-artifact@v4
         with:
           name: course-site
