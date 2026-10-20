@@ -68,6 +68,7 @@ def test_workflows_activate_conda_and_install_poetry_dependencies_without_venvs(
     )
     job = workflow["jobs"]["checks" if name == "ci" else "build"]
     assert job["defaults"]["run"]["shell"] == "bash -el {0}"
+    assert job["env"]["POETRY_INSTALLER_PARALLEL"] == "false"
     assert job["env"]["POETRY_VIRTUALENVS_CREATE"] == "false"
     assert job["env"]["POETRY_VIRTUALENVS_IN_PROJECT"] == "false"
     assert "VIRTUAL_ENV" not in job["env"]
