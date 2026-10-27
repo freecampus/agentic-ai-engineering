@@ -68,7 +68,7 @@ Units 3, 5, and 15.
 
 | Lesson | Evidence you will preserve |
 |---|---|
-| 1. Your First Model Call: OpenRouter to Agent | Returned model ID and answer, vocabulary map, observed event trace, and passing repair checks. |
+| 1. Your First Model Call: OpenRouter to Agent | Predicted prompt, returned model ID and answer, vocabulary map, observed event trace, and passing repair checks. |
 | 2. Learn with Specifications and Evidence | Task contract plus a prediction/run/explanation record. |
 | 3. Use AI Assistance Without Outsourcing Judgment | Verification checklist and corrected implementation rationale. |
 | 4. Work Reliably in Colab and Jupyter | Clean restart-and-run transcript. |
