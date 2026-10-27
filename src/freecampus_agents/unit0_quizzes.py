@@ -7,7 +7,7 @@ from freecampus_agents.questions import MultipleChoiceQuestion, Quiz
 
 
 def unit0_quizzes(slug: str) -> tuple[Quiz, ...]:
-    """Return concept, evidence, and failure checkpoints for one activity slug."""
+    """Return the authored checkpoint banks for one Unit 0 activity."""
     banks = json.loads(
         files("freecampus_agents")
         .joinpath("fixtures/unit0_quizzes.json")

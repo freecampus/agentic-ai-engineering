@@ -1,6 +1,6 @@
 ---
-title: "Your First Model Call: OpenRouter to Agent"
-description: "Make a first language-model call through OpenRouter, distinguish models from agents, and inspect the harness around a small offline agent loop."
+title: "Introduction to Agentic AI: Models, Agents, and Harnesses"
+description: "A gentle introduction to model families, LLMs, Transformers, agents, and harnesses, ending with a first Hello, world! call in Colab."
 content_kind: lesson
 content_status: draft
 draft: true
@@ -12,20 +12,18 @@ categories:
 - launch-agent-lab
 order: 10
 colab_notebook: notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/meet-a-tiny-agent.ipynb
-notebook_package: true
 execute:
   echo: true
 lesson_id: launch-agent-lab.meet-a-tiny-agent
 lesson_order: 10
 ---
-
 ::: {.lesson-meta}
-- **Level:** Orientation; assumes project-ready Python, not prior AI or agent knowledge.
-- **Active time:** 90–120 minutes, including the OpenRouter call and repair lab.
-- **Prerequisites:** Python functions, dictionaries, imports, and assertions; the [readiness check](../../readiness.qmd).
-- **Outcome:** Make one real text-generation request, explain six related terms, trace a model-to-tool loop, and verify one valid and one rejected run.
-- **Evidence:** A predicted prompt, returned model ID and answer, vocabulary map, observed event trace, and passing repair checks.
-- **Environment:** Colab with internet access and an OpenRouter API key stored as a Colab secret. The live call uses OpenRouter’s free-model route; a no-account offline path follows it.
+- **Level:** Introductory; no previous AI or agent knowledge required.
+- **Active time:** 25–35 minutes.
+- **Prerequisites:** Open a Colab notebook and run a Python cell.
+- **Outcome:** Explain how an AI product, model, LLM, and Transformer differ; describe what an agent and harness do; and make one model call.
+- **Evidence:** Vocabulary notes, the model ID, and the “Hello, world!” response.
+- **Environment:** Google Colab, internet access, and an OpenRouter API key stored as a Colab secret.
 :::
 
 ::: {.callout-note}
@@ -36,41 +34,148 @@ review build includes its notebook; a public Colab URL is not available yet.
 
 {{< include ../../../../_includes/colab-link.qmd >}}
 
-## 1. Make your first model call
+## 1. Models and familiar names
 
-Take a minute to consider these questions:
+You may know **ChatGPT**, **Claude**, or **Gemini** as AI products. A product,
+the company behind it, and the model it uses are related, but they are not the
+same thing:
 
-1. If a sentence sounds confident, does that tell you how it was produced?
-2. What information would you want to record to show which model answered?
-3. What must you keep out of a shared notebook and a model prompt?
+- A **developer or provider** builds or provides a model.
+- A **product** is the app or service people use.
+- A **model** is software that takes input and produces an output. A model ID
+  names a specific model or version when you use an API.
 
-Before the call, write your own one-sentence answer to this prompt:
+| Developer or provider | Model family students may encounter |
+|---|---|
+| OpenAI | GPT |
+| Anthropic | Claude |
+| Google | Gemini |
+| DeepSeek | DeepSeek |
+| Alibaba | Qwen |
+| Moonshot AI | Kimi |
+| Zhipu AI | GLM |
 
-> In one sentence, what is a large language model?
+Some names are used for both a model family and a product. **Claude** and
+**Gemini** can mean either one. **ChatGPT** is a product; **GPT** is OpenAI's
+model family. A product may let you choose which model to use. With an API,
+check the model ID to see which model received your request.
 
-Then ask a real language model the same question. We will use OpenRouter so the
-code can reach several model providers through one API. For the first request,
-`openrouter/free` selects an available free model. The selected model may vary,
-so the code prints the model ID OpenRouter returned.
+DeepSeek, Qwen, Kimi, and GLM are model families developed in China. Students
+will encounter them alongside OpenAI, Anthropic, and Google models. Different
+models can work better for different tasks. Compare current versions and test
+results instead of relying on one permanent ranking. Names and versions change,
+so check each provider's current model list.
 
-### Prepare the key in Colab
+## 2. LLMs, GPT, and Transformers
 
-1. Create an OpenRouter account and an API key at [OpenRouter API Keys](https://openrouter.ai/settings/keys).
-2. In Colab, open the **Secrets** panel (key icon), add a secret named `OPENROUTER_API_KEY`, and enable notebook access for it.
-3. Do not paste the key into a code cell, notebook text, output, GitHub, or a shared document. The cell reads it from Colab’s secret store.
-4. The free route is currently listed at zero model-token cost, with limits; free models and request limits can change. Do not switch to a paid model for this exercise. Check the [current free-model list](https://openrouter.ai/collections/free-models) if the route is unavailable.
+A **large language model (LLM)** reads and creates text. It handles text as
+small pieces called *tokens*, such as a word or part of a word. It predicts a
+likely next token from the text so far, then repeats this step to create a
+response. A fluent answer can still be wrong.
 
-Only send a made-up, non-sensitive prompt. The router may select different
-providers, and their data practices can differ. This first request is a small
-experiment, not a place to send private information.
+A **Transformer** is a kind of neural network: a computer system designed to
+learn patterns. Its design is called an *architecture*. Many LLMs use the
+Transformer architecture. Its *attention* step helps the model connect
+information from different parts of its input. Transformer names a model
+design, not an app or company.
 
-### Predict, call, and inspect
+![Input passes through the encoder. The decoder uses the encoder’s output as it predicts the next token.](images/transformer-encoder-decoder.png){.lesson-visual}
 
-Predict what kind of answer you expect. Then run this cell in Colab:
+*Simplified redraw adapted from Figure 1 in Vaswani et al. (2017), [“Attention Is All You Need”](https://arxiv.org/abs/1706.03762).*
+
+**GPT** stands for *Generative Pre-trained Transformer*. GPT is OpenAI's model
+family and one example of an LLM family. It is not another name for all LLMs.
+Model families can differ, so check the documentation for the model you use.
+
+## 3. Agents and harnesses
+
+A model can answer one prompt without being an agent. An **agent** is software
+that uses a model to work toward a goal. It may use tools, check their results,
+and decide what to do next or when to stop. A model that only answers one prompt
+is not, by itself, an agent.
+
+A **harness** is the software that manages how the model works. It gives the
+model the task and useful information, controls which tools it can use, checks
+the model's requests, runs only allowed actions, and helps decide when the work
+is done. The harness is one part of the agent; the agent is the whole system
+doing the task.
+
+![A farmer guides a draft horse in a harness connected to a plough.](images/agent-harness-farm-analogy.png){.lesson-visual}
+
+**Farm analogy:** The horse is like the model: it provides the ability to do
+work. The harness and reins are like the software harness: they connect and
+guide that ability. The plough is a tool. The whole setup working toward the
+goal is like the agent. The farmer represents the person who sets the task and
+oversees it. In an AI system, code must enforce the harness's rules and limits.
+
+### Five jobs a harness can do
+
+| Part | What it does |
+|---|---|
+| **Loop** | Sends the model another request when the task needs more than one step. |
+| **Tools** | Lets the model request actions, such as reading a file; the harness checks and runs allowed actions. |
+| **Context** | Gives the model the task, instructions, available tools, and useful results so far. |
+| **Memory** | Saves important progress so it can be used in later steps or sessions. |
+| **Control** | Applies permissions and limits, asks for approval when needed, and stops the process when a limit is reached. |
+
+Context is what the model sees for a step. Memory keeps useful information for
+later. The model does not learn new facts or change its weights just because the
+harness saves notes.
+
+```text
+Prepare task and context → model suggests a step
+                         → harness checks permission
+                         → allowed tool runs, if needed
+                         → result returns to model
+                         → continue or stop
+```
+
+Before an agent stops, its harness can ask it to compare its work with the task
+and check the result. A harness can also notice repeated failed attempts and
+prompt a new approach. Repeating nearly the same failed action is sometimes
+called a *doom loop*.
+
+Next, we will send one request to a model. That shows how to connect to a model;
+it does not create an agent. The program will not choose and check a series of
+steps toward a goal.
+
+## 4. Connect to a model: “Hello, world!”
+
+We will use OpenRouter's API to send one short request to a free model. An API
+is a way for programs to communicate with a service. The free model option may
+use a different model each time, so the cell prints the ID of the model that
+answered. You need an API key and internet access, but no extra package or GPU.
+
+### Add the key to Colab
+
+1. Create an OpenRouter account if you do not have one. Open [API Keys](https://openrouter.ai/settings/keys) and choose **New Key**. Name the key. Choose an expiry date and spending limit you are comfortable with. The screenshot hides account-specific values.
+
+   ![OpenRouter key creation form with account-specific values obscured.](images/openrouter-create-key.png){.lesson-visual}
+
+2. If OpenRouter asks you to verify your email, enter the code it sends you. The screenshot hides the email address.
+
+   ![OpenRouter email verification dialog with the address obscured.](images/openrouter-verify-email.png){.lesson-visual}
+
+3. When OpenRouter shows the new key, copy the whole value. You will only see it once, so keep it private while you add it to Colab. The example below shows a key's shape: part of the start and end, with the middle hidden.
+
+   ![Example of an OpenRouter API key with its prefix and suffix visible and its middle masked.](images/openrouter-copy-key.png){.lesson-visual}
+
+4. In Colab, click the key-shaped **Secrets** icon in the left sidebar. Add a secret named `OPENROUTER_API`. Paste the key into its value field and turn on notebook access. The screenshot shows the matching name and code; its value is hidden.
+
+   ![Colab Secrets panel showing the OPENROUTER_API secret with its value obscured.](images/colab-save-secret.png){.lesson-visual}
+
+5. Keep the key in Secrets. Do not paste it into a code cell, notebook text, a prompt, or a shared document. Never publish or share a screenshot that shows the key.
+6. OpenRouter's free models and request limits can change. For this exercise, keep the model set to `openrouter/free`; do not replace it with a paid model.
+
+Use only the greeting shown below. Do not send personal or private information
+to a model service.
+
+### Make the request
+
+Run this cell in Colab:
 
 ```python
 import json
-from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 try:
@@ -79,24 +184,18 @@ except ModuleNotFoundError:
     userdata = None
 
 if userdata is None:
-    print(
-        "This live call uses Colab Secrets. Run it in Colab, or continue with "
-        "the offline sections."
-    )
+    print("This live request uses Colab Secrets. Run this cell in Colab.")
 else:
-    api_key = userdata.get("OPENROUTER_API_KEY")
+    api_key = userdata.get("OPENROUTER_API")
     if not api_key:
-        raise RuntimeError("Add the OPENROUTER_API_KEY secret and allow notebook access.")
+        raise RuntimeError("Add the OPENROUTER_API secret and allow notebook access.")
 
     payload = {
         "model": "openrouter/free",
         "messages": [
-            {
-                "role": "user",
-                "content": "In one sentence, what is a large language model?",
-            }
+            {"role": "user", "content": "Reply with exactly: Hello, world!"}
         ],
-        "max_completion_tokens": 120,
+        "max_tokens": 32,
     }
     request = Request(
         "https://openrouter.ai/api/v1/chat/completions",
@@ -107,436 +206,21 @@ else:
         },
         method="POST",
     )
+    with urlopen(request, timeout=45) as response:
+        result = json.load(response)
 
-    try:
-        with urlopen(request, timeout=45) as response:
-            completion = json.load(response)
-    except HTTPError as error:
-        raise RuntimeError(
-            f"OpenRouter returned HTTP {error.code}. Check the key, "
-            "free-model availability, and account limits."
-        ) from None
-    except URLError:
-        raise RuntimeError(
-            "The request could not reach OpenRouter. Check the Colab internet connection."
-        ) from None
-
-    answer = completion["choices"][0]["message"]["content"]
-    assert isinstance(answer, str) and answer.strip()
-    print("Model selected:", completion.get("model"))
-    print("Response:", answer)
-    print("Usage:", completion.get("usage"))
+    print("Model:", result.get("model"))
+    print("Response:", result["choices"][0]["message"]["content"])
 ```
 
-Read the request as four parts:
+The model ID may change because OpenRouter can use different free models.
+Record the ID and the model's reply. You have sent a prompt to a language model
+and received one response. You have not built an agent yet.
 
-- `userdata.get` reads the key from Colab Secrets; the code never prints the key.
-- `model` chooses the free-model router, while `messages` contains the prompt.
-- The URL names OpenRouter’s chat-completions endpoint; the authorization header sends the key with the request.
-- `completion["model"]` identifies the model that answered. `completion["choices"]` contains its response, and `usage` reports request-token counts.
+### Sources
 
-Compare the model’s answer with your own. Record the returned model ID and one
-thing the answer explains well or leaves unclear. The API call is visible in
-this code; a fluent response alone would not prove which model produced it.
+- Maarten Grootendorst and Jay Alammar, [*An Illustrated Guide to AI Agents*, Chapter 1](https://learning.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch01.html) introduces LLM-backed agents; [Chapter 2](https://learning.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch02.html) introduces LLM and Transformer foundations. This lesson follows that progression and uses original examples. O’Reilly access may be required.
+- Current model references: [OpenAI](https://platform.openai.com/docs/models), [Anthropic](https://docs.anthropic.com/en/docs/about-claude/models/overview), [Google Gemini](https://ai.google.dev/gemini-api/docs/models), [DeepSeek](https://api-docs.deepseek.com/api/list-models/), and [Alibaba Cloud Model Studio](https://www.alibabacloud.com/help/en/model-studio/models). Check these catalogs for current names and availability.
+- OpenRouter, [Chat Completions API](https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request), [free models](https://openrouter.ai/collections/free-models), and [pricing and limits](https://openrouter.ai/pricing/).
 
-OpenRouter provides an OpenAI-compatible chat-completions endpoint. In later
-lessons you can replace `openrouter/free` with a specific current model ID and
-compare outputs. Check its price before using a specific model: many are paid.
-This free route does not guarantee one fixed model or identical answers.
-
-If you cannot make the network call today, continue with the offline sections.
-The deterministic course example lets you study the agent loop without an API
-key; it does not pretend to be the response from a real LLM.
-
-## 2. Put the names in the right places
-
-These words describe related but different things:
-
-| Term | In plain language | How it relates to the example |
-|---|---|---|
-| **Model** | A model is a system that maps inputs to outputs according to learned patterns or specified rules. “Model” is a broad term; it includes many kinds of prediction and generation systems. | The live call uses a remote language model; the offline agent example uses a hand-written test double. |
-| **Large language model (LLM)** | A language model processes text as tokens and generates text by repeatedly producing a distribution over possible next tokens. Large models learn this behavior from very large collections of data. They can still make mistakes. | The OpenRouter request gets a real LLM response. The offline code does not call an LLM or test its language ability. |
-| **Transformer** | A neural-network architecture built around attention. Transformers are used by many current language models; the word names an architecture, not a chatbot or an agent. | The API hides the model’s internals. Check the selected model’s documentation rather than assuming which architecture it uses. |
-| **GPT** | A family of generative pretrained Transformer models. GPT is one family of language models, not another name for all LLMs. | `openrouter/free` may select different models. The returned model ID tells you which one answered; do not assume every answer came from GPT. |
-| **Agent** | The word is used in several ways. In this course, an agent is a system that uses a model to choose steps toward a task, may request tools, receives results, and continues or stops. | The OpenRouter call is one request and one response, not an agent loop. The offline example makes a small loop visible. |
-| **Harness** | In this course, the harness is the surrounding software that runs the loop: it supplies task and tool context, checks requests, dispatches permitted tools, applies limits, and records results. Other teams may use “harness” more broadly. | `run_agent` is the offline example’s harness. It—not `FakeModel`—checks the tool name and the step limit. |
-
-A useful way to remember the relationships:
-
-- **Transformer** names an architecture; **GPT** names a model family built using that architecture.
-- **LLM** describes a kind of model by its language task and scale; many, but not all, LLMs use Transformers.
-- **Agent** describes a system’s way of working on a task. A language model by itself can answer a prompt without being an agent.
-- **Harness** describes software that runs and constrains an agent’s interaction loop. It does not make the model more capable or make arbitrary code safe.
-- **ChatGPT** is a product people interact with. GPT models can power products, but product, model, and architecture are different levels.
-
-This is a working vocabulary, not a claim that every research group uses the word *agent* or *harness* in exactly the same way. The lesson uses narrow definitions so we can inspect the code and agree on what happened.
-
-### One loop, with each part named
-
-```text
-task and context
-       ↓
-harness asks the model for its next action
-       ↓
-harness checks the requested action
-       ↓
-permitted tool runs → result comes back as an observation
-       ↓
-harness gives the observation to the model
-       ↓
-model returns an answer, or the harness stops the run
-```
-
-A simple call like the one above can stop after the model returns text. An agent-style
-loop adds repeated decisions and actions. The harness is responsible for what
-the software permits and records; it cannot guarantee that the model’s answer is
-true.
-
-## 3. Predict the first run
-
-The course package includes `FakeModel`, a tiny deterministic Python object.
-Its code says: if there is no observation yet, request the `add` tool; otherwise,
-return the observation as the final answer. It follows those fixed rules. It is
-not trained, it does not predict tokens, and it does not understand a natural
-language request.
-
-The live call above demonstrates one real model response. This second example
-is intentionally offline: it separates the harness mechanics from the LLM.
-`FakeModel` follows fixed Python rules; it is not trained, does not predict
-tokens, and does not understand a natural-language request. The offline trace
-shows what this harness did, not what a real LLM can do.
-
-Predict these before running the cell:
-
-- What answer will the run produce?
-- How many model decisions will `FakeModel` make?
-- How many events will the harness record?
-- Which component actually adds the two integers?
-
-In an exported notebook, run the bundled setup cell first. Locally, use the
-installed course package; the final Unit 0 lesson explains that setup. The
-OpenRouter call itself is Colab-specific; a local API-key workflow comes later.
-
-```python
-from freecampus_agents.lab import Task, run_agent
-
-task = Task(left=7, right=5)
-run = run_agent(task)
-
-print("status:", run.status)
-print("answer:", run.answer)
-for number, event in enumerate(run.events, start=1):
-    print(number, event.kind, "—", event.detail)
-
-assert run.status == "complete"
-assert run.answer == 12
-```
-
-Expected output:
-
-```text
-status: complete
-answer: 12
-1 task — Add 7 and 5
-2 tool_call — add
-3 observation — 12
-4 final — 12
-```
-
-There are **two model decisions** and **four recorded events**. On its first
-decision, the fake model requests `add`. The harness checks that the name is
-allowed, calls the tool, validates the returned data, and records the observation.
-On its second decision, the fake model returns that observation. The harness
-records the final answer.
-
-The `add` function performs the arithmetic. The model-shaped object chooses
-whether to request that function; it does not calculate the sum. The harness
-coordinates and checks these steps.
-
-Read the key implementation if you want to see the boundaries in the source:
-
-```python
-import inspect
-from freecampus_agents.lab import FakeModel, add, run_agent
-
-print(inspect.getsource(FakeModel))
-print(inspect.getsource(add))
-print(inspect.getsource(run_agent))
-```
-
-Find the `decide` calls, the `decision.tool != "add"` check, the tool call, and
-the result check. `Task`, `Decision`, `Event`, and `Run` are named data records.
-`Model` is a Python protocol describing the expected `decide` method. These
-structures make the example readable; they are not themselves an LLM or an
-authorization system.
-
-<script type="application/json" class="fcagentic-ojs-quiz-config">
-{
-  "id": "u00-model-agent-concepts",
-  "title": "Checkpoint: sort out the terms",
-  "instructions": "Choose an answer, check its explanation, then select Next.",
-  "questions": [
-    {
-      "id": "u00-model-agent-concepts-1",
-      "prompt": "Which statement best describes the relationship between Transformers and GPT?",
-      "options": [
-        "GPT is the architecture; Transformer is the chatbot product.",
-        "They are two names for every large language model.",
-        "Transformer names an architecture; GPT names a family of models built with it.",
-        "Transformer is the software loop that authorizes tools."
-      ],
-      "answer_index": 2,
-      "explanation": "Transformer is an architecture. GPT is a family of generative pretrained Transformer models; neither term means an agent harness."
-    },
-    {
-      "id": "u00-model-agent-concepts-2",
-      "prompt": "Does a language model automatically count as an agent in this course?",
-      "options": [
-        "Yes. Any text produced by a model is an agent action.",
-        "No. An agent adds a task-directed system that may choose actions, use tools, observe results, and continue or stop.",
-        "Yes, if the model has the letters GPT in its name.",
-        "No. Only multiple models working together can form an agent."
-      ],
-      "answer_index": 1,
-      "explanation": "A model can simply generate a response. This course uses agent for a system that organizes steps toward a task and can act on observations."
-    }
-  ]
-}
-</script>
-
-{{< include ../../../../_includes/ojs-quiz.qmd >}}
-
-## 4. Change the input and the harness limit
-
-First predict the result of `-5 + 5`. Then predict what happens if the harness
-allows one model decision instead of two. Run the cell and compare the trace with
-your predictions.
-
-```python
-zero = run_agent(Task(-5, 5))
-limited = run_agent(Task(7, 5), max_steps=1)
-
-print("zero:", zero.status, zero.answer)
-print("zero events:", [event.kind for event in zero.events])
-print("limited:", limited.status, limited.answer)
-print("limited events:", [event.kind for event in limited.events])
-
-assert zero.status == "complete"
-assert zero.answer == 0
-assert limited.status == "budget_exhausted"
-assert limited.answer is None
-```
-
-The zero result is a valid observation. `None` means that an observation or final
-answer is absent; `0` is a real integer. The one-decision run calls the addition
-tool and records its observation, but the model does not get a second decision
-to return a final answer. The harness stops at its decision budget.
-
-The limit counts model decisions, not events, tokens, seconds, or tool effects.
-This simple limit does not interrupt a slow or stuck Python function. A local
-Python process is not a security sandbox.
-
-<script type="application/json" class="fcagentic-ojs-quiz-config">
-{
-  "id": "u00-model-agent-evidence",
-  "title": "Checkpoint: read the trace",
-  "instructions": "Use the run output above, choose an answer, then select Next.",
-  "questions": [
-    {
-      "id": "u00-model-agent-evidence-1",
-      "prompt": "What does the four-event successful trace establish?",
-      "options": [
-        "A real LLM interpreted natural language and calculated the answer.",
-        "The harness received a deterministic tool request, ran the allowed function, and recorded a matching final answer.",
-        "The tool chose which actions the model was allowed to request.",
-        "The run proves that every addition tool is safe."
-      ],
-      "answer_index": 1,
-      "explanation": "The trace shows the behavior of this fake model and this harness. It is not evidence about a real LLM or arbitrary tool safety."
-    },
-    {
-      "id": "u00-model-agent-evidence-2",
-      "prompt": "Why does max_steps=1 stop after the observation?",
-      "options": [
-        "The harness counts four events, so it rejects any result.",
-        "The model is unable to return integer answers.",
-        "The tool returned zero, which is treated as missing.",
-        "The first decision requested the tool; a second decision is needed to return the final answer."
-      ],
-      "answer_index": 3,
-      "explanation": "The budget is one model decision. After the tool observation, the model would need another decision to produce the final answer."
-    }
-  ]
-}
-</script>
-
-{{< include ../../../../_includes/ojs-quiz.qmd >}}
-
-## 5. Lab: repair the tool result
-
-A tool must return a small data envelope that the harness understands. The
-correct envelope has one field named `result`, whose value is an integer. The
-following replacement tool uses a different field name. Predict the final status,
-then run it.
-
-```python
-def wrong_envelope(task):
-    return {"total": task.left + task.right}
-
-broken = run_agent(Task(7, 5), add_tool=wrong_envelope)
-print("status:", broken.status)
-print("answer:", broken.answer)
-print("events:", [event.kind for event in broken.events])
-print("diagnostic:", broken.events[-1].detail)
-
-assert broken.status == "invalid"
-assert broken.answer is None
-assert [event.kind for event in broken.events] == [
-    "task", "tool_call", "invalid"
-]
-```
-
-The harness rejects the response because it does not match the declared result
-shape. The tool did run; the result was rejected before it could be used as an
-observation. Repair the producer rather than teaching the harness to accept
-unrelated field names.
-
-Implement the repair in a new cell:
-
-```python
-def repaired_add(task):
-    # Return exactly one integer field named "result".
-    raise NotImplementedError
-```
-
-Use the acceptance checks below after implementing your function:
-
-```python
-from freecampus_agents.lab import Decision
-
-def check_repair(candidate):
-    for left, right, expected in [(7, 5, 12), (-5, 5, 0), (-3, -4, -7)]:
-        result = run_agent(Task(left, right), add_tool=candidate)
-        assert result.status == "complete"
-        assert result.answer == expected
-
-    calls = []
-    def watched_tool(task):
-        calls.append(task)
-        return candidate(task)
-
-    class UnsupportedModel:
-        def decide(self, task, observation):
-            return Decision("tool", tool="shell")
-
-    denied = run_agent(
-        Task(7, 5), model=UnsupportedModel(), add_tool=watched_tool
-    )
-    assert denied.status == "denied"
-    assert [event.kind for event in denied.events] == ["task", "denied"]
-    assert calls == []
-
-# After writing repaired_add: check_repair(repaired_add)
-```
-
-The three arithmetic cases check ordinary positive, zero, and negative results.
-The watched tool is a call counter. With a request for an unsupported tool,
-the harness should deny the request before calling the addition replacement.
-
-<details>
-<summary>Hint: follow the data to the earliest failed check</summary>
-
-Compare the dictionary key returned by `wrong_envelope` with the key checked in
-`run_agent`. Keep the integer calculation; change the response shape.
-
-</details>
-
-<details>
-<summary>Solution and regression checks — open after attempting the repair</summary>
-
-```python
-def repaired_add(task):
-    return {"result": task.left + task.right}
-
-broken = run_agent(Task(7, 5), add_tool=wrong_envelope)
-assert broken.status == "invalid"
-
-check_repair(repaired_add)
-print("Envelope repair and denial checks passed")
-```
-
-This verifies the tested paths in this local example. It does not prove that a
-real model is reliable, that arbitrary Python is contained, or that a production
-agent is secure. Tool permissions and limits need enforcement in an appropriate
-runtime for the system being built.
-
-</details>
-
-<script type="application/json" class="fcagentic-ojs-quiz-config">
-{
-  "id": "u00-model-agent-failures",
-  "title": "Checkpoint: diagnose the failure",
-  "instructions": "Choose the diagnosis that matches the evidence, then select Next.",
-  "questions": [
-    {
-      "id": "u00-model-agent-failures-1",
-      "prompt": "The tool returns {\"total\": 12}, and the trace ends in invalid. What should you repair?",
-      "options": [
-        "Change the fake model so it guesses the sum.",
-        "Allow any dictionary key as a valid observation.",
-        "Make the tool return the declared integer field named result.",
-        "Remove the result validation from the harness."
-      ],
-      "answer_index": 2,
-      "explanation": "The producer violates the expected envelope. Repairing the tool response preserves the harness's explicit contract."
-    },
-    {
-      "id": "u00-model-agent-failures-2",
-      "prompt": "What does calls == [] establish in the unsupported-tool check?",
-      "options": [
-        "The tested request was denied before the watched addition tool ran.",
-        "All Python code in the process is sandboxed.",
-        "The model has no possible tool-use capability.",
-        "The test checked that a final answer was correct."
-      ],
-      "answer_index": 0,
-      "explanation": "The spy records whether this injected addition function ran on the tested path. It does not establish general process isolation or security."
-    }
-  ]
-}
-</script>
-
-{{< include ../../../../_includes/ojs-quiz.qmd >}}
-
-## 6. Keep evidence and look ahead
-
-In the [engineering journal](../../../../resources/engineering-journal.qmd),
-record your prediction, the model ID OpenRouter returned, a brief note about its
-answer, the observed offline event order, the first failed boundary, the repair,
-and one limitation. Describe observable actions and results; do not ask for or
-record hidden model reasoning.
-
-Try one transfer on paper: imagine a read-only temperature converter. Name its
-task input, one permitted tool, expected result field, and one test value. Then
-decide whether an ordinary conversion function already solves the task. We will
-study how to choose between ordinary programs, workflows, and agents in Unit 1.
-
-**Key points:** a Transformer is an architecture; GPT is a model family; an LLM
-generates text; an agent organizes model-guided steps; a harness runs and checks
-those steps. The OpenRouter call is a real model response, but one prompt and
-answer is not an agent loop. In the offline loop, the fake model lets you inspect
-the harness; that trace does not measure real LLM capability.
-
-### Sources and implementation
-
-- Vaswani et al., [Attention Is All You Need](https://arxiv.org/abs/1706.03762), introduces the Transformer architecture.
-- Brown et al., [Language Models are Few-Shot Learners](https://openai.com/index/language-models-are-few-shot-learners/), describes GPT-3 as an autoregressive language model.
-- OpenAI, [A Practical Guide to Building Agents](https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/), discusses models, tools, instructions, and agent workflows.
-- Visual Studio Code, [Agent harnesses](https://code.visualstudio.com/docs/agents/concepts/agent-harnesses), describes a harness as software around the agent loop, context, tools, and state.
-- OpenRouter, [Chat Completions API](https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request) and [Free Models Router](https://openrouter.ai/openrouter/free/apps), document the API request and the changing free-model route. Check [current pricing and limits](https://openrouter.ai/pricing/) before each course run.
-- Google, [Colab API-key example](https://colab.research.google.com/github/google-gemini/gemini-api-cookbook/blob/main/quickstarts/Authentication.ipynb), demonstrates storing a key in Colab Secrets and reading it through `google.colab.userdata`.
-- Optional book reading: [An Illustrated Guide to AI Agents](https://learning.oreilly.com/library/view/an-illustrated-guide/9798341662681/), especially Chapters 1–2. O’Reilly access may be required.
-- Local canonical code: `src/freecampus_agents/lab.py`. The notebook is generated from this QMD; do not edit the notebook by hand.
-
-The examples and fixtures are original synthetic course material under the
-repository’s BSD-3-Clause license. Primary references checked 2026-10-27.
+Model-family examples and provider references checked 2026-10-27.

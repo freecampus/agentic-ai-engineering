@@ -69,7 +69,7 @@ Do not write an LLM integration or a generalized agent framework for this task.
 
 The direct baseline is `left + right`; the agent is retained only to inspect
 runtime boundaries. For `7` and `5`, predict answer `12`, two model decisions,
-and the four events taught in Lesson 0.1. For `-5` and `5`, predict zero—not
+and the four events this exercise records. For `-5` and `5`, predict zero—not
 missing evidence. Write the expected difference before executing:
 
 ```python
