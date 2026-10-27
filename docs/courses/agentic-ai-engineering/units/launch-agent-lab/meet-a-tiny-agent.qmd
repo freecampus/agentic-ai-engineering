@@ -175,33 +175,42 @@ to a model service.
 Run this cell in Colab:
 
 ```python
-import requests
-from google.colab import userdata
+import json
+from urllib.request import Request, urlopen
 
-api_key = userdata.get("OPENROUTER_API")
-if not api_key:
-    raise RuntimeError("Add the OPENROUTER_API secret and allow notebook access.")
+try:
+    from google.colab import userdata
+except ModuleNotFoundError:
+    userdata = None
 
-response = requests.post(
-    "https://openrouter.ai/api/v1/chat/completions",
-    headers={
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-    },
-    json={
+if userdata is None:
+    print("This live request uses Colab Secrets. Run this cell in Colab.")
+else:
+    api_key = userdata.get("OPENROUTER_API")
+    if not api_key:
+        raise RuntimeError("Add the OPENROUTER_API secret and allow notebook access.")
+
+    payload = {
         "model": "openrouter/free",
         "messages": [
             {"role": "user", "content": "Reply with exactly: Hello, world!"}
         ],
         "max_tokens": 32,
-    },
-    timeout=45,
-)
-response.raise_for_status()
-result = response.json()
+    }
+    request = Request(
+        "https://openrouter.ai/api/v1/chat/completions",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    with urlopen(request, timeout=45) as response:
+        result = json.load(response)
 
-print("Model:", result.get("model"))
-print("Response:", result["choices"][0]["message"]["content"])
+    print("Model:", result.get("model"))
+    print("Response:", result["choices"][0]["message"]["content"])
 ```
 
 The model ID may change because OpenRouter can use different free models.

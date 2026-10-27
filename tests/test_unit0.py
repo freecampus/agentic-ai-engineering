@@ -184,10 +184,14 @@ def test_unit0_checkpoint_banks_match_canonical_sources(slug):
         )
     ]
     assert [quiz.to_dict() for quiz in unit0_quizzes(slug)] == payloads
-    assert len(payloads) == 3
+    expected_bank_count = 0 if slug == "meet-a-tiny-agent" else 3
+    assert len(payloads) == expected_bank_count
     assert all(len(quiz["questions"]) == 2 for quiz in payloads)
     assert "@@QUIZ" not in text
-    assert "notebook_package: true" in text
+    if slug == "meet-a-tiny-agent":
+        assert "notebook_package: true" not in text
+    else:
+        assert "notebook_package: true" in text
     assert re.search(
         r"(?:Primary references checked|references\s+checked) "
         r"\d{4}-\d{2}-\d{2}[.;]",

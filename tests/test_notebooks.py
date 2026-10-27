@@ -227,9 +227,14 @@ def test_authored_notebooks_run_cellwise_in_fresh_python_without_site_packages(
     )
     assert "Review draft, not a published assessment" in markdown
     assert "[Source page]" not in markdown
-    assert markdown.count("<summary>Check your answer</summary>") == (
-        9 if source in UNIT1_DRAFTS else 6
-    )
+    if source in UNIT1_DRAFTS:
+        expected_checkpoints = 9
+    elif source.stem == "meet-a-tiny-agent":
+        expected_checkpoints = 0
+    else:
+        expected_checkpoints = 6
+    checkpoint_count = markdown.count("<summary>Check your answer</summary>")
+    assert checkpoint_count == expected_checkpoints
     assert "<script" not in markdown
     for heading in re.findall(r"^## .+$", source.read_text(encoding="utf-8"), re.M):
         assert heading in markdown
@@ -261,7 +266,7 @@ def test_authored_worked_examples_and_hidden_solutions_execute_separately(
     )
     assert result.returncode == 0, result.stderr
     expected = {
-        "meet-a-tiny-agent": "Envelope repair and denial checks passed",
+        "meet-a-tiny-agent": "This live request uses Colab Secrets",
         "learn-with-evidence": "Lookup contract passed",
         "use-ai-responsibly": "Reviewed arithmetic checks passed",
         "work-in-notebooks": "Explicit-input launch checks passed",

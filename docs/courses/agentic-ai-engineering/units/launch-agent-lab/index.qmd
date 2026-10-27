@@ -24,7 +24,10 @@ not a completed instructional lab.
 
 ## 1. What you will be able to do
 
-Explain the difference between a provider, product, model family, LLM, and Transformer; make a first “Hello, world!” model request through OpenRouter; then run, inspect, and modify a small deterministic agent in Colab, reproduce it locally, keep secrets out of artifacts, and distinguish model, runtime, tool, environment, and trace evidence.
+Explain the difference between a provider, product, model family, LLM, and Transformer;
+make a first “Hello, world!” model request through OpenRouter; then run, inspect, and
+modify a small deterministic agent in Colab; reproduce it locally; keep secrets out of
+artifacts; and distinguish model, runtime, tool, environment, and trace evidence.
 
 **Phase:** Orientation
 **Overview:** 20–40 minutes
