@@ -23,7 +23,8 @@ graduate_outcomes:
 units:
   - id: launch-agent-lab
     outcome:
-      Run, inspect, and modify a small deterministic agent in Colab; reproduce it locally;
+      Make a first text-generation request through OpenRouter's current free-model route;
+      run, inspect, and modify a small deterministic agent in Colab; reproduce it locally;
       keep secrets out of artifacts; and distinguish model, runtime, tool, environment, and
       trace evidence.
     graduate_outcome_ids:

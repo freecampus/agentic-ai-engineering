@@ -73,50 +73,59 @@ import json
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from google.colab import userdata
-
-api_key = userdata.get("OPENROUTER_API_KEY")
-if not api_key:
-    raise RuntimeError("Add the OPENROUTER_API_KEY secret and allow notebook access.")
-
-payload = {
-    "model": "openrouter/free",
-    "messages": [
-        {
-            "role": "user",
-            "content": "In one sentence, what is a large language model?",
-        }
-    ],
-    "max_completion_tokens": 120,
-}
-request = Request(
-    "https://openrouter.ai/api/v1/chat/completions",
-    data=json.dumps(payload).encode("utf-8"),
-    headers={
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-    },
-    method="POST",
-)
-
 try:
-    with urlopen(request, timeout=45) as response:
-        completion = json.load(response)
-except HTTPError as error:
-    raise RuntimeError(
-        f"OpenRouter returned HTTP {error.code}. Check the key, "
-        "free-model availability, and account limits."
-    ) from None
-except URLError:
-    raise RuntimeError(
-        "The request could not reach OpenRouter. Check the Colab internet connection."
-    ) from None
+    from google.colab import userdata
+except ModuleNotFoundError:
+    userdata = None
 
-answer = completion["choices"][0]["message"]["content"]
-assert isinstance(answer, str) and answer.strip()
-print("Model selected:", completion.get("model"))
-print("Response:", answer)
-print("Usage:", completion.get("usage"))
+if userdata is None:
+    print(
+        "This live call uses Colab Secrets. Run it in Colab, or continue with "
+        "the offline sections."
+    )
+else:
+    api_key = userdata.get("OPENROUTER_API_KEY")
+    if not api_key:
+        raise RuntimeError("Add the OPENROUTER_API_KEY secret and allow notebook access.")
+
+    payload = {
+        "model": "openrouter/free",
+        "messages": [
+            {
+                "role": "user",
+                "content": "In one sentence, what is a large language model?",
+            }
+        ],
+        "max_completion_tokens": 120,
+    }
+    request = Request(
+        "https://openrouter.ai/api/v1/chat/completions",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+
+    try:
+        with urlopen(request, timeout=45) as response:
+            completion = json.load(response)
+    except HTTPError as error:
+        raise RuntimeError(
+            f"OpenRouter returned HTTP {error.code}. Check the key, "
+            "free-model availability, and account limits."
+        ) from None
+    except URLError:
+        raise RuntimeError(
+            "The request could not reach OpenRouter. Check the Colab internet connection."
+        ) from None
+
+    answer = completion["choices"][0]["message"]["content"]
+    assert isinstance(answer, str) and answer.strip()
+    print("Model selected:", completion.get("model"))
+    print("Response:", answer)
+    print("Usage:", completion.get("usage"))
 ```
 
 Read the request as four parts:
@@ -283,12 +292,12 @@ authorization system.
       "id": "u00-model-agent-concepts-2",
       "prompt": "Does a language model automatically count as an agent in this course?",
       "options": [
-        "No. An agent adds a task-directed system that may choose actions, use tools, observe results, and continue or stop.",
         "Yes. Any text produced by a model is an agent action.",
+        "No. An agent adds a task-directed system that may choose actions, use tools, observe results, and continue or stop.",
         "Yes, if the model has the letters GPT in its name.",
         "No. Only multiple models working together can form an agent."
       ],
-      "answer_index": 0,
+      "answer_index": 1,
       "explanation": "A model can simply generate a response. This course uses agent for a system that organizes steps toward a task and can act on observations."
     }
   ]
@@ -453,7 +462,7 @@ broken = run_agent(Task(7, 5), add_tool=wrong_envelope)
 assert broken.status == "invalid"
 
 check_repair(repaired_add)
-print("Repair and denial-before-dispatch checks passed")
+print("Envelope repair and denial checks passed")
 ```
 
 This verifies the tested paths in this local example. It does not prove that a
@@ -530,4 +539,4 @@ the harness; that trace does not measure real LLM capability.
 - Local canonical code: `src/freecampus_agents/lab.py`. The notebook is generated from this QMD; do not edit the notebook by hand.
 
 The examples and fixtures are original synthetic course material under the
-repository’s BSD-3-Clause license.
+repository’s BSD-3-Clause license. Primary references checked 2026-10-27.

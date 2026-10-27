@@ -1,95 +1,95 @@
 {
   "meet-a-tiny-agent": [
     {
-      "id": "u00-meet-a-tiny-agent-concept",
-      "title": "Checkpoint: explain the contract",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+      "id": "u00-model-agent-concepts",
+      "title": "Checkpoint: sort out the terms",
+      "instructions": "Choose an answer, check its explanation, then select Next.",
       "questions": [
         {
-          "id": "u00-meet-a-tiny-agent-concept-1",
-          "prompt": "Who authorizes the requested add operation?",
+          "id": "u00-model-agent-concepts-1",
+          "prompt": "Which statement best describes the relationship between Transformers and GPT?",
           "options": [
-            "The runtime checks the requested name before dispatch.",
-            "The model authorizes any name it emits.",
-            "The tool authorizes itself after calculating.",
-            "The final answer grants permission retroactively."
-          ],
-          "answer_index": 0,
-          "explanation": "A model decision is a request. The runtime allowlist precedes dispatch; a correct answer cannot retroactively authorize an effect."
-        },
-        {
-          "id": "u00-meet-a-tiny-agent-concept-2",
-          "prompt": "Why is FakeModel not evidence of LLM capability?",
-          "options": [
-            "It uses a smaller paid model.",
-            "It follows deterministic Python rules rather than predicting language.",
-            "It stores hidden reasoning in each Event.",
-            "It becomes an LLM after importing a framework."
-          ],
-          "answer_index": 1,
-          "explanation": "The test double is deliberately predictable. It tests runtime paths, not language understanding or stochastic model reliability."
-        }
-      ]
-    },
-    {
-      "id": "u00-meet-a-tiny-agent-evidence",
-      "title": "Checkpoint: interpret the evidence",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
-      "questions": [
-        {
-          "id": "u00-meet-a-tiny-agent-evidence-1",
-          "prompt": "For -5 + 5, which interpretation of observation=0 is correct?",
-          "options": [
-            "The tool has not run because zero is falsey.",
-            "The model must call the tool until the result is positive.",
-            "A valid tool result exists and can be finalized.",
-            "The runtime must replace zero with None."
+            "GPT is the architecture; Transformer is the chatbot product.",
+            "They are two names for every large language model.",
+            "Transformer names an architecture; GPT names a family of models built with it.",
+            "Transformer is the software loop that authorizes tools."
           ],
           "answer_index": 2,
-          "explanation": "None denotes absence. Zero is an integer result; using truthiness instead of an explicit None check loses this distinction."
+          "explanation": "Transformer is an architecture. GPT is a family of generative pretrained Transformer models; neither term means an agent harness."
         },
         {
-          "id": "u00-meet-a-tiny-agent-evidence-2",
-          "prompt": "Why does max_steps=1 leave answer=None after observing 12?",
+          "id": "u00-model-agent-concepts-2",
+          "prompt": "Does a language model automatically count as an agent in this course?",
           "options": [
-            "The budget counts four log events and rejects arithmetic.",
-            "Twelve exceeds the numeric answer limit.",
-            "The tool result was malformed because it was positive.",
-            "The final decision would require a second step."
+            "Yes. Any text produced by a model is an agent action.",
+            "No. An agent adds a task-directed system that may choose actions, use tools, observe results, and continue or stop.",
+            "Yes, if the model has the letters GPT in its name.",
+            "No. Only multiple models working together can form an agent."
           ],
-          "answer_index": 3,
-          "explanation": "The budget counts model decisions, not events or answer magnitude. One step can calculate without allowing a final decision."
+          "answer_index": 1,
+          "explanation": "A model can simply generate a response. This course uses agent for a system that organizes steps toward a task and can act on observations."
         }
       ]
     },
     {
-      "id": "u00-meet-a-tiny-agent-failure",
-      "title": "Checkpoint: diagnose the failure",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
+      "id": "u00-model-agent-evidence",
+      "title": "Checkpoint: read the trace",
+      "instructions": "Use the run output above, choose an answer, then select Next.",
       "questions": [
         {
-          "id": "u00-meet-a-tiny-agent-failure-1",
-          "prompt": "The trace is task, tool_call, invalid for {\"total\": 12}. What should you repair first?",
+          "id": "u00-model-agent-evidence-1",
+          "prompt": "What does the four-event successful trace establish?",
           "options": [
-            "The tool producer must return the declared result field.",
-            "Permit every field name so the run can continue.",
-            "Ask the model to guess a final answer.",
-            "Remove the tool-name allowlist."
-          ],
-          "answer_index": 0,
-          "explanation": "The tool ran but its envelope violated the result contract. Repairing that boundary preserves both policy and diagnostic evidence."
-        },
-        {
-          "id": "u00-meet-a-tiny-agent-failure-2",
-          "prompt": "Which test best supports denial before a tool effect?",
-          "options": [
-            "The final text says access was denied.",
-            "An unsupported request produces denied and an independent call spy remains empty.",
-            "The tool prints no output after it returns.",
-            "The answer is correct for the ordinary case."
+            "A real LLM interpreted natural language and calculated the answer.",
+            "The harness received a deterministic tool request, ran the allowed function, and recorded a matching final answer.",
+            "The tool chose which actions the model was allowed to request.",
+            "The run proves that every addition tool is safe."
           ],
           "answer_index": 1,
-          "explanation": "A call spy checks the tested effect boundary independently. A denial label alone could be recorded after a tool already ran."
+          "explanation": "The trace shows the behavior of this fake model and this harness. It is not evidence about a real LLM or arbitrary tool safety."
+        },
+        {
+          "id": "u00-model-agent-evidence-2",
+          "prompt": "Why does max_steps=1 stop after the observation?",
+          "options": [
+            "The harness counts four events, so it rejects any result.",
+            "The model is unable to return integer answers.",
+            "The tool returned zero, which is treated as missing.",
+            "The first decision requested the tool; a second decision is needed to return the final answer."
+          ],
+          "answer_index": 3,
+          "explanation": "The budget is one model decision. After the tool observation, the model would need another decision to produce the final answer."
+        }
+      ]
+    },
+    {
+      "id": "u00-model-agent-failures",
+      "title": "Checkpoint: diagnose the failure",
+      "instructions": "Choose the diagnosis that matches the evidence, then select Next.",
+      "questions": [
+        {
+          "id": "u00-model-agent-failures-1",
+          "prompt": "The tool returns {\"total\": 12}, and the trace ends in invalid. What should you repair?",
+          "options": [
+            "Change the fake model so it guesses the sum.",
+            "Allow any dictionary key as a valid observation.",
+            "Make the tool return the declared integer field named result.",
+            "Remove the result validation from the harness."
+          ],
+          "answer_index": 2,
+          "explanation": "The producer violates the expected envelope. Repairing the tool response preserves the harness's explicit contract."
+        },
+        {
+          "id": "u00-model-agent-failures-2",
+          "prompt": "What does calls == [] establish in the unsupported-tool check?",
+          "options": [
+            "The tested request was denied before the watched addition tool ran.",
+            "All Python code in the process is sandboxed.",
+            "The model has no possible tool-use capability.",
+            "The test checked that a final answer was correct."
+          ],
+          "answer_index": 0,
+          "explanation": "The spy records whether this injected addition function ran on the tested path. It does not establish general process isolation or security."
         }
       ]
     }

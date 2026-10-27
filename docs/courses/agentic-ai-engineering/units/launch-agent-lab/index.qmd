@@ -24,7 +24,7 @@ not a completed instructional lab.
 
 ## 1. What you will be able to do
 
-Make a first text-generation request through OpenRouter, then run, inspect, and modify a small deterministic agent in Colab; reproduce it locally; keep secrets out of artifacts; and distinguish model, runtime, tool, environment, and trace evidence.
+Make a first text-generation request through OpenRouter's current free-model route; run, inspect, and modify a small deterministic agent in Colab; reproduce it locally; keep secrets out of artifacts; and distinguish model, runtime, tool, environment, and trace evidence.
 
 **Phase:** Orientation
 **Overview:** 20–40 minutes
