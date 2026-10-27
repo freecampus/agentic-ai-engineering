@@ -1,8 +1,8 @@
 ---
 title: Launch a Reproducible Agent Engineering Lab Overview
-description: Run, inspect, and modify a small deterministic agent in Colab; reproduce it locally;
-  keep secrets out of artifacts; and distinguish model, runtime, tool, environment, and trace
-  evidence.
+description: Make a first language-model call through OpenRouter, then inspect and modify a
+  small offline agent in Colab; reproduce it locally; and distinguish model, runtime, tool,
+  environment, and trace evidence.
 content_kind: unit-overview
 content_status: planned
 order: 0
@@ -24,7 +24,7 @@ not a completed instructional lab.
 
 ## 1. What you will be able to do
 
-Run, inspect, and modify a small deterministic agent in Colab; reproduce it locally; keep secrets out of artifacts; and distinguish model, runtime, tool, environment, and trace evidence.
+Make a first text-generation request through OpenRouter, then run, inspect, and modify a small deterministic agent in Colab; reproduce it locally; keep secrets out of artifacts; and distinguish model, runtime, tool, environment, and trace evidence.
 
 **Phase:** Orientation
 **Overview:** 20–40 minutes
@@ -42,35 +42,41 @@ Bring project-ready Python: functions, data structures, modules, exceptions, and
 
 Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
 shared package. Work in a clean Colab/Jupyter notebook or a local Conda
-environment with Poetry-managed dependencies. The core route will not require
-provider keys or paid inference.
+environment with Poetry-managed dependencies. Lesson 0.1 starts with a live
+OpenRouter request using its current free-model route; that call needs an
+OpenRouter account, API key, and internet access. No paid model is required, and
+the rest of the lesson has an offline path if the service is unavailable.
 Keep credentials and personal data out of notebooks, traces, and submitted artifacts.
 
-The notebook route bundles a small offline package and uses only synthetic data.
+The first call sends one generic, non-sensitive prompt to a remote model. The
+offline package examples use synthetic task and tool data; store the API key in
+Colab Secrets, not in the notebook.
 Local development requires Git and the real project Conda + Poetry environment;
 initial installation needs registry access. No GPU is required. Use an explicit
 workspace, keep your journal outside temporary runtime storage, and distinguish
 notebook success from a verified local installation.
 
-**Working vocabulary:** the task states the requested result; the model proposes
-an action; the runtime authorizes and dispatches it; the tool returns data; the
-trajectory records visible events. The model here is a deterministic test double,
-not an LLM. The in-process examples are not security sandboxes. General runtime,
-tool-boundary, and security engineering arrive in Units 3, 5, and 15.
+**Working vocabulary:** the task states the requested result; a language model
+generates text; an agent system can use model-selected steps and tools; the
+harness or runtime authorizes, dispatches, and records those steps. The live
+OpenRouter call reaches a real language model. The separate offline loop uses a
+deterministic test double, not an LLM. In-process examples are not security
+sandboxes. General runtime, tool-boundary, and security engineering arrive in
+Units 3, 5, and 15.
 
 ## 3. Planned lesson sequence
 
 | Lesson | Evidence you will preserve |
 |---|---|
-| 1. Meet an Agent Through a Tiny Complete Run | Annotated event log connecting task, model decision, tool call, observation, and final answer. |
+| 1. Your First Model Call: OpenRouter to Agent | Returned model ID and answer, vocabulary map, observed event trace, and passing repair checks. |
 | 2. Learn with Specifications and Evidence | Task contract plus a prediction/run/explanation record. |
 | 3. Use AI Assistance Without Outsourcing Judgment | Verification checklist and corrected implementation rationale. |
 | 4. Work Reliably in Colab and Jupyter | Clean restart-and-run transcript. |
 | 5. Build a Dependable Local Workspace | Environment report and passing cross-environment smoke test. |
 
-### 1. Meet an Agent Through a Tiny Complete Run
+### 1. Your First Model Call: OpenRouter to Agent
 
-Run a three-step deterministic agent that reads a task, chooses a calculator tool, and returns a result. Learners map every source object to the visible trajectory, predict one controlled edit, and repair a malformed tool result.
+Make a real text-generation request through OpenRouter’s free-model route, then define models, LLMs, Transformers, GPT, agents, and harnesses. Trace an offline agent-style run, repair a malformed tool result, and verify that an unsupported request is denied before dispatch.
 
 ### 2. Learn with Specifications and Evidence
 
