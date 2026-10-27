@@ -9,6 +9,7 @@ course-and-unit organization on the ``gh-pages`` branch.
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import re
 from dataclasses import dataclass
@@ -300,6 +301,28 @@ def qmd_to_notebook(source: Path, source_root: Path = SOURCE_ROOT) -> dict[str, 
         return f"]({SITE_URL}{relative.as_posix()}{anchor})"
 
     body = re.sub(r"\]\(([^)\s]+\.qmd(?:#[^)]*)?)\)", public_link, parsed.body)
+
+    def public_image(match: re.Match[str]) -> str:
+        alt, target, attributes = match.groups()
+        if "://" in target or target.startswith(("data:", "#")):
+            return match.group(0)
+        resolved = (source.parent / target).resolve()
+        relative = resolved.relative_to(source_root.resolve())
+        url = f"{SITE_URL}{relative.as_posix()}"
+        if attributes and ".lesson-visual" in attributes:
+            return (
+                f'<img src="{html.escape(url, quote=True)}" '
+                f'alt="{html.escape(alt, quote=True)}" '
+                'style="display:block;width:100%;aspect-ratio:4/3;'
+                'object-fit:contain;box-sizing:border-box;margin:1rem auto;'
+                'padding:0.75rem;border:1px solid #e5e1da;'
+                'border-radius:1rem;background:#ffffff;">'
+            )
+        return f"![{alt}]({url})"
+
+    body = re.sub(
+        r"!\[([^\]]*)\]\(([^)\s]+)\)(\{[^}]*\})?", public_image, body
+    )
     cells = [markdown_cell(intro)]
     if parsed.metadata.get("notebook_package"):
         cells.append(package_setup_cell())

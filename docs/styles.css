@@ -35,6 +35,23 @@ main.content {
   padding-bottom: 4rem;
 }
 
+/* Keep this lesson's diagrams and setup screenshots in one readable frame.
+   `contain` preserves every label and part of each image. */
+.lesson-visual {
+  aspect-ratio: 4 / 3;
+  background: var(--fc-surface);
+  border: 1px solid var(--fc-border);
+  border-radius: 1rem;
+  box-sizing: border-box;
+  display: block;
+  height: auto;
+  margin: 1rem auto;
+  max-width: 56rem;
+  object-fit: contain;
+  padding: 0.75rem;
+  width: 100%;
+}
+
 main.content p,
 main.content li {
   text-wrap: pretty;
