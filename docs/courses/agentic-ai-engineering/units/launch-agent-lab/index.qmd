@@ -76,7 +76,7 @@ Units 3, 5, and 15.
 
 ### 1. Your First Model Call: OpenRouter to Agent
 
-Make a real text-generation request through OpenRouter’s free-model route, then define models, LLMs, Transformers, GPT, agents, and harnesses. Trace an offline agent-style run, repair a malformed tool result, and verify that an unsupported request is denied before dispatch.
+Make a real text-generation request through OpenRouter's free-model route, then define models, LLMs, Transformers, GPT, agents, and harnesses. Trace an offline agent-style run, repair a malformed tool result, and verify denial before dispatch.
 
 ### 2. Learn with Specifications and Evidence
 
