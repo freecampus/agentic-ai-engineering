@@ -92,6 +92,25 @@ Open at least one desktop and narrow-screen quiz when browser tooling is availab
 Restart the smoke notebook and run from the top. Report skipped checks and external
 limitations rather than treating unrun checks as passing.
 
+### Before pushing lesson changes
+
+Run the same aggregate check used by GitHub Actions:
+
+```bash
+poetry run makim all.ci
+```
+
+For a curriculum change, keep the lesson, unit overview, `_catalog.yml`, and
+`_outcomes.yml` in sync. The course tests compare these records. If you change a
+lesson's checkpoints or notebook setup, update its QMD, the matching quiz fixture,
+and the related test expectations together. Notebook checks run outside Colab in
+a clean Python process, so use the standard library or install declared packages;
+guard Colab-only imports so those checks can run without Colab.
+
+When the PR matrix fails, open a full job log and find its first failing step.
+Several red Python-version checks can share one cause. Fix that cause, then let
+the PR checks rerun before treating the change as ready.
+
 ## 6. Keep current-system examples reproducible
 
 Teach the transferable mechanism in the small course runtime first. The tracked
