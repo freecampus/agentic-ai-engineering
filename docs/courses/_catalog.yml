@@ -35,7 +35,7 @@ courses:
         estimated_effort: 10–16 hours
         lessons:
           - id: launch-agent-lab.meet-a-tiny-agent
-            title: Your First Model Call: OpenRouter to Agent
+            title: "Your First Model Call: OpenRouter to Agent"
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/launch-agent-lab/meet-a-tiny-agent.qmd
