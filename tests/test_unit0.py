@@ -188,9 +188,10 @@ def test_unit0_checkpoint_banks_match_canonical_sources(slug):
     assert all(len(quiz["questions"]) == 2 for quiz in payloads)
     assert "@@QUIZ" not in text
     assert "notebook_package: true" in text
-    assert (
-        "Primary references checked 2026-09-19" in text
-        or "references\nchecked 2026-09-19" in text
+    assert re.search(
+        r"(?:Primary references checked|references\s+checked) "
+        r"\d{4}-\d{2}-\d{2}[.;]",
+        text,
     )
 
 

@@ -28,23 +28,24 @@ courses:
         overview: courses/agentic-ai-engineering/units/launch-agent-lab/index.qmd
         prerequisite_unit_ids: []
         outcome:
-          Run, inspect, and modify a small deterministic agent in Colab; reproduce it locally;
+          Make a first text-generation request through OpenRouter's current free-model route;
+          run, inspect, and modify a small deterministic agent in Colab; reproduce it locally;
           keep secrets out of artifacts; and distinguish model, runtime, tool, environment, and
           trace evidence.
         estimated_effort: 10–16 hours
         lessons:
           - id: launch-agent-lab.meet-a-tiny-agent
-            title: Meet an Agent Through a Tiny Complete Run
+            title: "Your First Model Call: OpenRouter to Agent"
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/launch-agent-lab/meet-a-tiny-agent.qmd
             summary:
-              Run a three-step deterministic agent that reads a task, chooses a calculator
-              tool, and returns a result. Learners map every source object to the visible trajectory,
-              predict one controlled edit, and repair a malformed tool result.
+              Make a real text-generation request through OpenRouter's free-model route, then
+              define models, LLMs, Transformers, GPT, agents, and harnesses. Trace an offline
+              agent-style run, repair a malformed tool result, and verify denial before dispatch.
             evidence:
-              annotated event log connecting task, model decision, tool call, observation,
-              and final answer.
+              predicted prompt, returned model ID and answer, vocabulary map, observed event
+              trace, and passing repair checks.
           - id: launch-agent-lab.learn-with-evidence
             title: Learn with Specifications and Evidence
             order: 20
