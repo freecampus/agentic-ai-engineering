@@ -314,15 +314,13 @@ def qmd_to_notebook(source: Path, source_root: Path = SOURCE_ROOT) -> dict[str, 
                 f'<img src="{html.escape(url, quote=True)}" '
                 f'alt="{html.escape(alt, quote=True)}" '
                 'style="display:block;width:100%;aspect-ratio:4/3;'
-                'object-fit:contain;box-sizing:border-box;margin:1rem auto;'
-                'padding:0.75rem;border:1px solid #e5e1da;'
+                "object-fit:contain;box-sizing:border-box;margin:1rem auto;"
+                "padding:0.75rem;border:1px solid #e5e1da;"
                 'border-radius:1rem;background:#ffffff;">'
             )
         return f"![{alt}]({url})"
 
-    body = re.sub(
-        r"!\[([^\]]*)\]\(([^)\s]+)\)(\{[^}]*\})?", public_image, body
-    )
+    body = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)\)(\{[^}]*\})?", public_image, body)
     cells = [markdown_cell(intro)]
     if parsed.metadata.get("notebook_package"):
         cells.append(package_setup_cell())
