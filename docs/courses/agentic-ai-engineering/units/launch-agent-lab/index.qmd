@@ -26,7 +26,7 @@ not a completed instructional lab.
 
 Explain the difference between a provider, product, model family, LLM, and Transformer;
 make a first “Hello, world!” model request through OpenRouter, repeat it through
-LangChain, and define a model task with DSPy. Then run, inspect, and modify a
+LangChain, and define a model task with DSPy; then run, inspect, and modify a
 small deterministic agent in Colab; reproduce it locally; keep secrets out of
 artifacts; and distinguish model, runtime, tool, environment, and trace evidence.
 

@@ -392,10 +392,10 @@
           "options": [
             "Training a new foundation model for every application.",
             "Replacing model providers so an app no longer needs an API connection.",
-            "Building model programs from task descriptions and improving them with examples and a metric.",
-            "Guaranteeing that every model output is correct."
+            "Guaranteeing that every model output is correct.",
+            "Building model programs from task descriptions and improving them with examples and a metric."
           ],
-          "answer_index": 2,
+          "answer_index": 3,
           "explanation": "DSPy describes tasks and programs, then can use examples and a metric to optimize a program. It does not supply the model or guarantee correctness."
         },
         {
@@ -423,10 +423,10 @@
           "options": [
             "The secret value, so another student can repeat it.",
             "Only the answer text, because the route never changes.",
-            "The selected route and the model reported by DSPy, when available.",
-            "A claim that every request used the same provider model."
+            "A claim that every request used the same provider model.",
+            "The selected route and the model reported by DSPy, when available."
           ],
-          "answer_index": 2,
+          "answer_index": 3,
           "explanation": "The free route can select different models. Record the selected route and the model metadata returned by the call; never record the key."
         },
         {

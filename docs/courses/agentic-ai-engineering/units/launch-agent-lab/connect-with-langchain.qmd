@@ -348,7 +348,9 @@ usage when available. The exact model and response can vary.
 - This was one model call. It did not create an agent, use a tool, or prove the
   answer correct.
 
-### References checked 2026-10-30
+### References
+
+Primary references checked 2026-10-30.
 
 - LangChain, [Announcing our $10M seed round](https://www.langchain.com/blog/announcing-our-10m-seed-round-led-by-benchmark) (origin story and first-release date).
 - LangChain, [Learn](https://docs.langchain.com/oss/python/learn) (current example use cases, including semantic search, RAG, SQL, and voice agents).
