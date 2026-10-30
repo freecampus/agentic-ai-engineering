@@ -29,9 +29,10 @@ courses:
         prerequisite_unit_ids: []
         outcome:
           Explain the difference between a provider, product, model family, LLM, and Transformer;
-          make a first “Hello, world!” model request through OpenRouter; then run, inspect, and
-          modify a small deterministic agent in Colab; reproduce it locally; keep secrets out of
-          artifacts; and distinguish model, runtime, tool, environment, and trace evidence.
+          make a first “Hello, world!” model request through OpenRouter, repeat it through
+          LangChain, and define a model task with DSPy; then run, inspect, and modify a small deterministic agent in Colab; reproduce
+          it locally; keep secrets out of artifacts; and distinguish model, runtime, tool,
+          environment, and trace evidence.
         estimated_effort: 10–16 hours
         lessons:
           - id: launch-agent-lab.meet-a-tiny-agent
@@ -45,26 +46,26 @@ courses:
               request through OpenRouter and note which model answered.
             evidence:
               model-family notes, key vocabulary, returned model ID, and “Hello, world!” response.
-          - id: launch-agent-lab.learn-with-evidence
-            title: Learn with Specifications and Evidence
+          - id: launch-agent-lab.connect-with-langchain
+            title: Connect to Models with LangChain
             order: 20
             status: planned
-            path: courses/agentic-ai-engineering/units/launch-agent-lab/learn-with-evidence.qmd
+            path: courses/agentic-ai-engineering/units/launch-agent-lab/connect-with-langchain.qmd
             summary:
-              Turn a vague request into a task contract containing success, stop, budget,
-              escalation, and forbidden-action rules. Compare a convincing demo with a reproducible
-              test and learn why one successful run is not evidence of reliability.
-            evidence: task contract plus a prediction/run/explanation record.
-          - id: launch-agent-lab.use-ai-responsibly
-            title: Use AI Assistance Without Outsourcing Judgment
+              Repeat the first model request through LangChain, inspect its message and metadata,
+              and compare OpenRouter routing with direct OpenAI, Gemini, and Cohere connections.
+            evidence: returned model ID, response, token usage when available, and provider-route
+              comparison.
+          - id: launch-agent-lab.program-with-dspy
+            title: Program a Model Task with DSPy
             order: 30
             status: planned
-            path: courses/agentic-ai-engineering/units/launch-agent-lab/use-ai-responsibly.qmd
+            path: courses/agentic-ai-engineering/units/launch-agent-lab/program-with-dspy.qmd
             summary:
-              "Establish a responsible assistance protocol for course work: disclose assistance,
-              protect data and credentials, verify generated claims and code, and preserve the learner’s
-              own reasoning. Diagnose a confident but unsafe suggested tool implementation."
-            evidence: verification checklist and corrected implementation rationale.
+              Explain why DSPy was created, define a task with a signature, and make a model call
+              through OpenRouter while identifying direct-provider alternatives.
+            evidence: task signature, selected model route, model-reported ID when available,
+              extracted fields, and a note on when DSPy is useful.
           - id: launch-agent-lab.work-in-notebooks
             title: Work Reliably in Colab and Jupyter
             order: 40

@@ -1,0 +1,370 @@
+---
+title: Program a Model Task with DSPy
+description: Learn why DSPy was created, define a small task with a signature, and call it through OpenRouter while seeing how to switch to direct model providers.
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: launch-agent-lab
+unit_number: 0
+categories:
+- agentic-ai-engineering
+- launch-agent-lab
+order: 30
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/program-with-dspy.ipynb
+execute:
+  echo: true
+lesson_id: launch-agent-lab.program-with-dspy
+lesson_order: 30
+---
+
+::: {.lesson-meta}
+- **Level:** Introductory; project-ready Python.
+- **Active time:** 45–60 minutes.
+- **Prerequisites:** Lessons 0.1 and 0.2; the `OPENROUTER_API` Colab secret.
+- **Outcome:** Explain what DSPy adds, describe a task with a signature, and make one real model call through DSPy.
+- **Evidence:** The task signature, selected model route, model-reported ID when available, extracted fields, and a note on when DSPy is useful.
+- **Environment:** Google Colab, internet access, and the existing OpenRouter key. The exercise uses OpenRouter's free-model router, which can be rate limited and may choose different models.
+:::
+
+::: {.callout-note}
+## Review draft
+Independent teaching and accessibility review are pending. Use the local review
+notebook; this page does not grant course progress.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. From a prompt to a model task
+
+In Lesson 0.1, you sent a request directly to OpenRouter. In Lesson 0.2, you
+sent a request through LangChain. Here, you will keep using a real language
+model, but describe the job in a different way.
+
+Before you begin, consider:
+
+1. What stayed the same when Lesson 0.2 changed the way the request was sent?
+2. If an application receives a repair note, what facts should it return?
+3. How could you describe those input and output fields without writing one long prompt?
+4. What evidence would tell you whether the result is useful?
+
+**DSPy** is a Python framework for writing programs that use language models.
+You describe a task with its inputs and expected outputs. DSPy turns that
+description into a model request and returns the requested fields. The model
+still creates the answer; DSPy organizes how the application asks for it.
+
+| Lesson 0.2: LangChain | Lesson 0.3: DSPy |
+|---|---|
+| Gives application code a shared way to connect to a model. | Gives application code a structured way to describe a model task and improve it against examples. |
+| We use its OpenRouter connector for one call. | We use a signature and `Predict` for one extraction task. |
+
+The frameworks can both work with model providers. They solve different parts
+of an application, and a small program may need neither one.
+
+## 2. When DSPy appeared and what it set out to change
+
+DSPy grew out of research at Stanford NLP with Omar Khattab and his
+collaborators. Its project site says it has been built in the open since
+**December 2022**. The first paper introducing DSPy was submitted on
+**October 5, 2023**. Khattab was its first author, alongside twelve other
+collaborators. The paper was published at [ICLR 2024](https://openreview.net/forum?id=sY5N0zY5Od).
+
+The research team described a common problem: language-model programs often
+relied on long, hand-written prompt templates that developers adjusted by trial
+and error. That becomes harder when an application has several model steps.
+DSPy proposed a more systematic approach:
+
+1. Describe the task and its input and output fields.
+2. Compose those task descriptions into a Python program.
+3. When you have examples and a way to score results, use a DSPy optimizer to
+   search for better instructions or demonstrations for that program.
+
+The optimizer needs examples and a metric that represent the task. The first
+call in this lesson does **not** optimize anything or retrain the model. Some
+separate DSPy workflows can fine-tune models, but that is a later topic.
+
+## 3. Is DSPy still useful?
+
+As of **October 30, 2026**, the DSPy project site lists version **3.4.1** and
+its current guides cover information extraction, retrieval-augmented generation
+(RAG), and agents. Those are examples of the kinds of model programs people
+build with it. The site also describes production examples; these are project
+reports, not an independent measure of how widely DSPy is used. [Explore the
+current DSPy guides](https://dspy.ai/current/).
+
+DSPy is most useful when a task repeats, you can collect representative
+examples, and you can score the output. It gives you a way to improve a model
+program systematically instead of relying only on hand-edited prompts. For a
+single, one-off question, a direct model call may be simpler. DSPy does not
+guarantee a correct answer, and its task description does not replace checking
+the result.
+
+## 4. Install DSPy and connect through OpenRouter
+
+Run this cell in Colab. The version matches the version listed on the DSPy site
+on the date this draft was researched.
+
+```{.bash}
+%pip install -q dspy==3.4.1
+```
+
+The `dspy.LM` object connects DSPy to a model. DSPy uses LiteLLM to support
+multiple providers. The first part of the model string identifies the provider
+interface; the rest identifies the model route.
+
+In Lesson 0.1, you saved the key in Colab's **Secrets** panel, opened with the
+key icon in the left sidebar. Keep the secret named `OPENROUTER_API` and make
+sure notebook access is switched on. The cell below reads the key without
+printing it.
+
+We use the OpenRouter model route `openrouter/free`. OpenRouter can choose a
+currently available free model for each request. With LiteLLM's provider prefix,
+the complete DSPy model string is `openrouter/openrouter/free`: the first
+`openrouter/` selects LiteLLM's OpenRouter connection, and the remaining
+`openrouter/free` is the OpenRouter model route. The route is free at the time
+of research, but it can be rate limited and the exact model can change. Check
+the [current route details](https://openrouter.ai/openrouter/free) before
+teaching the lesson.
+
+## 5. Describe the task, then make one model call
+
+This example extracts two details from a made-up repair-café note. The
+signature declares the input (`note`) and the requested outputs (`item` and
+`issue`). `Predict` is a DSPy module that uses that signature to ask the
+configured model for a prediction.
+
+```python
+try:
+    from google.colab import userdata
+except ModuleNotFoundError:
+    userdata = None
+
+if userdata is None:
+    print("This live DSPy call uses Colab Secrets. Open the notebook in Colab.")
+else:
+    api_key = userdata.get("OPENROUTER_API")
+    if not api_key:
+        raise RuntimeError(
+            "Add OPENROUTER_API in Colab Secrets and allow notebook access."
+        )
+
+    import dspy
+
+    selected_model = "openrouter/openrouter/free"
+    lm = dspy.LM(selected_model, api_key=api_key, max_tokens=160)
+    dspy.configure(lm=lm)
+
+    class ExtractRepairDetails(dspy.Signature):
+        """Extract the item and problem described in a repair note."""
+
+        note: str = dspy.InputField()
+        item: str = dspy.OutputField(desc="The item brought in for repair")
+        issue: str = dspy.OutputField(desc="The reported problem")
+
+    extract = dspy.Predict(ExtractRepairDetails)
+    prediction = extract(
+        note=(
+            "My blue electric kettle switches off before the water boils. "
+            "I can bring it to the repair café on Tuesday afternoon."
+        )
+    )
+
+    item = str(prediction.item).strip()
+    issue = str(prediction.issue).strip()
+    assert item and issue, "The model must return both requested fields."
+
+    call = lm.history[-1]
+    print("Selected route:", selected_model)
+    print("Model reported by DSPy:", call.get("response_model", call.get("model")))
+    print("Token usage:", call.get("usage"))
+    print("Item:", item)
+    print("Issue:", issue)
+```
+
+The exact wording can vary. The assertions check that both fields are present;
+they do not prove the model extracted the right facts. Compare the returned
+fields with the original note and correct them if needed. Keep the input
+synthetic, and do not print or copy the API key into notebook output.
+
+### Try a small change
+
+Add an output field called `visit_window` with a description that asks for the
+day and time mentioned in the note. Run the request again and compare the new
+field with the text. This is a second live model call, so skip it if your route
+is rate limited.
+
+Success means the returned prediction includes nonempty `item`, `issue`, and
+`visit_window` fields. Record whether each field matches the note. Do not treat
+the model's response as verified just because the Python assertions pass.
+
+<details>
+<summary>Hint</summary>
+
+Add `visit_window: str = dspy.OutputField(...)` to the signature, then read
+`prediction.visit_window` after calling the same `extract` module.
+
+</details>
+
+<details>
+<summary>One possible solution</summary>
+
+Describe `visit_window` as “The day and time the visitor says they can bring the
+item.” A reasonable result should mention Tuesday afternoon. The model may word
+it differently, so compare its answer with the note instead of checking for one
+exact string.
+
+</details>
+
+## 6. Use another provider when you are ready
+
+The signature and `Predict` module can stay the same when you change the model
+connection. Change the model string and provide a key for the route you choose.
+These are examples of DSPy's provider/model format; select a current model ID
+from that provider's catalog.
+
+| Connection | DSPy model string | Colab secret |
+|---|---|---|
+| OpenRouter | `openrouter/<provider>/<model>` | `OPENROUTER_API` |
+| OpenAI directly | `openai/<model>` | `OPENAI_API_KEY` |
+| Anthropic directly | `anthropic/<model>` | `ANTHROPIC_API_KEY` |
+| Google Gemini directly | `gemini/<model>` | `GEMINI_API_KEY` |
+
+For example, to use a Gemini model directly, read `GEMINI_API_KEY` from Colab
+Secrets and create `dspy.LM("gemini/<current-model-id>", api_key=api_key)`,
+then call `dspy.configure(lm=lm)`. Do not include angle brackets literally;
+replace the placeholder with a current model ID. A direct provider connection
+uses that provider's account and pricing. OpenRouter uses the OpenRouter key,
+even when its selected model was made by another company. You only need the
+OpenRouter key for the required exercise.
+
+## 7. Check your understanding
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-program-with-dspy-concept",
+  "title": "Checkpoint: explain DSPy",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u00-program-with-dspy-concept-1",
+      "prompt": "What problem was DSPy designed to help with?",
+      "options": [
+        "Training a new foundation model for every application.",
+        "Replacing model providers so an app no longer needs an API connection.",
+        "Building model programs from task descriptions and improving them with examples and a metric.",
+        "Guaranteeing that every model output is correct."
+      ],
+      "answer_index": 2,
+      "explanation": "DSPy describes tasks and programs, then can use examples and a metric to optimize a program. It does not supply the model or guarantee correctness."
+    },
+    {
+      "id": "u00-program-with-dspy-concept-2",
+      "prompt": "What does the signature in this lesson describe?",
+      "options": [
+        "The OpenRouter API key and its expiration date.",
+        "The task's input and the fields the program asks the model to return.",
+        "A list of model weights to download into Colab.",
+        "A permission for the model to use external tools."
+      ],
+      "answer_index": 1,
+      "explanation": "The signature names the note input and the requested item and issue outputs. It is a task description, not a credential or tool permission."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+### Check the returned evidence
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-program-with-dspy-evidence",
+  "title": "Checkpoint: inspect the call",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u00-program-with-dspy-evidence-1",
+      "prompt": "What should you record when using the OpenRouter free route?",
+      "options": [
+        "The secret value, so another student can repeat it.",
+        "Only the answer text, because the route never changes.",
+        "The selected route and the model reported by DSPy, when available.",
+        "A claim that every request used the same provider model."
+      ],
+      "answer_index": 2,
+      "explanation": "The free route can select different models. Record the selected route and the model metadata returned by the call; never record the key."
+    },
+    {
+      "id": "u00-program-with-dspy-evidence-2",
+      "prompt": "Both output fields are nonempty, but the model says the kettle is a toaster. What do the assertions prove?",
+      "options": [
+        "Only that the requested fields are present; you must still compare them with the note.",
+        "That the model understood the note correctly.",
+        "That DSPy optimized the model for this task.",
+        "That the selected provider returned a verified fact."
+      ],
+      "answer_index": 0,
+      "explanation": "The assertions check shape, not meaning. Compare the fields with the source note and correct inaccurate output."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+### Diagnose a connection failure
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-program-with-dspy-failure",
+  "title": "Checkpoint: diagnose the failure",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u00-program-with-dspy-failure-1",
+      "prompt": "DSPy reports that it cannot authenticate. What should you check first?",
+      "options": [
+        "Print the API key to see whether it was copied correctly.",
+        "Put the key in the task note so the model can find it.",
+        "Switch immediately to a paid model.",
+        "Check that `OPENROUTER_API` exists in Colab Secrets and notebook access is enabled."
+      ],
+      "answer_index": 3,
+      "explanation": "Check the secret name and access setting without displaying the value. A new model route does not fix a missing key."
+    },
+    {
+      "id": "u00-program-with-dspy-failure-2",
+      "prompt": "The free route returns a rate-limit error. What is a sound response?",
+      "options": [
+        "Record the error and retry later or use an instructor-approved route.",
+        "Paste the same key into the shared notebook for another student.",
+        "Assume the signature is invalid and rewrite the whole task.",
+        "Choose a paid model without checking its price."
+      ],
+      "answer_index": 0,
+      "explanation": "A rate limit is a property of the service route. Keep the key private and do not incur unapproved costs to work around it."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## Key points
+
+- DSPy is a Python framework for describing and composing language-model tasks.
+- The first paper was submitted in October 2023; work on the open project began at Stanford NLP in December 2022.
+- A signature describes what goes in and what the model program should return.
+- DSPy uses LiteLLM to connect to providers such as OpenRouter, OpenAI, Anthropic, and Gemini.
+- Optimizing a program requires representative examples and a scoring metric; a basic `Predict` call does not optimize the model.
+- A well-shaped response still needs checking against its source.
+
+## Sources
+
+- Khattab et al., [*DSPy: Compiling Declarative Language Model Calls into Self-Improving Pipelines*](https://arxiv.org/abs/2310.03714), submitted October 5, 2023; [published at ICLR 2024](https://openreview.net/forum?id=sY5N0zY5Od).
+- [DSPy project and current guides](https://dspy.ai/current/) and [DSPy language-model setup](https://dspy.ai/3.1.3/learn/programming/language_models/).
+- LiteLLM's [OpenRouter provider guide](https://docs.litellm.ai/docs/providers/openrouter).
+- OpenRouter's [free-model router](https://openrouter.ai/openrouter/free).
+
+**Primary references checked 2026-10-30.**
