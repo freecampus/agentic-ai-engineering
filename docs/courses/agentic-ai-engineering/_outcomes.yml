@@ -24,17 +24,18 @@ units:
   - id: launch-agent-lab
     outcome:
       Explain the difference between a provider, product, model family, LLM, and Transformer;
-      make a first “Hello, world!” model request through OpenRouter; then run, inspect, and
-      modify a small deterministic agent in Colab; reproduce it locally; keep secrets out of
-      artifacts; and distinguish model, runtime, tool, environment, and trace evidence.
+      make a first “Hello, world!” model request through OpenRouter, repeat it through
+      LangChain, and define a model task with DSPy; then run, inspect, and modify a small deterministic agent in Colab; reproduce
+      it locally; keep secrets out of artifacts; and distinguish model, runtime, tool,
+      environment, and trace evidence.
     graduate_outcome_ids:
       - runtime
       - evaluation
       - safety
     lesson_ids:
       - launch-agent-lab.meet-a-tiny-agent
-      - launch-agent-lab.learn-with-evidence
-      - launch-agent-lab.use-ai-responsibly
+      - launch-agent-lab.connect-with-langchain
+      - launch-agent-lab.program-with-dspy
       - launch-agent-lab.work-in-notebooks
       - launch-agent-lab.build-local-workspace
     challenge_id: launch-agent-lab.challenge

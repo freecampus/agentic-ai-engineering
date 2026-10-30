@@ -10,8 +10,8 @@ website:
             - href: courses/agentic-ai-engineering/units/launch-agent-lab/index.qmd
               text: Overview
             - courses/agentic-ai-engineering/units/launch-agent-lab/meet-a-tiny-agent.qmd
-            - courses/agentic-ai-engineering/units/launch-agent-lab/learn-with-evidence.qmd
-            - courses/agentic-ai-engineering/units/launch-agent-lab/use-ai-responsibly.qmd
+            - courses/agentic-ai-engineering/units/launch-agent-lab/connect-with-langchain.qmd
+            - courses/agentic-ai-engineering/units/launch-agent-lab/program-with-dspy.qmd
             - courses/agentic-ai-engineering/units/launch-agent-lab/work-in-notebooks.qmd
             - courses/agentic-ai-engineering/units/launch-agent-lab/build-local-workspace.qmd
             - href: courses/agentic-ai-engineering/units/launch-agent-lab/challenge.qmd

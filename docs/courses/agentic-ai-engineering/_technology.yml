@@ -9,6 +9,53 @@ review_triggers:
   - deprecation
   - license-or-provider-policy-change
 entries:
+  - id: langchain-openrouter
+    role: mechanism-reference
+    owner: course maintainers
+    documentation_reviewed_on: "2026-10-30"
+    review_due_on: "2027-01-28"
+    source_revision: "langchain-openrouter 0.2.9"
+    integration_status: not-validated
+    validated_version: null
+    validation_evidence: []
+    required_live_dependency: false
+    lesson_ids:
+      - launch-agent-lab.connect-with-langchain
+    primary_sources:
+      - https://docs.langchain.com/oss/python/langchain/models
+      - https://docs.langchain.com/oss/python/integrations/chat/openrouter
+      - https://docs.langchain.com/oss/python/integrations/chat/openai
+      - https://docs.langchain.com/oss/python/integrations/providers/google
+      - https://docs.langchain.com/oss/python/integrations/chat/cohere
+      - https://pypi.org/project/langchain-openrouter/
+    notes: >
+      Research reference only; the LangChain OpenRouter connector is marked beta
+      and has not been validated by the course. Lesson 0.2 pins version 0.2.9
+      in its draft live example. Direct OpenAI, Gemini, and Cohere alternatives
+      are provider references, not required accounts or validated integrations.
+  - id: dspy-model-programming
+    role: mechanism-reference
+    owner: course maintainers
+    documentation_reviewed_on: "2026-10-30"
+    review_due_on: "2027-01-28"
+    source_revision: "DSPy 3.4.1 listed by project site; integration not validated"
+    integration_status: not-validated
+    validated_version: null
+    validation_evidence: []
+    required_live_dependency: false
+    lesson_ids:
+      - launch-agent-lab.program-with-dspy
+    primary_sources:
+      - https://arxiv.org/abs/2310.03714
+      - https://dspy.ai/current/
+      - https://dspy.ai/3.1.3/learn/programming/language_models/
+      - https://docs.litellm.ai/docs/providers/openrouter
+      - https://openrouter.ai/openrouter/free
+    notes: >
+      Research reference only. The project site lists DSPy 3.4.1; the lesson pins
+      that version but its Colab and OpenRouter calls have not been validated.
+      OpenRouter's free route and provider model IDs can change; recheck before
+      publication and retain the documented direct-provider alternatives.
   - id: agent-skills
     role: mechanism-reference
     owner: course maintainers

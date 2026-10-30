@@ -267,8 +267,8 @@ def test_authored_worked_examples_and_hidden_solutions_execute_separately(
     assert result.returncode == 0, result.stderr
     expected = {
         "meet-a-tiny-agent": "This live request uses Colab Secrets",
-        "learn-with-evidence": "Lookup contract passed",
-        "use-ai-responsibly": "Reviewed arithmetic checks passed",
+        "connect-with-langchain": "This live model request uses Colab Secrets",
+        "program-with-dspy": "This live DSPy call uses Colab Secrets",
         "work-in-notebooks": "Explicit-input launch checks passed",
         "build-local-workspace": "Unsupported mode rejected",
         "challenge": "Denial, malformed result, and decision budget checks passed",

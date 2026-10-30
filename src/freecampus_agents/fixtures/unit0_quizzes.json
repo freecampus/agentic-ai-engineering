@@ -1,195 +1,5 @@
 {
   "meet-a-tiny-agent": [],
-  "learn-with-evidence": [
-    {
-      "id": "u00-learn-with-evidence-concept",
-      "title": "Checkpoint: explain the contract",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
-      "questions": [
-        {
-          "id": "u00-learn-with-evidence-concept-1",
-          "prompt": "Which success contract is testable for the caf\u00e9 lookup?",
-          "options": [
-            "Always give an answer that sounds useful.",
-            "Try hard to keep lookups low.",
-            "Return an approved document ID and text within the read limit, or an explicit terminal failure.",
-            "Find information by any available route."
-          ],
-          "answer_index": 2,
-          "explanation": "Success must describe observable result, provenance, and limits. Intentions and plausible prose cannot establish compliance."
-        },
-        {
-          "id": "u00-learn-with-evidence-concept-2",
-          "prompt": "Where must the permission check occur?",
-          "options": [
-            "After reading, provided the result is not displayed.",
-            "Only when the final answer is wrong.",
-            "Inside the generated answer text.",
-            "Before the document mapping is read."
-          ],
-          "answer_index": 3,
-          "explanation": "Reading is the effect being restricted. A later denial does not undo an unauthorized read."
-        }
-      ]
-    },
-    {
-      "id": "u00-learn-with-evidence-evidence",
-      "title": "Checkpoint: interpret the evidence",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
-      "questions": [
-        {
-          "id": "u00-learn-with-evidence-evidence-1",
-          "prompt": "holiday is empty, hours is present, and max_lookups=1. What follows requests [holiday, hours]?",
-          "options": [
-            "budget_exhausted after only holiday was read.",
-            "found, because the second document exists.",
-            "missing with both documents read.",
-            "denied, because empty documents are forbidden."
-          ],
-          "answer_index": 0,
-          "explanation": "An allowed miss consumes a lookup. The next request hits the limit before access; missing is reserved for exhausting the script without a result."
-        },
-        {
-          "id": "u00-learn-with-evidence-evidence-2",
-          "prompt": "What do the four deterministic cases establish?",
-          "options": [
-            "The system is statistically reliable on every future task.",
-            "The checked implementation met those specific fixture contracts.",
-            "Any future network connector is safe.",
-            "The agent is better than direct lookup."
-          ],
-          "answer_index": 1,
-          "explanation": "Finite deterministic checks are regression evidence, not distributional reliability or an architecture comparison by themselves."
-        }
-      ]
-    },
-    {
-      "id": "u00-learn-with-evidence-failure",
-      "title": "Checkpoint: diagnose the failure",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
-      "questions": [
-        {
-          "id": "u00-learn-with-evidence-failure-1",
-          "prompt": "Why is returning the correct hours after a denied lookup a defect?",
-          "options": [
-            "The hours string should be longer.",
-            "Denied requests should consume more retries.",
-            "That run has no permitted source supporting the returned answer.",
-            "The model needs a more confident prompt."
-          ],
-          "answer_index": 2,
-          "explanation": "An answer can be textually correct but procedurally unsupported. Preserve status rather than converting lack of evidence into success."
-        },
-        {
-          "id": "u00-learn-with-evidence-failure-2",
-          "prompt": "A run reports no reads, but the independent mapping spy contains private. What should you conclude?",
-          "options": [
-            "The reported tuple is authoritative, so the spy can be ignored.",
-            "The private read is allowed because no answer was emitted.",
-            "Only the quiz text needs correction.",
-            "The tested implementation violated the no-read contract and its trace is insufficient."
-          ],
-          "answer_index": 3,
-          "explanation": "The independent observer contradicts the self-report. Fix the read ordering rather than weakening the acceptance check."
-        }
-      ]
-    }
-  ],
-  "use-ai-responsibly": [
-    {
-      "id": "u00-use-ai-responsibly-concept",
-      "title": "Checkpoint: explain the contract",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
-      "questions": [
-        {
-          "id": "u00-use-ai-responsibly-concept-1",
-          "prompt": "What should the arithmetic debugging request contain?",
-          "options": [
-            "A minimal synthetic contract and error, inspected for sensitive values.",
-            "All environment variables to avoid missing context.",
-            "The real credential so the assistant can reproduce access.",
-            "A screenshot of every open notebook."
-          ],
-          "answer_index": 0,
-          "explanation": "Only task-relevant synthetic data is needed. Redacting keys alone is insufficient when values can contain sensitive material."
-        },
-        {
-          "id": "u00-use-ai-responsibly-concept-2",
-          "prompt": "Which disclosure demonstrates engineering ownership?",
-          "options": [
-            "State that AI was used, with no description of verification.",
-            "Name accepted and rejected suggestions, actual checks, and remaining uncertainty.",
-            "Paste the whole private conversation as proof.",
-            "Claim no assistance because you edited one line."
-          ],
-          "answer_index": 1,
-          "explanation": "A useful disclosure separates assistance from the learner\u2019s decisions and evidence; neither secrecy nor an indiscriminate transcript does that."
-        }
-      ]
-    },
-    {
-      "id": "u00-use-ai-responsibly-evidence",
-      "title": "Checkpoint: interpret the evidence",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
-      "questions": [
-        {
-          "id": "u00-use-ai-responsibly-evidence-1",
-          "prompt": "generated_coercion(True, 2) returns 3. Why is that a failed contract?",
-          "options": [
-            "Three is not an integer.",
-            "The function should round the boolean down.",
-            "Booleans are forbidden inputs even though Python can coerce them to integers.",
-            "Only the string formatting is wrong."
-          ],
-          "answer_index": 2,
-          "explanation": "The declared input contract excludes booleans and decimals. A plausible sum does not justify silently changing input meaning."
-        },
-        {
-          "id": "u00-use-ai-responsibly-evidence-2",
-          "prompt": "A citation title sounds authoritative but no primary text was inspected. How should it appear in the claim table?",
-          "options": [
-            "Verified if the title matches the task.",
-            "Verified if two generated answers repeat it.",
-            "Refuted solely because its title is unfamiliar.",
-            "Unverified; do not cite it as supporting authority."
-          ],
-          "answer_index": 3,
-          "explanation": "Lack of inspected support warrants an unverified label, not manufactured evidence or a conclusion based only on familiarity."
-        }
-      ]
-    },
-    {
-      "id": "u00-use-ai-responsibly-failure",
-      "title": "Checkpoint: diagnose the failure",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence if needed.",
-      "questions": [
-        {
-          "id": "u00-use-ai-responsibly-failure-1",
-          "prompt": "How should you repair an arithmetic suggestion that adds a shell helper?",
-          "options": [
-            "Remove code evaluation/process capability and use validated arithmetic only.",
-            "Rename shell to a more reassuring tool name.",
-            "Keep it but request caution in the prompt.",
-            "Run it on real data to see whether anything bad happens."
-          ],
-          "answer_index": 0,
-          "explanation": "The capability itself is unnecessary. Renaming or prompting does not remove process execution, and unsafe trial runs are not a review method."
-        },
-        {
-          "id": "u00-use-ai-responsibly-failure-2",
-          "prompt": "What does check_add prove about a candidate that passes?",
-          "options": [
-            "It cannot access the network under any circumstances.",
-            "It satisfies the tested input/output cases; capability review remains separate.",
-            "Every generated source claim is correct.",
-            "It is safe to execute any other AI patch."
-          ],
-          "answer_index": 1,
-          "explanation": "Behavioral tests are scoped evidence. They cannot certify arbitrary Python harmless or validate unrelated claims."
-        }
-      ]
-    }
-  ],
   "work-in-notebooks": [
     {
       "id": "u00-work-in-notebooks-concept",
@@ -301,7 +111,7 @@
             "A manually set VIRTUAL_ENV value."
           ],
           "answer_index": 0,
-          "explanation": "The guard checks interpreter identity, Conda metadata, and Poetry\u2019s actual selection. Labels are not activation."
+          "explanation": "The guard checks interpreter identity, Conda metadata, and Poetry’s actual selection. Labels are not activation."
         },
         {
           "id": "u00-build-local-workspace-concept-2",
@@ -358,7 +168,7 @@
           "prompt": "An import fails after a registry installation error. What is the first repair target?",
           "options": [
             "The interrupted install in the intended interpreter, preserving the error evidence.",
-            "Change the agent\u2019s arithmetic.",
+            "Change the agent’s arithmetic.",
             "Suppress ModuleNotFoundError and print 12.",
             "Disable the environment guard."
           ],
@@ -471,6 +281,196 @@
           ],
           "answer_index": 3,
           "explanation": "The contract forbids silently substituting tasks. Nonzero exit, actionable diagnostic, and no fabricated input or success payload are required."
+        }
+      ]
+    }
+  ],
+  "connect-with-langchain": [
+    {
+      "id": "u00-connect-with-langchain-concept",
+      "title": "Checkpoint: identify the layers",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding section if needed.",
+      "questions": [
+        {
+          "id": "u00-connect-with-langchain-concept-1",
+          "prompt": "What does the LangChain connector do here?",
+          "options": [
+            "It trains a model from the student's prompt.",
+            "It provides a common Python interface for sending the request and receiving a model message.",
+            "It turns every model call into an autonomous agent.",
+            "It replaces OpenRouter and supplies the model weights."
+          ],
+          "answer_index": 1,
+          "explanation": "The connector adapts LangChain's model interface to OpenRouter. It does not train or supply the model, and one call is not an agent loop."
+        },
+        {
+          "id": "u00-connect-with-langchain-concept-2",
+          "prompt": "If you select Gemini through OpenRouter, which service receives your API request?",
+          "options": [
+            "OpenRouter, which routes it to an available model provider.",
+            "LangChain's training service.",
+            "Google directly, because the model was made by Google.",
+            "Colab Secrets, which generates the response."
+          ],
+          "answer_index": 0,
+          "explanation": "The model may be made by Google, but the OpenRouter key and connector send the request to OpenRouter."
+        }
+      ]
+    },
+    {
+      "id": "u00-connect-with-langchain-evidence",
+      "title": "Checkpoint: read the returned message",
+      "instructions": "Choose an answer, check the explanation, then select Next. Use your call output when available.",
+      "questions": [
+        {
+          "id": "u00-connect-with-langchain-evidence-1",
+          "prompt": "Which field should you inspect to record the model that answered?",
+          "options": [
+            "`message.content`",
+            "The Colab secret value",
+            "`message.response_metadata`, including `model_name`",
+            "The package install command"
+          ],
+          "answer_index": 2,
+          "explanation": "The text is in `content`; the model name is in response metadata. Never copy the secret value into your notes."
+        },
+        {
+          "id": "u00-connect-with-langchain-evidence-2",
+          "prompt": "Why might two students record different model IDs when they use `openrouter/free`?",
+          "options": [
+            "LangChain renames providers randomly.",
+            "The free route may select different available models.",
+            "Colab changes the model ID when a notebook is copied.",
+            "The invoke method hides the model from OpenRouter."
+          ],
+          "answer_index": 1,
+          "explanation": "The free route can select different available models. Record the returned model name rather than treating the route label as the exact model."
+        }
+      ]
+    },
+    {
+      "id": "u00-connect-with-langchain-failure",
+      "title": "Checkpoint: diagnose the connection",
+      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the setup steps if needed.",
+      "questions": [
+        {
+          "id": "u00-connect-with-langchain-failure-1",
+          "prompt": "The code says no key is available. What should you check first?",
+          "options": [
+            "Put the key into the prompt.",
+            "Replace the model with a paid one.",
+            "Check the `OPENROUTER_API` secret name and notebook access.",
+            "Print every environment variable."
+          ],
+          "answer_index": 2,
+          "explanation": "The code reads the secret by its saved name. Keep its value private and check notebook access rather than printing credentials."
+        },
+        {
+          "id": "u00-connect-with-langchain-failure-2",
+          "prompt": "The free route is temporarily unavailable. What is the best next step?",
+          "options": [
+            "Use a paid model without checking its price.",
+            "Record the failure and retry later or use an instructor-approved route.",
+            "Put the API key in a shared notebook.",
+            "Conclude that LangChain trained the wrong model."
+          ],
+          "answer_index": 1,
+          "explanation": "A service limit is evidence about the route. Keep the key private and do not incur unapproved cost to hide the failure."
+        }
+      ]
+    }
+  ],
+  "program-with-dspy": [
+    {
+      "id": "u00-program-with-dspy-concept",
+      "title": "Checkpoint: explain DSPy",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
+      "questions": [
+        {
+          "id": "u00-program-with-dspy-concept-1",
+          "prompt": "What problem was DSPy designed to help with?",
+          "options": [
+            "Training a new foundation model for every application.",
+            "Replacing model providers so an app no longer needs an API connection.",
+            "Guaranteeing that every model output is correct.",
+            "Building model programs from task descriptions and improving them with examples and a metric."
+          ],
+          "answer_index": 3,
+          "explanation": "DSPy describes tasks and programs, then can use examples and a metric to optimize a program. It does not supply the model or guarantee correctness."
+        },
+        {
+          "id": "u00-program-with-dspy-concept-2",
+          "prompt": "What does the signature in this lesson describe?",
+          "options": [
+            "The OpenRouter API key and its expiration date.",
+            "The task's input and the fields the program asks the model to return.",
+            "A list of model weights to download into Colab.",
+            "A permission for the model to use external tools."
+          ],
+          "answer_index": 1,
+          "explanation": "The signature names the note input and the requested item and issue outputs. It is a task description, not a credential or tool permission."
+        }
+      ]
+    },
+    {
+      "id": "u00-program-with-dspy-evidence",
+      "title": "Checkpoint: inspect the call",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
+      "questions": [
+        {
+          "id": "u00-program-with-dspy-evidence-1",
+          "prompt": "What should you record when using the OpenRouter free route?",
+          "options": [
+            "The secret value, so another student can repeat it.",
+            "Only the answer text, because the route never changes.",
+            "A claim that every request used the same provider model.",
+            "The selected route and the model reported by DSPy, when available."
+          ],
+          "answer_index": 3,
+          "explanation": "The free route can select different models. Record the selected route and the model metadata returned by the call; never record the key."
+        },
+        {
+          "id": "u00-program-with-dspy-evidence-2",
+          "prompt": "Both output fields are nonempty, but the model says the kettle is a toaster. What do the assertions prove?",
+          "options": [
+            "Only that the requested fields are present; you must still compare them with the note.",
+            "That the model understood the note correctly.",
+            "That DSPy optimized the model for this task.",
+            "That the selected provider returned a verified fact."
+          ],
+          "answer_index": 0,
+          "explanation": "The assertions check shape, not meaning. Compare the fields with the source note and correct inaccurate output."
+        }
+      ]
+    },
+    {
+      "id": "u00-program-with-dspy-failure",
+      "title": "Checkpoint: diagnose the failure",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
+      "questions": [
+        {
+          "id": "u00-program-with-dspy-failure-1",
+          "prompt": "DSPy reports that it cannot authenticate. What should you check first?",
+          "options": [
+            "Print the API key to see whether it was copied correctly.",
+            "Put the key in the task note so the model can find it.",
+            "Switch immediately to a paid model.",
+            "Check that `OPENROUTER_API` exists in Colab Secrets and notebook access is enabled."
+          ],
+          "answer_index": 3,
+          "explanation": "Check the secret name and access setting without displaying the value. A new model route does not fix a missing key."
+        },
+        {
+          "id": "u00-program-with-dspy-failure-2",
+          "prompt": "The free route returns a rate-limit error. What is a sound response?",
+          "options": [
+            "Record the error and retry later or use an instructor-approved route.",
+            "Paste the same key into the shared notebook for another student.",
+            "Assume the signature is invalid and rewrite the whole task.",
+            "Choose a paid model without checking its price."
+          ],
+          "answer_index": 0,
+          "explanation": "A rate limit is a property of the service route. Keep the key private and do not incur unapproved costs to work around it."
         }
       ]
     }

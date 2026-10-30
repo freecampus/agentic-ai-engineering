@@ -1,0 +1,364 @@
+---
+title: Connect to Models with LangChain
+description: Call the same OpenRouter model from Lesson 0.1 through LangChain, inspect its response, and compare OpenRouter with direct OpenAI, Gemini, and Cohere connections.
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: launch-agent-lab
+unit_number: 0
+categories:
+- agentic-ai-engineering
+- launch-agent-lab
+order: 20
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/launch-agent-lab/connect-with-langchain.ipynb
+execute:
+  echo: true
+lesson_id: launch-agent-lab.connect-with-langchain
+lesson_order: 20
+---
+
+::: {.lesson-meta}
+- **Level:** Introductory; project-ready Python.
+- **Active time:** 45–60 minutes.
+- **Prerequisites:** Lesson 0.1 and its `OPENROUTER_API` Colab secret.
+- **Outcome:** Make the same model request through LangChain, inspect the returned message, and explain the difference between a model provider and an API gateway.
+- **Evidence:** The selected model route, actual model ID, response text, and a short comparison with Lesson 0.1.
+- **Environment:** Google Colab, internet access, the existing OpenRouter key, and one request to its current free-model route.
+:::
+
+::: {.callout-note}
+## Review draft
+Independent teaching and accessibility review are pending. Use the local review
+notebook; this page does not grant course progress.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What is LangChain, and why did it appear?
+
+LangChain is an open-source framework for building applications that use
+language models. It gives Python developers reusable ways to connect a model
+with prompts, data, and tools. Think of it as application-building software
+around a model. It is not itself a model, a model provider, or automatically an
+agent.
+
+The first LangChain Python package was released on **October 24, 2022**. At the
+time, developers were exploring how to connect language models to their own
+documents, APIs, and structured data, instead of using a model only to generate
+text. LangChain began as an open-source side project to make those parts easier
+to combine into an application. Its creators called this idea
+[*composability*](https://www.langchain.com/blog/announcing-our-10m-seed-round-led-by-benchmark).
+
+LangChain is still relevant when an application needs to connect a model to
+other parts of a system. Its current tutorials cover examples such as:
+
+- finding information in PDFs and answering questions with retrieval-augmented
+  generation (RAG);
+- letting an application query a SQL database with human review;
+- building agents that use tools, or voice-based agents.
+
+These are examples of where LangChain can help, not a rule that every AI
+application needs it. For one prompt and one response, a provider's own SDK or a
+direct API call may be simpler. A framework adds an abstraction and packages
+that the developer must understand and keep compatible. Use it when its shared
+interfaces and integrations make the application easier to build or change.
+
+In Lesson 0.1, Python sent an HTTP request straight to OpenRouter and read the
+JSON response itself. Here, LangChain's OpenRouter connector sends the request
+and returns a LangChain message. The [current LangChain guides](https://docs.langchain.com/oss/python/learn)
+show a wider range of uses; this lesson starts with just one model call so we
+can see exactly what the framework adds.
+
+```text
+Your Python code → LangChain connector → model service → LangChain message
+```
+
+Here, the connector adapts LangChain's shared model interface to OpenRouter.
+This example still makes only one model call: it has no goal loop, tool choice,
+or tool execution, so it is not an agent.
+
+Before running anything, answer these questions:
+
+1. Which parts of Lesson 0.1's request should stay the same for a fair comparison?
+2. What might LangChain return besides the words the model wrote?
+3. If you choose a Gemini model through OpenRouter, which service receives your API request?
+4. What information would you record to identify the model that answered?
+
+## 2. Choose a route to a model
+
+OpenAI makes GPT models. Google makes Gemini models. Cohere makes Command
+models, including Command R. OpenRouter is a gateway that offers one API to
+models from several companies; it is not the model that writes the answer.
+
+| Route | Connector and key | Starting point |
+|---|---|---|
+| OpenRouter (used here) | `ChatOpenRouter` from `langchain-openrouter`; `OPENROUTER_API_KEY` | `ChatOpenRouter(model="<OpenRouter model ID>")` |
+| OpenAI directly | `ChatOpenAI` from `langchain-openai`; `OPENAI_API_KEY` | `ChatOpenAI(model="<OpenAI model ID>")` |
+| Gemini directly | `ChatGoogleGenerativeAI` from `langchain-google-genai`; `GOOGLE_API_KEY` | `ChatGoogleGenerativeAI(model="<Gemini model ID>")` |
+| Cohere Command directly | `ChatCohere` from `langchain-cohere`; `COHERE_API_KEY` | `ChatCohere(model="<Cohere model ID>")` |
+
+For a direct connection, use that provider's connector, key, model ID, and
+current account rules. Model availability, prices, and free allowances can
+change. The required exercise uses your existing OpenRouter secret, so you do
+not need to create another account or choose a paid model.
+
+With any one of these connectors, the basic call has the same shape:
+`message = chat_model.invoke("Your prompt")`. Install only the package for the
+route you choose, and store that route's key in Colab Secrets under the matching
+environment-variable name. The direct-provider examples are optional; you do
+not need all four connectors for this lesson.
+
+## 3. Install the OpenRouter connector
+
+In a Colab code cell, run:
+
+```{.bash}
+%pip install -q langchain-openrouter==0.2.9
+```
+
+This draft pins the current package version for a known starting point. The
+LangChain docs currently mark this connector as **beta**, so its API may
+change. Check the [integration guide](https://docs.langchain.com/oss/python/integrations/chat/openrouter)
+and [package history](https://pypi.org/project/langchain-openrouter/) before a
+new course offering.
+
+## 4. Use the key saved in Colab
+
+In Lesson 0.1, you added the key with the key-shaped **Secrets** icon in
+Colab's left sidebar. Keep it there. The saved secret is named
+`OPENROUTER_API`; the connector expects `OPENROUTER_API_KEY`. The next cell
+reads the saved value and maps it to the connector's expected name. It does not
+print the key. Make sure notebook access is enabled in the Secrets panel.
+
+## 5. Make the same request through LangChain
+
+Use the same prompt and `openrouter/free` route as Lesson 0.1. That route may
+choose a different model each time, so record the model that actually answered.
+
+```python
+try:
+    from google.colab import userdata
+except ModuleNotFoundError:
+    userdata = None
+
+if userdata is None:
+    print("This live model request uses Colab Secrets. Run it in Colab.")
+else:
+    import os
+
+    api_key = userdata.get("OPENROUTER_API")
+    if not api_key:
+        raise RuntimeError(
+            "Add OPENROUTER_API in Colab Secrets and allow notebook access."
+        )
+    os.environ["OPENROUTER_API_KEY"] = api_key
+
+    from langchain_openrouter import ChatOpenRouter
+
+    selected_model = "openrouter/free"
+    chat_model = ChatOpenRouter(
+        model=selected_model,
+        max_tokens=32,
+        max_retries=0,
+    )
+    message = chat_model.invoke("Reply with exactly: Hello, world!")
+
+    actual_model = message.response_metadata.get("model_name")
+    assert isinstance(message.content, str) and message.content.strip()
+    assert isinstance(actual_model, str) and actual_model
+
+    print("Selected route:", selected_model)
+    print("Model that answered:", actual_model)
+    print("Response:", message.content)
+    print("Token usage:", message.usage_metadata)
+    print("LangChain returned a model name and nonempty response.")
+```
+
+`message.content` holds the text. `message.response_metadata` contains details
+such as the model ID and connector name. `message.usage_metadata` may contain
+input and output token counts. Compare this with Lesson 0.1: its direct HTTP
+call returned provider-specific JSON; LangChain returned a message with named
+fields. The response text can differ between calls.
+
+To compare models through OpenRouter, find a current model ID in its
+[catalog](https://openrouter.ai/models), check its availability and price, and
+change only `selected_model`. The required exercise stays on `openrouter/free`;
+another model is optional and may cost money. A direct OpenAI, Gemini, or Cohere
+connection also needs that provider's own connector and key.
+
+## 6. Check your understanding
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-connect-with-langchain-concept",
+  "title": "Checkpoint: identify the layers",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding section if needed.",
+  "questions": [
+    {
+      "id": "u00-connect-with-langchain-concept-1",
+      "prompt": "What does the LangChain connector do here?",
+      "options": [
+        "It trains a model from the student's prompt.",
+        "It provides a common Python interface for sending the request and receiving a model message.",
+        "It turns every model call into an autonomous agent.",
+        "It replaces OpenRouter and supplies the model weights."
+      ],
+      "answer_index": 1,
+      "explanation": "The connector adapts LangChain's model interface to OpenRouter. It does not train or supply the model, and one call is not an agent loop."
+    },
+    {
+      "id": "u00-connect-with-langchain-concept-2",
+      "prompt": "If you select Gemini through OpenRouter, which service receives your API request?",
+      "options": [
+        "OpenRouter, which routes it to an available model provider.",
+        "LangChain's training service.",
+        "Google directly, because the model was made by Google.",
+        "Colab Secrets, which generates the response."
+      ],
+      "answer_index": 0,
+      "explanation": "The model may be made by Google, but the OpenRouter key and connector send the request to OpenRouter."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+### Record the response evidence
+
+Write down the selected route, actual model ID, response, and token usage if
+present. Do not copy the API key into your notes.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-connect-with-langchain-evidence",
+  "title": "Checkpoint: read the returned message",
+  "instructions": "Choose an answer, check the explanation, then select Next. Use your call output when available.",
+  "questions": [
+    {
+      "id": "u00-connect-with-langchain-evidence-1",
+      "prompt": "Which field should you inspect to record the model that answered?",
+      "options": [
+        "`message.content`",
+        "The Colab secret value",
+        "`message.response_metadata`, including `model_name`",
+        "The package install command"
+      ],
+      "answer_index": 2,
+      "explanation": "The text is in `content`; the model name is in response metadata. Never copy the secret value into your notes."
+    },
+    {
+      "id": "u00-connect-with-langchain-evidence-2",
+      "prompt": "Why might two students record different model IDs when they use `openrouter/free`?",
+      "options": [
+        "LangChain renames providers randomly.",
+        "The free route may select different available models.",
+        "Colab changes the model ID when a notebook is copied.",
+        "The invoke method hides the model from OpenRouter."
+      ],
+      "answer_index": 1,
+      "explanation": "The free route can select different available models. Record the returned model name rather than treating the route label as the exact model."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+### Diagnose a failed connection
+
+If the cell says the secret is missing, check that Colab Secrets contains
+`OPENROUTER_API` and notebook access is enabled. If the request is rejected
+after the key loads, check the account's current key status, model availability,
+and usage limits. Do not paste the key into an error report or switch to a paid
+model to make an error disappear.
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u00-connect-with-langchain-failure",
+  "title": "Checkpoint: diagnose the connection",
+  "instructions": "Choose an answer, check the explanation, then select Next. Revisit the setup steps if needed.",
+  "questions": [
+    {
+      "id": "u00-connect-with-langchain-failure-1",
+      "prompt": "The code says no key is available. What should you check first?",
+      "options": [
+        "Put the key into the prompt.",
+        "Replace the model with a paid one.",
+        "Check the `OPENROUTER_API` secret name and notebook access.",
+        "Print every environment variable."
+      ],
+      "answer_index": 2,
+      "explanation": "The code reads the secret by its saved name. Keep its value private and check notebook access rather than printing credentials."
+    },
+    {
+      "id": "u00-connect-with-langchain-failure-2",
+      "prompt": "The free route is temporarily unavailable. What is the best next step?",
+      "options": [
+        "Use a paid model without checking its price.",
+        "Record the failure and retry later or use an instructor-approved route.",
+        "Put the API key in a shared notebook.",
+        "Conclude that LangChain trained the wrong model."
+      ],
+      "answer_index": 1,
+      "explanation": "A service limit is evidence about the route. Keep the key private and do not incur unapproved cost to hide the failure."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## 7. Lab: connect once, inspect, and explain
+
+Use the current free route and existing Colab secret. Preserve this evidence:
+
+| Item | Evidence |
+|---|---|
+| Selected route | `openrouter/free` |
+| Model that answered | `message.response_metadata["model_name"]` |
+| Response text | `message.content` |
+| Token use, if reported | `message.usage_metadata` |
+| What LangChain added | One sentence about its common message interface. |
+
+**Acceptance criteria:** the cell returns nonempty text and a nonempty model
+name; your record distinguishes the route from the model that answered; no
+secret value appears; and you explain that this was one model call, not an
+agent.
+
+::: {.callout-tip collapse="true"}
+## Hint and example result
+The Colab secret is named `OPENROUTER_API`. The connector reads
+`OPENROUTER_API_KEY`, so the code maps the secret without printing it. The
+returned model is in `message.response_metadata["model_name"]`.
+
+A successful run shows a selected route, actual model name, response, and token
+usage when available. The exact model and response can vary.
+:::
+
+## 8. Key points
+
+- LangChain provides interfaces and application building blocks; it does not
+  provide the model itself.
+- OpenRouter is a gateway that can route one API request to models from
+  OpenAI, Google, Cohere, and other providers when they are available.
+- Direct provider connections use that provider's connector, key, and model ID.
+- A LangChain response has content and metadata that Python can inspect.
+- This was one model call. It did not create an agent, use a tool, or prove the
+  answer correct.
+
+### References
+
+Primary references checked 2026-10-30.
+
+- LangChain, [Announcing our $10M seed round](https://www.langchain.com/blog/announcing-our-10m-seed-round-led-by-benchmark) (origin story and first-release date).
+- LangChain, [Learn](https://docs.langchain.com/oss/python/learn) (current example use cases, including semantic search, RAG, SQL, and voice agents).
+- LangChain, [Models](https://docs.langchain.com/oss/python/langchain/models) and
+  [ChatOpenRouter](https://docs.langchain.com/oss/python/integrations/chat/openrouter).
+- LangChain, [ChatOpenAI](https://docs.langchain.com/oss/python/integrations/chat/openai),
+  [Google integrations](https://docs.langchain.com/oss/python/integrations/providers/google),
+  and [ChatCohere](https://docs.langchain.com/oss/python/integrations/chat/cohere).
+- PyPI, [langchain-openrouter release and status](https://pypi.org/project/langchain-openrouter/).
+- OpenRouter, [model catalog](https://openrouter.ai/models) and
+  [pricing](https://openrouter.ai/pricing/). Availability and prices can change.

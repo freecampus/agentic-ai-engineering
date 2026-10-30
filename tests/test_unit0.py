@@ -15,8 +15,8 @@ from freecampus_agents.unit0_quizzes import unit0_quizzes
 UNIT = Path("docs/courses/agentic-ai-engineering/units/launch-agent-lab")
 SLUGS = (
     "meet-a-tiny-agent",
-    "learn-with-evidence",
-    "use-ai-responsibly",
+    "connect-with-langchain",
+    "program-with-dspy",
     "work-in-notebooks",
     "build-local-workspace",
     "challenge",
@@ -188,7 +188,11 @@ def test_unit0_checkpoint_banks_match_canonical_sources(slug):
     assert len(payloads) == expected_bank_count
     assert all(len(quiz["questions"]) == 2 for quiz in payloads)
     assert "@@QUIZ" not in text
-    if slug == "meet-a-tiny-agent":
+    if slug in {
+        "meet-a-tiny-agent",
+        "connect-with-langchain",
+        "program-with-dspy",
+    }:
         assert "notebook_package: true" not in text
     else:
         assert "notebook_package: true" in text
