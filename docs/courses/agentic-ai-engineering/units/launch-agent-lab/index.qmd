@@ -77,7 +77,7 @@ Units 3, 5, and 15.
 |---|---|
 | 1. Introduction to Agentic AI: Models, Agents, and Harnesses | Model-family notes, key vocabulary, returned model ID, and “Hello, world!” response. |
 | 2. Connect to Models with LangChain | Returned model ID, response, token usage when available, and provider-route comparison. |
-| 3. Program a Model Task with DSPy | Task signature, returned fields, selected model route, and a note on when DSPy is useful. |
+| 3. Program a Model Task with DSPy | Task signature, selected model route, model-reported ID when available, extracted fields, and a note on when DSPy is useful. |
 | 4. Work Reliably in Colab and Jupyter | Clean restart-and-run transcript. |
 | 5. Build a Dependable Local Workspace | Environment report and passing cross-environment smoke test. |
 
