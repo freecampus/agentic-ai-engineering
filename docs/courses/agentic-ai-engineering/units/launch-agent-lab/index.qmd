@@ -91,7 +91,7 @@ Repeat the first model request through LangChain, inspect its message and metada
 
 ### 3. Program a Model Task with DSPy
 
-Learn why DSPy was created, describe a task with its inputs and outputs, and make one model request through OpenRouter. See how to switch to a direct OpenAI, Gemini, or Anthropic connection without changing the task signature.
+Explain why DSPy was created, define a task with a signature, and make a model call through OpenRouter while identifying direct-provider alternatives.
 
 ### 4. Work Reliably in Colab and Jupyter
 
