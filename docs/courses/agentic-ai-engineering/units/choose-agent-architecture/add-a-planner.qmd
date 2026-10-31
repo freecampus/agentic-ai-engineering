@@ -492,3 +492,7 @@ After the live run, write down:
 - [Chapter 6 companion notebooks and code](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/tree/main/chapter06).
 
 This lesson introduces the planning idea in our own small example. It does not reproduce the book's code.
+
+**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
+Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
+depth through illustrations and a step-by-step TinyAgent build.

@@ -223,4 +223,8 @@ and received one response. You have not built an agent yet.
 - Current model references: [OpenAI](https://platform.openai.com/docs/models), [Anthropic](https://docs.anthropic.com/en/docs/about-claude/models/overview), [Google Gemini](https://ai.google.dev/gemini-api/docs/models), [DeepSeek](https://api-docs.deepseek.com/api/list-models/), and [Alibaba Cloud Model Studio](https://www.alibabacloud.com/help/en/model-studio/models). Check these catalogs for current names and availability.
 - OpenRouter, [Chat Completions API](https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request), [free models](https://openrouter.ai/collections/free-models), and [pricing and limits](https://openrouter.ai/pricing/).
 
+**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
+Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
+depth through illustrations and a step-by-step TinyAgent build.
+
 Model-family examples and provider references checked 2026-10-27.

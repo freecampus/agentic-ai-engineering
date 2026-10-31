@@ -545,3 +545,7 @@ model call.
 - OpenRouter, [Free Models Router](https://openrouter.ai/openrouter/free). The free route can select different available models over time.
 
 Primary references checked 2026-10-31.
+
+**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
+Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
+depth through illustrations and a step-by-step TinyAgent build.

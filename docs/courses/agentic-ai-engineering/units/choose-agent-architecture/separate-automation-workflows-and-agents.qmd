@@ -317,3 +317,7 @@ building from this small starting point, adding one capability at a time.
 
 - Stuart Russell and Peter Norvig, [*Artificial Intelligence: A Modern Approach*, Chapter 2: “Intelligent Agents”](https://aima.cs.berkeley.edu/).
 - Maarten Grootendorst and Jay Alammar, [*An Illustrated Guide to AI Agents*, Chapter 1](https://learning.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch01.html), and the [pinned Chapter 1 notebook](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/blob/7f56242c4150df4c463210d8e6d9300988057b5e/chapter01/chapter01.ipynb). The class structure and first run follow that chapter's introductory scaffold.
+
+**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
+Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
+depth through illustrations and a step-by-step TinyAgent build.

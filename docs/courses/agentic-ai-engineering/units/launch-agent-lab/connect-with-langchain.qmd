@@ -348,7 +348,7 @@ usage when available. The exact model and response can vary.
 - This was one model call. It did not create an agent, use a tool, or prove the
   answer correct.
 
-### References
+### Sources
 
 Primary references checked 2026-10-30.
 
@@ -362,3 +362,7 @@ Primary references checked 2026-10-30.
 - PyPI, [langchain-openrouter release and status](https://pypi.org/project/langchain-openrouter/).
 - OpenRouter, [model catalog](https://openrouter.ai/models) and
   [pricing](https://openrouter.ai/pricing/). Availability and prices can change.
+
+**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
+Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
+depth through illustrations and a step-by-step TinyAgent build.

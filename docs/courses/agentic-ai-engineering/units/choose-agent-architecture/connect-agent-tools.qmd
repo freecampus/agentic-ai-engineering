@@ -549,3 +549,7 @@ After the live run, write down:
 - Companion materials: [Chapter 5 in the book's GitHub repository](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/tree/main/chapter05).
 - OpenRouter, [Tool and Function Calling](https://openrouter.ai/docs/guides/features/tool-calling) and [Free Models Router](https://openrouter.ai/openrouter/free). These explain the request/result format and current feature routing for free models.
 - **Primary references checked 2026-10-31.**
+
+**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
+Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
+depth through illustrations and a step-by-step TinyAgent build.
