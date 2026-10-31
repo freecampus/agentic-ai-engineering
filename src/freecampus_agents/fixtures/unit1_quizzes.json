@@ -133,130 +133,130 @@
   "model-the-agent-environment-loop": [
     {
       "id": "u01-model-the-agent-environment-loop-concept",
-      "title": "Checkpoint: explain the mechanism",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "title": "Checkpoint: explain the model call",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
       "questions": [
         {
           "id": "u01-model-the-agent-environment-loop-concept-1",
-          "prompt": "Which record may contain information that a partially informed policy must not receive?",
+          "prompt": "What does a chat language model receive in the example?",
           "options": [
-            "The explicitly allowed observation.",
-            "The full pre-state/post-state audit transition.",
-            "The policy own recorded previous action.",
-            "The documented task objective."
+            "A Python function that it executes.",
+            "A list of messages containing a role and text.",
+            "The student's Colab secret as part of the prompt.",
+            "A complete record of every earlier notebook cell."
           ],
           "answer_index": 1,
-          "explanation": "Audit truth is available to the checker, not automatically to the controller. Leaking it makes the evaluated task easier."
+          "explanation": "The request sends messages. Here there is one user message with a role and content. The API key is used for authentication, not placed in the prompt."
         },
         {
           "id": "u01-model-the-agent-environment-loop-concept-2",
-          "prompt": "The grid position is unchanged after a blocked move. What else changes?",
+          "prompt": "How does the chat model produce its text reply?",
           "options": [
-            "The goal disappears.",
-            "The move becomes free because it failed.",
-            "Attempts increase and one cost unit is charged.",
-            "The run automatically counts as successful."
+            "It retrieves an exact stored sentence for every prompt.",
+            "It writes the whole answer in a single indivisible step.",
+            "It generates a sequence of tokens, using each new token as context for the next.",
+            "It runs the Python code inside the user's message."
           ],
           "answer_index": 2,
-          "explanation": "State includes counters as well as position. A failed attempt is still work."
+          "explanation": "The model generates text piece by piece. A token can be a word, part of a word, punctuation, or another text unit."
         },
         {
           "id": "u01-model-the-agent-environment-loop-concept-3",
-          "prompt": "What is the safest meaning of a terminal status?",
+          "prompt": "What happens when FreeCampusAgent.run(task) runs in this lesson?",
           "options": [
-            "The objective was necessarily achieved.",
-            "The observation can no longer be missing.",
-            "The controller may restart its allowance automatically.",
-            "No more actions may run; inspect the separate outcome for success or failure."
+            "The model calls tools until the task is complete.",
+            "The agent sends one message to the LLM and returns its answer.",
+            "The model saves the task as long-term memory.",
+            "The agent creates a plan and checks it against the environment."
           ],
-          "answer_index": 3,
-          "explanation": "Success and exhausted/insufficient-evidence states can all be terminal."
+          "answer_index": 1,
+          "explanation": "The updated _step makes one LLM call. Memory, tools, planning, and environment actions are not active yet."
         }
       ]
     },
     {
       "id": "u01-model-the-agent-environment-loop-evidence",
-      "title": "Checkpoint: interpret the evidence",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "title": "Checkpoint: read the response",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
       "questions": [
         {
           "id": "u01-model-the-agent-environment-loop-evidence-1",
-          "prompt": "The move down has no report, but audit state shows (0,1). What should the controller record?",
+          "prompt": "Where does the plain-text answer appear in the API response?",
           "options": [
-            "Current position unknown; retain any earlier position only as last seen.",
-            "Current position is definitely (0,0).",
-            "Read the audit record and pretend the sensor supplied it.",
-            "Missing observations imply blocked moves."
+            "In choices[0].message.content.",
+            "In the Authorization header.",
+            "In the model's name.",
+            "In the request timeout."
           ],
           "answer_index": 0,
-          "explanation": "The policy lacks current evidence. The audit proves what happened only to the tester."
+          "explanation": "The first choice contains a message, and its content field holds the text reply."
         },
         {
           "id": "u01-model-the-agent-environment-loop-evidence-2",
-          "prompt": "The five-move trace reaches the goal after one collision. What is its total move cost?",
+          "prompt": "What does the returned model ID tell you?",
           "options": [
-            "Four units, counting only successful moves.",
-            "Five units, because every attempted move costs one.",
-            "One unit, counting only the final move.",
-            "Zero units, because this is an offline simulator."
+            "Which model route or model answered this request.",
+            "How many words the learner typed.",
+            "Whether the answer is factually correct.",
+            "Which code cell ran first."
           ],
-          "answer_index": 1,
-          "explanation": "Synthetic cost is part of the explicit contract and counts the blocked attempt too."
+          "answer_index": 0,
+          "explanation": "The route name is what the request asked for; the returned ID records the model reported by the service. It does not prove answer quality."
         },
         {
           "id": "u01-model-the-agent-environment-loop-evidence-3",
-          "prompt": "A read consumes the one-read allowance but yields no text; finish returns insufficient_evidence. What was established?",
+          "prompt": "If a response has no token-use field, what should the learner record?",
           "options": [
-            "The opening hours were verified.",
-            "The missing read never happened.",
-            "The run stopped without evidence-backed success.",
-            "An empty action list is a success certificate."
+            "Zero tokens were used.",
+            "The call did not reach a model.",
+            "Usage was not reported in this response.",
+            "The answer is invalid."
           ],
           "answer_index": 2,
-          "explanation": "The trace distinguishes a consumed attempt from an answered task."
+          "explanation": "A missing field does not establish a value of zero. Record it as not reported."
         }
       ]
     },
     {
       "id": "u01-model-the-agent-environment-loop-failure",
-      "title": "Checkpoint: diagnose the failure",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "title": "Checkpoint: identify the limits",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
       "questions": [
         {
           "id": "u01-model-the-agent-environment-loop-failure-1",
-          "prompt": "A checker accepts a trace with cost zero on the wall collision. What should be repaired?",
+          "prompt": "The model gives a confident but incorrect answer. What can you conclude?",
           "options": [
-            "Change the expected total to four to make it pass.",
-            "Give the controller the hidden wall map without disclosure.",
-            "Ignore failed transitions in the evidence bundle.",
-            "Check per-transition cost and cumulative attempts, not only the final position."
+            "A fluent answer guarantees that the model checked a source.",
+            "The model generated text, but the response still needs an appropriate check.",
+            "The LLM has become an autonomous agent.",
+            "The API token count must be wrong."
           ],
-          "answer_index": 3,
-          "explanation": "The final position can be correct while the cost contract is violated."
+          "answer_index": 1,
+          "explanation": "A language model can generate plausible but incorrect text. A successful request is not a factuality check."
         },
         {
           "id": "u01-model-the-agent-environment-loop-failure-2",
-          "prompt": "An observation for action 3 arrives after action 4. What instrumentation best disambiguates it?",
+          "prompt": "Why does FreeCampusAgent not remember a separate earlier request?",
           "options": [
-            "Action/observation correlation IDs and separate dispatch and receipt ordering.",
-            "Only the final answer length.",
-            "One timestamp with no action identity.",
-            "A stronger instruction to report promptly."
+            "The model has no memory of any text.",
+            "This call sends only the current message; no conversation history is stored or sent.",
+            "Token counts remove the earlier answer.",
+            "The API key expires after each prompt."
           ],
-          "answer_index": 0,
-          "explanation": "Arrival order alone does not identify which action produced the report."
+          "answer_index": 1,
+          "explanation": "The model receives the messages included in each request. This lesson sends one message and adds no persistent memory."
         },
         {
           "id": "u01-model-the-agent-environment-loop-failure-3",
-          "prompt": "Which signature best preserves the policy information boundary?",
+          "prompt": "What does the agent do if the model's answer says 'search the web'?",
           "options": [
-            "update(complete_environment_truth, hidden_goal_map)",
-            "update(previous_belief, allowed_observation)",
-            "update(audit_transition) with undocumented access to after",
-            "update(expected_test_answer)"
+            "It searches automatically because the model requested it.",
+            "It asks the model to plan five more steps.",
+            "Nothing in this lesson executes that suggestion; the answer is returned as text.",
+            "It saves the suggestion in long-term memory."
           ],
-          "answer_index": 1,
-          "explanation": "The update should accept the evidence the controller is entitled to observe, not evaluation-only truth."
+          "answer_index": 2,
+          "explanation": "The lesson does not connect a tool or action executor. A model's text does not run a tool by itself."
         }
       ]
     }

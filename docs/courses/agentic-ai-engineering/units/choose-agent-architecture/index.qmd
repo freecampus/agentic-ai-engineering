@@ -66,7 +66,7 @@ they are not security sandboxes or evidence of live-model reliability.
 | Lesson | Evidence you will preserve |
 |---|---|
 | 1. What Is an Agent? | FreeCampusAgent's class definition, first output, and explanation of its placeholder methods. |
-| 2. Model the Agent–Environment Loop | State-transition trace and diagram. |
+| 2. Connect an LLM to FreeCampusAgent | One inspected model response and a model-backed FreeCampusAgent answer. |
 | 3. Bound Autonomy with Task Contracts | Validated task-contract schema and examples. |
 | 4. Choose the Simplest Adequate Architecture | Architecture decision record with rejection reasons. |
 
@@ -74,9 +74,12 @@ they are not security sandboxes or evidence of live-model reliability.
 
 Introduce FreeCampusAgent's class scaffold, explain its methods, and run its first task without a connected model or tools.
 
-### 2. Model the Agent–Environment Loop
+### 2. Connect an LLM to FreeCampusAgent
 
-Represent observations, internal state, actions, environment transitions, objectives, costs, and terminal states. Trace a small grid-world and a tool-using assistant through the same conceptual loop.
+Explain how an LLM receives a message and generates a response. Inspect the
+returned model ID and token-use fields, then connect one model call to
+FreeCampusAgent. This first version makes one call and does not use memory,
+tools, or planning.
 
 ### 3. Bound Autonomy with Task Contracts
 

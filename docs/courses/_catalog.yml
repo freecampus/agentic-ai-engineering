@@ -118,15 +118,15 @@ courses:
               Introduce the FreeCampusAgent class scaffold, explain its methods, and run its first task.
             evidence: class definition, returned message, and explanation of the placeholder behavior.
           - id: choose-agent-architecture.model-the-agent-environment-loop
-            title: Model the Agent–Environment Loop
+            title: Connect an LLM to FreeCampusAgent
             order: 20
             status: planned
             path: courses/agentic-ai-engineering/units/choose-agent-architecture/model-the-agent-environment-loop.qmd
             summary:
-              Represent observations, internal state, actions, environment transitions, objectives,
-              costs, and terminal states. Trace a small grid-world and a tool-using assistant through
-              the same conceptual loop.
-            evidence: state-transition trace and diagram.
+              Explain token-by-token text generation, inspect one OpenRouter chat response, and connect
+              a small LLM wrapper to FreeCampusAgent for one model-backed answer.
+            evidence: LLMResponse with the returned model and token-use fields, plus a model-backed
+              FreeCampusAgent answer.
           - id: choose-agent-architecture.bound-autonomy-with-task-contracts
             title: Bound Autonomy with Task Contracts
             order: 30

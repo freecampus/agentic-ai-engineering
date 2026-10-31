@@ -310,8 +310,8 @@ Write three short sentences in your learning notes:
 returns a placeholder message. The model, memory, tools, planning, and real
 actions have not been added yet.
 
-The next lesson looks more closely at the agent–environment loop. We will keep
-building from this small starting point.
+The next lesson connects a language model to FreeCampusAgent. We will keep
+building from this small starting point, adding one capability at a time.
 
 ### Sources
 

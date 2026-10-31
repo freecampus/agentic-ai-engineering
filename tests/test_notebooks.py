@@ -279,7 +279,7 @@ def test_authored_worked_examples_and_hidden_solutions_execute_separately(
                 "Received: What is 2 + 2?"
             ),
             "model-the-agent-environment-loop": (
-                "Transition and observation checks passed"
+                "This live request uses Colab Secrets"
             ),
             "bound-autonomy-with-task-contracts": (
                 "Contract authorization checks passed"
