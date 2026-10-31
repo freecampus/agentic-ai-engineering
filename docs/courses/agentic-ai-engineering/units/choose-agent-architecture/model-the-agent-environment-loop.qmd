@@ -538,7 +538,7 @@ model call.
 
 ### Sources
 
-- Maarten Grootendorst and Jay Alammar, [*An Illustrated Guide to AI Agents*, Chapter 2: “Large Language Models”](https://learning.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch02.html). This lesson follows the chapter's progression from tokens and chat requests to an LLM wrapper and a single model-backed TinyAgent step, with original examples and course code. O’Reilly access may be required.
+- Maarten Grootendorst and Jay Alammar, *An Illustrated Guide to AI Agents*, Chapter 2: “Large Language Models.” This lesson follows the chapter's progression from tokens and chat requests to an LLM wrapper and a single model-backed TinyAgent step, with original examples and course code.
 - [Official Chapter 2 code and notebook](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/tree/main/chapter02).
 - OpenRouter, [Create a chat completion](https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request). The request uses the documented chat-completions endpoint and response shape.
 - OpenRouter, [Quickstart](https://openrouter.ai/docs/quickstart). The lesson reuses the Colab secret from Unit 0 and the OpenAI-compatible API format.
@@ -546,6 +546,4 @@ model call.
 
 Primary references checked 2026-10-31.
 
-**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
-Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
-depth through illustrations and a step-by-step TinyAgent build.
+For deeper study, consult the books and supplementary resources listed in this lesson’s Sources section. They offer further explanations, examples, and code.

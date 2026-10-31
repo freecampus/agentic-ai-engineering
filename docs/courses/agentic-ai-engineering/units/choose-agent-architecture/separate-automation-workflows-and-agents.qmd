@@ -56,7 +56,14 @@ The figure below shows how these parts fit together.
 
 ![Figure 1-1. An agent receives percepts from its environment through sensors and sends actions back through actuators.](images/agent-environment-sensors-actuators.png){.lesson-visual}
 
-*Source: Reproduced from Figure 1-1 in Maarten Grootendorst and Jay Alammar, [*An Illustrated Guide to AI Agents*, Chapter 1](https://learning.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch01.html). The agent definition is credited to [Russell and Norvig, *Artificial Intelligence: A Modern Approach*, Chapter 2](https://aima.cs.berkeley.edu/).*
+*Source: Reproduced from Figure 1-1 in Maarten Grootendorst and Jay Alammar, *An Illustrated Guide to AI Agents*, Chapter 1. The agent definition is credited to [Russell and Norvig, *Artificial Intelligence: A Modern Approach*, Chapter 2](https://aima.cs.berkeley.edu/).*
+
+A fixed workflow follows a path set in code. In an LLM-based agent, the model
+may help choose what to do next as the program receives information, such as
+whether to request a tool. A system can combine both: keep predictable steps
+fixed and use the model where a choice is useful. Anthropic describes this
+distinction and recommends starting with the simplest design that fits the
+task ([“Building effective agents”](https://www.anthropic.com/research/building-effective-agents)).
 
 We will use this picture to make sense of a small Python class, then run the
 class and see which parts it has—and which parts it does not have yet.
@@ -319,8 +326,9 @@ building from this small starting point, adding one capability at a time.
 Primary references checked 2026-10-31.
 
 - Stuart Russell and Peter Norvig, [*Artificial Intelligence: A Modern Approach*, Chapter 2: “Intelligent Agents”](https://aima.cs.berkeley.edu/).
-- Maarten Grootendorst and Jay Alammar, [*An Illustrated Guide to AI Agents*, Chapter 1](https://learning.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch01.html), and the [pinned Chapter 1 notebook](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/blob/7f56242c4150df4c463210d8e6d9300988057b5e/chapter01/chapter01.ipynb). The class structure and first run follow that chapter's introductory scaffold.
+- Maarten Grootendorst and Jay Alammar, *An Illustrated Guide to AI Agents*, Chapter 1, and the [pinned Chapter 1 notebook](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/blob/7f56242c4150df4c463210d8e6d9300988057b5e/chapter01/chapter01.ipynb). The class structure and first run follow that chapter's introductory scaffold.
+- Anthropic, [“Building effective agents”](https://www.anthropic.com/research/building-effective-agents), for the distinction between predefined workflows and agents that direct their next steps.
+- Patrick A. Andrei, *Agentic AI Systems: The Complete Guide for Building Production AI Agents*,
+  Chapter 10, “Workflows vs Agents,” for a complementary production-focused discussion.
 
-**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
-Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
-depth through illustrations and a step-by-step TinyAgent build.
+For deeper study, consult the books and supplementary resources listed in this lesson’s Sources section. They offer further explanations, examples, and code.

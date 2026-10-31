@@ -83,6 +83,11 @@ design, not an app or company.
 
 *Simplified redraw adapted from Figure 1 in Vaswani et al. (2017), [“Attention Is All You Need”](https://arxiv.org/abs/1706.03762).*
 
+This figure shows the encoder–decoder design introduced in that paper. It is
+one important Transformer design, not a blueprint for every LLM. For example,
+GPT-3 is described as an autoregressive language model that generates text from
+the tokens that came before it ([Brown et al., 2020](https://arxiv.org/abs/2005.14165)).
+
 **GPT** stands for *Generative Pre-trained Transformer*. GPT is OpenAI's model
 family and one example of an LLM family. It is not another name for all LLMs.
 Model families can differ, so check the documentation for the model you use.
@@ -219,12 +224,11 @@ and received one response. You have not built an agent yet.
 
 ### Sources
 
-- Maarten Grootendorst and Jay Alammar, [*An Illustrated Guide to AI Agents*, Chapter 1](https://learning.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch01.html) introduces LLM-backed agents; [Chapter 2](https://learning.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch02.html) introduces LLM and Transformer foundations. This lesson follows that progression and uses original examples. O’Reilly access may be required.
+- Maarten Grootendorst and Jay Alammar, *An Illustrated Guide to AI Agents*, Chapters 1–2. Chapter 1 introduces LLM-backed agents; Chapter 2 introduces LLM and Transformer foundations. This lesson follows that progression and uses original examples.
+- Tom B. Brown et al., [“Language Models are Few-Shot Learners”](https://arxiv.org/abs/2005.14165), for the GPT-3 autoregressive language-model example.
 - Current model references: [OpenAI](https://platform.openai.com/docs/models), [Anthropic](https://docs.anthropic.com/en/docs/about-claude/models/overview), [Google Gemini](https://ai.google.dev/gemini-api/docs/models), [DeepSeek](https://api-docs.deepseek.com/api/list-models/), and [Alibaba Cloud Model Studio](https://www.alibabacloud.com/help/en/model-studio/models). Check these catalogs for current names and availability.
 - OpenRouter, [Chat Completions API](https://openrouter.ai/docs/api/api-reference/chat/send-chat-completion-request), [free models](https://openrouter.ai/collections/free-models), and [pricing and limits](https://openrouter.ai/pricing/).
 
-**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
-Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
-depth through illustrations and a step-by-step TinyAgent build.
+For deeper study, consult the books and supplementary resources listed in this lesson’s Sources section. They offer further explanations, examples, and code.
 
 Model-family examples and provider references checked 2026-10-27.
