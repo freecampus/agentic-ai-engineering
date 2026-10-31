@@ -123,28 +123,29 @@ courses:
             status: planned
             path: courses/agentic-ai-engineering/units/choose-agent-architecture/model-the-agent-environment-loop.qmd
             summary:
-              Explain token-by-token text generation, inspect one OpenRouter chat response, and connect
-              a small LLM wrapper to FreeCampusAgent for one model-backed answer.
-            evidence: LLMResponse with the returned model and token-use fields, plus a model-backed
-              FreeCampusAgent answer.
+              Explain how an LLM receives a message and generates a response. Inspect the returned
+              model ID and token-use fields, then connect one model call to FreeCampusAgent. This
+              first version makes one call and does not use memory, tools, or planning.
+            evidence: One inspected model response and a model-backed FreeCampusAgent answer.
           - id: choose-agent-architecture.add-conversation-memory
             title: Give FreeCampusAgent Conversation Memory
             order: 30
             status: planned
             path: courses/agentic-ai-engineering/units/choose-agent-architecture/add-conversation-memory.qmd
             summary:
-              Explain that a model request receives only the messages sent with it, then add
-              short-term conversation memory to FreeCampusAgent and inspect a follow-up request.
-            evidence: message history before and after two turns, plus a model-backed follow-up.
+              Explain that each model request receives only the messages sent with it. Add a small
+              conversation-memory object to FreeCampusAgent and inspect a follow-up request that
+              includes earlier messages.
+            evidence: Message history before and after two turns, plus a model-backed follow-up.
           - id: choose-agent-architecture.connect-agent-tools
             title: Give FreeCampusAgent a Tool
             order: 40
             status: planned
             path: courses/agentic-ai-engineering/units/choose-agent-architecture/connect-agent-tools.qmd
             summary:
-              Give FreeCampusAgent one bounded tool and follow the request, execution, and result
-              through the class.
-            evidence: a tool call, its Python result, and the reply that uses that result.
+              Connect one read-only course lookup to FreeCampusAgent. Follow the model's structured
+              request, the Python function's result, and the final answer.
+            evidence: A tool call, its Python result, and the reply that uses that result.
           - id: choose-agent-architecture.add-a-planner
             title: Add a Planner to FreeCampusAgent
             order: 50
@@ -153,7 +154,7 @@ courses:
             summary:
               Add a simple planner that turns a task into ordered steps, then inspect how
               FreeCampusAgent handles those steps.
-            evidence: a short plan, step-by-step execution record, and explanation of the limits.
+            evidence: A short plan, step-by-step execution record, and explanation of the limits.
         challenge:
           id: choose-agent-architecture.challenge
           title: De-Agentify an Overbuilt System
