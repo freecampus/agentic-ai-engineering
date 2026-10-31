@@ -12,6 +12,7 @@ categories:
 - choose-agent-architecture
 order: 10
 colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-architecture/separate-automation-workflows-and-agents.ipynb
+notebook_package: true
 execute:
   echo: true
 lesson_id: choose-agent-architecture.separate-automation-workflows-and-agents
@@ -188,12 +189,12 @@ starting point. We will add and study capabilities as the course continues.
       "id": "u01-separate-automation-workflows-and-agents-concept-3",
       "prompt": "What do the llm, memory, tools, and planner attributes mean right now?",
       "options": [
-        "They are empty placeholders for capabilities that are not connected yet.",
+        "They are names for parts of the environment.",
         "They are four tools that run automatically.",
         "They contain the student's last four questions.",
-        "They are names for parts of the environment."
+        "They are empty placeholders for capabilities that are not connected yet."
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "Each attribute is None. The names mark places where later lessons can add capabilities."
     }
   ]
@@ -225,11 +226,11 @@ starting point. We will add and study capabilities as the course continues.
       "prompt": "Which method creates the Received: ... message?",
       "options": [
         "__init__",
-        "_step",
+        "run",
         "_execute_action",
-        "run"
+        "_step"
       ],
-      "answer_index": 1,
+      "answer_index": 3,
       "explanation": "_step contains the placeholder return statement that builds this message."
     },
     {
@@ -260,12 +261,12 @@ starting point. We will add and study capabilities as the course continues.
       "id": "u01-separate-automation-workflows-and-agents-failure-1",
       "prompt": "Why does this run print an acknowledgement instead of 4?",
       "options": [
-        "There is no model connected, and _step only returns a placeholder message.",
+        "The task must be stored in memory first.",
         "The task is too short for Python.",
         "The class has no run method.",
-        "The task must be stored in memory first."
+        "There is no model connected, and _step only returns a placeholder message."
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "The class has no connected language model or decision process yet. Its current _step method returns a fixed acknowledgement."
     },
     {

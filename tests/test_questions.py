@@ -106,7 +106,7 @@ def test_shared_renderer_keeps_keyboard_navigation_and_no_auto_advance() -> None
         "Next question",
         "Previous",
         "Reset",
-        "scripts.find",
+        "[...scripts].reverse().find",
     ]:
         assert token in renderer
     change_handler = renderer.split('addEventListener("change"', 1)[1].split("});", 1)[

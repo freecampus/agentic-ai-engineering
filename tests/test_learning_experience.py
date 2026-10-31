@@ -49,7 +49,7 @@ def test_catalog_records_the_exact_planned_course() -> None:
     assert course["status"] == "in-development"
     units = course["units"]
     assert [u["number"] for u in units] == list(range(25))
-    assert [len(u["lessons"]) for u in units] == [5] + [4] * 24
+    assert [len(u["lessons"]) for u in units] == [5, 5] + [4] * 23
     assert course["planned_unit_count"] == len(units) == 25
     assert (
         course["planned_lesson_count"] == sum(len(u["lessons"]) for u in units) == 102

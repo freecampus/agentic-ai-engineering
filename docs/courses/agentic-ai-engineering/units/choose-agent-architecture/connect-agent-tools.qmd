@@ -409,12 +409,12 @@ After the live run, write down:
       "id": "u01-connect-agent-tools-concept-1",
       "prompt": "What does a tool add to FreeCampusAgent?",
       "options": [
-        "A Python capability the program can run when the model requests it.",
+        "A way to make the model execute Python by itself.",
         "A new set of learned parameters inside the model.",
         "A guarantee that the model's answer is correct.",
-        "A way to make the model execute Python by itself."
+        "A Python capability the program can run when the model requests it."
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "The tool is a function provided by the program. The model can request it, but FreeCampusAgent's Python code runs it."
     },
     {
@@ -506,11 +506,11 @@ After the live run, write down:
       "prompt": "What can lookup_unit1_lesson change?",
       "options": [
         "It can update the public course website.",
-        "It can only return a lesson record from the local dictionary.",
         "It can browse any website the model names.",
+        "It can only return a lesson record from the local dictionary.",
         "It can edit files in the learner's Drive."
       ],
-      "answer_index": 1,
+      "answer_index": 2,
       "explanation": "This lesson's function reads a fixed Python dictionary and returns a record. It has no write or network action."
     },
     {

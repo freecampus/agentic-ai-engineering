@@ -363,11 +363,11 @@ Before opening a checkpoint, explain this path in your own words:
       "prompt": "What does a chat language model receive in the example?",
       "options": [
         "A Python function that it executes.",
-        "A list of messages containing a role and text.",
+        "A complete record of every earlier notebook cell.",
         "The student's Colab secret as part of the prompt.",
-        "A complete record of every earlier notebook cell."
+        "A list of messages containing a role and text."
       ],
-      "answer_index": 1,
+      "answer_index": 3,
       "explanation": "The request sends messages. Here there is one user message with a role and content. The API key is used for authentication, not placed in the prompt."
     },
     {
@@ -426,12 +426,12 @@ the value as “not reported” when it is absent.
       "id": "u01-model-the-agent-environment-loop-evidence-1",
       "prompt": "Where does the plain-text answer appear in the API response?",
       "options": [
-        "In choices[0].message.content.",
+        "In the request timeout.",
         "In the Authorization header.",
         "In the model's name.",
-        "In the request timeout."
+        "In choices[0].message.content."
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "The first choice contains a message, and its content field holds the text reply."
     },
     {
@@ -481,11 +481,11 @@ earlier call, or that the agent can act in an environment.
       "prompt": "The model gives a confident but incorrect answer. What can you conclude?",
       "options": [
         "A fluent answer guarantees that the model checked a source.",
-        "The model generated text, but the response still needs an appropriate check.",
         "The LLM has become an autonomous agent.",
+        "The model generated text, but the response still needs an appropriate check.",
         "The API token count must be wrong."
       ],
-      "answer_index": 1,
+      "answer_index": 2,
       "explanation": "A language model can generate plausible but incorrect text. A successful request is not a factuality check."
     },
     {

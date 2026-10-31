@@ -314,12 +314,12 @@ Explain this path in your own words:
       "id": "u01-add-conversation-memory-concept-3",
       "prompt": "What does this lesson add to FreeCampusAgent?",
       "options": [
-        "Conversation messages passed back to the LLM on later turns.",
+        "Memory that survives a Colab runtime reset.",
         "A web-search tool that runs automatically.",
         "A plan that the agent executes without checking.",
-        "Memory that survives a Colab runtime reset."
+        "Conversation messages passed back to the LLM on later turns."
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "This lesson adds short-term conversation history in the current Python process. Tools, planning, and persistent storage are not added here."
     }
   ]
@@ -352,11 +352,11 @@ Run the two-turn example and answer these questions in your notes:
       "prompt": "What is in memory after the first turn finishes?",
       "options": [
         "Only the model ID.",
-        "One user message followed by one assistant message.",
+        "Only the API key.",
         "The full notebook source code.",
-        "Only the API key."
+        "One user message followed by one assistant message."
       ],
-      "answer_index": 1,
+      "answer_index": 3,
       "explanation": "run adds the user task before the model call and the assistant reply after it."
     },
     {

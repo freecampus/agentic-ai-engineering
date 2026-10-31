@@ -365,11 +365,11 @@ After the live run, write down:
       "prompt": "Who performs the course lookup for each planned step?",
       "options": [
         "The model, without the Python program.",
-        "The registered Python function called by FreeCampusAgent.",
+        "The planner's text response by itself.",
         "The Colab Secrets panel.",
-        "The planner's text response by itself."
+        "The registered Python function called by FreeCampusAgent."
       ],
-      "answer_index": 1,
+      "answer_index": 3,
       "explanation": "The model proposes lesson numbers. FreeCampusAgent calls the Python lookup function for each approved number."
     },
     {
@@ -400,12 +400,12 @@ After the live run, write down:
       "id": "u01-add-a-planner-evidence-1",
       "prompt": "Where can you see the order suggested by the model?",
       "options": [
-        "In freecampus_agent.last_plan.",
+        "In the Python function's source code.",
         "In the API key value.",
         "In the course website sidebar only.",
-        "In the Python function's source code."
+        "In freecampus_agent.last_plan."
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "The agent stores the validated order in last_plan for inspection."
     },
     {
@@ -487,6 +487,8 @@ After the live run, write down:
 {{< include ../../../../_includes/ojs-quiz.qmd >}}
 
 ## Sources
+
+Primary references checked 2026-10-31.
 
 - [Chapter 6: Planning and Reflection, *An Illustrated Guide to AI Agents*](https://www.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch06.html).
 - [Chapter 6 companion notebooks and code](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/tree/main/chapter06).

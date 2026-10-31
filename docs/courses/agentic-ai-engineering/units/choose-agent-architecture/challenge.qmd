@@ -327,12 +327,12 @@ def qualify(candidate):
       "id": "u01-challenge-evidence-2",
       "prompt": "A note-driven private read creates a deny event and zero read events. What does that show?",
       "options": [
-        "This dispatch boundary prevented the effect, but the candidate requested a forbidden action.",
+        "The private data was read but not logged.",
         "Arbitrary Python is now proven sandboxed.",
         "No policy violation was attempted.",
-        "The private data was read but not logged."
+        "This dispatch boundary prevented the effect, but the candidate requested a forbidden action."
       ],
-      "answer_index": 0,
+      "answer_index": 3,
       "explanation": "Prevented effects and bad requests are distinct evidence. The toy runtime proves only its own path."
     },
     {
