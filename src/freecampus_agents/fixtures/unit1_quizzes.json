@@ -522,5 +522,267 @@
         }
       ]
     }
+  ],
+  "connect-agent-tools": [
+    {
+      "id": "u01-connect-agent-tools-concept",
+      "title": "Checkpoint: explain a tool",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
+      "questions": [
+        {
+          "id": "u01-connect-agent-tools-concept-1",
+          "prompt": "What does a tool add to FreeCampusAgent?",
+          "options": [
+            "A Python capability the program can run when the model requests it.",
+            "A new set of learned parameters inside the model.",
+            "A guarantee that the model's answer is correct.",
+            "A way to make the model execute Python by itself."
+          ],
+          "answer_index": 0,
+          "explanation": "The tool is a function provided by the program. The model can request it, but FreeCampusAgent's Python code runs it."
+        },
+        {
+          "id": "u01-connect-agent-tools-concept-2",
+          "prompt": "Who executes lookup_unit1_lesson?",
+          "options": [
+            "The language model's hidden Python runtime.",
+            "OpenRouter, without receiving any tool description.",
+            "FreeCampusAgent's Python code, after checking the requested tool name.",
+            "The Colab Secrets panel."
+          ],
+          "answer_index": 2,
+          "explanation": "The model returns a structured request. The notebook code checks its name and invokes the registered Python function."
+        },
+        {
+          "id": "u01-connect-agent-tools-concept-3",
+          "prompt": "Why does the tool result include the model's tool_call_id?",
+          "options": [
+            "To connect the returned result with the request it answers.",
+            "To turn the result into a permanent database record.",
+            "To prove that the model selected a correct answer.",
+            "To grant the model permission to run any Python code."
+          ],
+          "answer_index": 0,
+          "explanation": "The matching ID tells the chat API which tool request this result belongs to. It does not verify the final answer."
+        }
+      ]
+    },
+    {
+      "id": "u01-connect-agent-tools-evidence",
+      "title": "Checkpoint: follow the tool cycle",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
+      "questions": [
+        {
+          "id": "u01-connect-agent-tools-evidence-1",
+          "prompt": "What does TOOL_DEFINITIONS tell the model?",
+          "options": [
+            "The name, purpose, and input format of an available tool.",
+            "The full source code for every Python function in Colab.",
+            "The answer it must return, regardless of the tool result.",
+            "The learner's saved API key."
+          ],
+          "answer_index": 0,
+          "explanation": "The schema describes the tool's name and arguments. The Python function and its data stay in the program."
+        },
+        {
+          "id": "u01-connect-agent-tools-evidence-2",
+          "prompt": "What happens after the model returns a tool request?",
+          "options": [
+            "The model immediately runs the Python function itself.",
+            "FreeCampusAgent checks the name and Python runs the registered function.",
+            "The request is stored as long-term memory without execution.",
+            "The planner turns it into five new tools."
+          ],
+          "answer_index": 1,
+          "explanation": "The local Python program receives the request, finds the matching registered function, and runs it."
+        },
+        {
+          "id": "u01-connect-agent-tools-evidence-3",
+          "prompt": "What does the second model call receive?",
+          "options": [
+            "The original conversation, the tool request, and the Python result.",
+            "Only the API key and the tool's Python source code.",
+            "The model's training data and hidden reasoning.",
+            "No information from the first model call."
+          ],
+          "answer_index": 0,
+          "explanation": "The program keeps the conversation, appends the tool request and its result, then sends that history for the final answer."
+        }
+      ]
+    },
+    {
+      "id": "u01-connect-agent-tools-limits",
+      "title": "Checkpoint: understand this tool's limits",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
+      "questions": [
+        {
+          "id": "u01-connect-agent-tools-limits-1",
+          "prompt": "What can lookup_unit1_lesson change?",
+          "options": [
+            "It can update the public course website.",
+            "It can only return a lesson record from the local dictionary.",
+            "It can browse any website the model names.",
+            "It can edit files in the learner's Drive."
+          ],
+          "answer_index": 1,
+          "explanation": "This lesson's function reads a fixed Python dictionary and returns a record. It has no write or network action."
+        },
+        {
+          "id": "u01-connect-agent-tools-limits-2",
+          "prompt": "Does a valid tool result guarantee a correct final answer?",
+          "options": [
+            "Yes. The model must copy every result exactly.",
+            "Yes, because the schema checks the final reply.",
+            "No. Check the final text against the Python result.",
+            "No. A model can never use a tool result."
+          ],
+          "answer_index": 2,
+          "explanation": "The Python result is inspectable data. The final text is still generated by the model and should be checked."
+        },
+        {
+          "id": "u01-connect-agent-tools-limits-3",
+          "prompt": "What does this lesson add to FreeCampusAgent?",
+          "options": [
+            "One read-only lookup function and the code to process its request and result.",
+            "A planner that automatically breaks every task into steps.",
+            "Web search and permission to edit local files.",
+            "Memory that persists after the Colab runtime ends."
+          ],
+          "answer_index": 0,
+          "explanation": "This lesson adds one bounded course lookup. Planning, web access, file editing, and permanent memory are not part of it."
+        }
+      ]
+    }
+  ],
+  "add-a-planner": [
+    {
+      "id": "u01-add-a-planner-concept",
+      "title": "Checkpoint: explain a plan",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
+      "questions": [
+        {
+          "id": "u01-add-a-planner-concept-1",
+          "prompt": "What does the planner do in this lesson?",
+          "options": [
+            "It proposes an order for the allowed lesson lookups.",
+            "It runs Python functions inside the language model.",
+            "It guarantees that every answer is correct.",
+            "It saves the notebook after the runtime ends."
+          ],
+          "answer_index": 0,
+          "explanation": "The planner asks the model for an ordered list. Python checks the list before using it."
+        },
+        {
+          "id": "u01-add-a-planner-concept-2",
+          "prompt": "Who performs the course lookup for each planned step?",
+          "options": [
+            "The model, without the Python program.",
+            "The registered Python function called by FreeCampusAgent.",
+            "The Colab Secrets panel.",
+            "The planner's text response by itself."
+          ],
+          "answer_index": 1,
+          "explanation": "The model proposes lesson numbers. FreeCampusAgent calls the Python lookup function for each approved number."
+        },
+        {
+          "id": "u01-add-a-planner-concept-3",
+          "prompt": "Why does the code check the plan before running a lookup?",
+          "options": [
+            "To confirm it contains only the allowed lesson numbers.",
+            "To teach the model new course material.",
+            "To make the plan permanent.",
+            "To avoid using Python."
+          ],
+          "answer_index": 0,
+          "explanation": "The check rejects malformed plans and numbers outside the three allowed lessons before a tool runs."
+        }
+      ]
+    },
+    {
+      "id": "u01-add-a-planner-evidence",
+      "title": "Checkpoint: inspect the plan and record",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
+      "questions": [
+        {
+          "id": "u01-add-a-planner-evidence-1",
+          "prompt": "Where can you see the order suggested by the model?",
+          "options": [
+            "In freecampus_agent.last_plan.",
+            "In the API key value.",
+            "In the course website sidebar only.",
+            "In the Python function's source code."
+          ],
+          "answer_index": 0,
+          "explanation": "The agent stores the validated order in last_plan for inspection."
+        },
+        {
+          "id": "u01-add-a-planner-evidence-2",
+          "prompt": "What does execution_record show?",
+          "options": [
+            "The Python lookup called for each step and the returned lesson data.",
+            "Every thought generated by the model.",
+            "A guarantee that the lesson content is up to date.",
+            "The API key and account balance."
+          ],
+          "answer_index": 0,
+          "explanation": "Each record entry includes the step number, lesson number, and lookup result."
+        },
+        {
+          "id": "u01-add-a-planner-evidence-3",
+          "prompt": "What happens if the model returns an invalid plan?",
+          "options": [
+            "The code raises an error before running a lookup.",
+            "Python silently changes it to lessons 2, 3, and 4.",
+            "The model gets permission to search the web.",
+            "The notebook makes up missing lesson details."
+          ],
+          "answer_index": 0,
+          "explanation": "The planner checks the JSON and the allowed lesson numbers before FreeCampusAgent uses the plan."
+        }
+      ]
+    },
+    {
+      "id": "u01-add-a-planner-limits",
+      "title": "Checkpoint: understand the limits",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
+      "questions": [
+        {
+          "id": "u01-add-a-planner-limits-1",
+          "prompt": "Does a valid plan prove that the order is the best one?",
+          "options": [
+            "Yes, the validation checks teaching quality.",
+            "No, it checks only the format and allowed lesson numbers.",
+            "Yes, because Python ran the lookups.",
+            "No, because the model did not answer in prose."
+          ],
+          "answer_index": 1,
+          "explanation": "The validation enforces the allowed steps. It does not judge whether their order is ideal."
+        },
+        {
+          "id": "u01-add-a-planner-limits-2",
+          "prompt": "What does this first planner do when a lookup fails?",
+          "options": [
+            "It automatically reflects and creates a new plan.",
+            "It stops with the error; retries and replanning are not added here.",
+            "It changes files to repair the lookup.",
+            "It searches the web for a replacement."
+          ],
+          "answer_index": 1,
+          "explanation": "This first version processes one plan. It does not include retries, reflection, or replanning."
+        },
+        {
+          "id": "u01-add-a-planner-limits-3",
+          "prompt": "Which statement best describes the plan and the actions?",
+          "options": [
+            "The model proposes lesson numbers; Python checks them and runs the lookups.",
+            "The model executes Python and verifies its own results.",
+            "The plan itself contains the lesson data, so no lookup is needed.",
+            "Python chooses a new lesson number whenever it wants."
+          ],
+          "answer_index": 0,
+          "explanation": "The planner supplies a proposal. The program validates the proposal and performs the registered read-only actions."
+        }
+      ]
+    }
   ]
 }

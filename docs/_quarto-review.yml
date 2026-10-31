@@ -23,5 +23,7 @@ website:
             - courses/agentic-ai-engineering/units/choose-agent-architecture/separate-automation-workflows-and-agents.qmd
             - courses/agentic-ai-engineering/units/choose-agent-architecture/model-the-agent-environment-loop.qmd
             - courses/agentic-ai-engineering/units/choose-agent-architecture/add-conversation-memory.qmd
+            - courses/agentic-ai-engineering/units/choose-agent-architecture/connect-agent-tools.qmd
+            - courses/agentic-ai-engineering/units/choose-agent-architecture/add-a-planner.qmd
             - href: courses/agentic-ai-engineering/units/choose-agent-architecture/challenge.qmd
               text: Unit Challenge

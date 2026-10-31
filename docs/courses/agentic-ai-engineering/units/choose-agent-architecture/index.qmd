@@ -12,7 +12,7 @@ colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-arch
 
 ::: {.callout-important}
 ## Curriculum preview—not a released unit
-Lessons 1–3 and the challenge have review drafts; Lessons 4–5 are still planned.
+Lessons 1–5 and the challenge have review drafts.
 All remain planned for publication until independent teaching, execution, and
 accessibility gates pass.
 This overview is available for orientation; it does not award course progress.
@@ -85,7 +85,7 @@ Explain that each model request receives only the messages sent with it. Add a s
 
 ### 4. Give FreeCampusAgent a Tool
 
-Connect one bounded tool to FreeCampusAgent. Follow how the model requests the tool, how Python runs it, and how its result returns to the model.
+Connect one read-only course lookup to FreeCampusAgent. Follow the model's structured request, the Python function's result, and the final answer.
 
 ### 5. Add a Planner to FreeCampusAgent
 

@@ -156,7 +156,7 @@ UNIT1_DRAFTS = sorted(path for path in UNIT1.glob("*.qmd") if path.stem != "inde
 
 def test_draft_exports_are_explicit_and_never_target_the_public_site(tmp_path):
     assert len(UNIT0_DRAFTS) == 6
-    assert len(UNIT1_DRAFTS) == 4
+    assert len(UNIT1_DRAFTS) == 6
     assert not set(UNIT1_DRAFTS) & set(builder.public_qmd_files())
     assert set(UNIT1_DRAFTS) <= set(builder.public_qmd_files(include_drafts=True))
     assert not set(UNIT0_DRAFTS) & set(builder.public_qmd_files())
@@ -164,7 +164,7 @@ def test_draft_exports_are_explicit_and_never_target_the_public_site(tmp_path):
     with pytest.raises(ValueError, match="separate review"):
         builder.build_notebooks(include_drafts=True)
     written = builder.build_notebooks(output_root=tmp_path, include_drafts=True)
-    assert len(written) == 41
+    assert len(written) == 42
     for path in written:
         nbformat.validate(nbformat.read(path, as_version=4))
 
@@ -284,6 +284,8 @@ def test_authored_worked_examples_and_hidden_solutions_execute_separately(
             "add-conversation-memory": (
                 "Conversation memory storage checks passed"
             ),
+            "connect-agent-tools": "Lesson lookup validation passed",
+            "add-a-planner": "Planner input checks passed",
             "challenge": (
                 "De-agentification development and qualification checks passed"
             ),

@@ -1,0 +1,494 @@
+---
+title: Add a Planner to FreeCampusAgent
+description: Ask a model to order a small task, let FreeCampusAgent process each step with its read-only course lookup, and inspect the execution record.
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: choose-agent-architecture
+unit_number: 1
+categories:
+- agentic-ai-engineering
+- choose-agent-architecture
+order: 50
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-architecture/add-a-planner.ipynb
+notebook_package: true
+execute:
+  echo: true
+lesson_id: choose-agent-architecture.add-a-planner
+lesson_order: 50
+---
+
+::: {.lesson-meta}
+- **Level:** Foundations.
+- **Active time:** 35–45 minutes, including one short model call.
+- **Prerequisites:** Unit 1, Lessons 1–4; the `OPENROUTER_API` secret saved in Colab.
+- **Outcome:** Add a planner that turns a task into ordered steps, then inspect how FreeCampusAgent processes those steps.
+- **Evidence:** The model's plan, Python's step-by-step lookup record, and a short explanation of the limits.
+- **Environment:** Google Colab with internet access; no GPU or additional Python package is needed.
+:::
+
+::: {.callout-note}
+## Review draft
+This proposed Lesson 5 adds a small planner to FreeCampusAgent. It uses the same OpenRouter secret as the earlier model lessons and the read-only course lookup from Lesson 4. The planner can order only lessons 2, 3, and 4. Python checks the plan and runs the lookups; the model does not run Python code.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What does a planner add?
+
+In the earlier lessons, FreeCampusAgent received a task, connected to a language model, kept conversation messages, and used one read-only course lookup. A **planner** adds a step in between the task and the work: it proposes an order for the steps needed to handle the task.
+
+For example, a learner may ask for a short review of the model, memory, and tool lessons. The planner can propose which lesson to look up first, next, and last. FreeCampusAgent then processes that list.
+
+```text
+task → model proposes a plan → Python checks each step
+     → FreeCampusAgent runs the allowed lookups → execution record
+```
+
+The planner proposes the order. The Python program decides whether that plan is allowed and calls the registered lookup function. This distinction matters: the model supplies a suggestion, while the program performs the work.
+
+Chapter 6 of *An Illustrated Guide to AI Agents* introduces planning and reflection as ways to handle tasks that need more than one step. This lesson focuses on the first idea: make a plan and inspect its steps. Reflection, retries, and changing a plan while it runs are beyond this first version. The chapter's [source notebook and code](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/tree/main/chapter06) include more advanced ReAct examples; we are not adding those here.
+
+## 2. Give the planner a small, known task
+
+We will ask FreeCampusAgent to prepare a short review path through Unit 1 Lessons 2–4. The only available action is the read-only lookup from Lesson 4. It returns information from this small outline stored in the notebook.
+
+```python
+UNIT1_LESSONS = {
+    2: {
+        "title": "Connect an LLM to FreeCampusAgent",
+        "focus": "Send one message to a language model and inspect its response.",
+    },
+    3: {
+        "title": "Give FreeCampusAgent Conversation Memory",
+        "focus": "Keep earlier messages and include them in a later model request.",
+    },
+    4: {
+        "title": "Give FreeCampusAgent a Tool",
+        "focus": "Let the model request a course lookup and inspect the result.",
+    },
+}
+
+
+def lookup_unit1_lesson(lesson_number: int) -> dict[str, object]:
+    """Return the title and focus of one lesson in this review task."""
+    if type(lesson_number) is not int:
+        raise TypeError("lesson_number must be an integer")
+    if lesson_number not in UNIT1_LESSONS:
+        raise ValueError("This planner can look up only lessons 2, 3, and 4")
+    return {"lesson_number": lesson_number, **UNIT1_LESSONS[lesson_number]}
+
+
+assert lookup_unit1_lesson(3)["title"] == "Give FreeCampusAgent Conversation Memory"
+
+try:
+    lookup_unit1_lesson(5)
+except ValueError:
+    print("Planner input checks passed")
+else:
+    raise AssertionError("The lookup should reject lessons outside this task")
+```
+
+The assertion checks the local Python function and its limit. It does not imitate a model call. Each Colab lesson has a fresh runtime, so this notebook includes the small outline and lookup it needs.
+
+## 3. Connect the planner to a model
+
+This is the same small OpenRouter connection used in the earlier lessons. The planner asks for a JSON list of lesson numbers, so Python can inspect and validate the result before doing any lookups.
+
+```python
+import json
+from dataclasses import dataclass
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
+
+try:
+    from google.colab import userdata
+except ModuleNotFoundError:
+    userdata = None
+
+
+@dataclass
+class LLMResponse:
+    """The answer and basic usage details returned by a language model."""
+
+    content: str
+    model: str | None
+    prompt_tokens: int | None
+    completion_tokens: int | None
+
+
+class LLM:
+    """Send chat messages to a model through OpenRouter."""
+
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "openrouter/free",
+        base_url: str = "https://openrouter.ai/api/v1",
+    ) -> None:
+        self.api_key = api_key
+        self.model = model
+        self.base_url = base_url.rstrip("/")
+
+    def generate(self, messages: list[dict[str, str]]) -> LLMResponse:
+        """Send the messages once and return the model's response."""
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "max_tokens": 80,
+        }
+        request = Request(
+            f"{self.base_url}/chat/completions",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+
+        try:
+            with urlopen(request, timeout=45) as response:
+                data = json.load(response)
+        except HTTPError as error:
+            raise RuntimeError(
+                f"OpenRouter returned HTTP {error.code}. "
+                "Check the key, model route, or account limits."
+            ) from None
+
+        message = data["choices"][0]["message"]
+        usage = data.get("usage") or {}
+        return LLMResponse(
+            content=message.get("content") or "",
+            model=data.get("model", self.model),
+            prompt_tokens=usage.get("prompt_tokens"),
+            completion_tokens=usage.get("completion_tokens"),
+        )
+
+
+llm = None
+if userdata is None:
+    print("This live planning exercise uses Colab Secrets. Run it in Colab.")
+else:
+    api_key = userdata.get("OPENROUTER_API")
+    if not api_key:
+        raise RuntimeError(
+            "Add OPENROUTER_API in Colab Secrets and allow notebook access."
+        )
+    llm = LLM(api_key=api_key)
+    print("Selected route:", llm.model)
+```
+
+The free route may select different models at different times. The notebook prints the model ID returned with the response so you can record which one made the plan.
+
+## 4. Add the planner and connect it to FreeCampusAgent
+
+The `Planner` sends the task and a short lesson outline to the model. It asks for three lesson numbers and rejects a response that is not a list containing each allowed number once. This check keeps an unexpected model response from becoming a Python action.
+
+FreeCampusAgent then passes each accepted number to its registered lookup function. The returned plan and lookup results are saved as an execution record.
+
+```python
+from collections.abc import Callable
+
+
+class Planner:
+    """Ask the model to order the allowed lesson lookups."""
+
+    def __init__(self, llm: LLM):
+        self.llm = llm
+        self.last_response: LLMResponse | None = None
+
+    def create_plan(self, task: str) -> list[int]:
+        """Return a checked order of lessons 2, 3, and 4."""
+        outline = "\n".join(
+            f"{number}: {lesson['title']} — {lesson['focus']}"
+            for number, lesson in UNIT1_LESSONS.items()
+        )
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "You create short plans for a course review. Use each of "
+                    "these lesson numbers exactly once: 2, 3, and 4. Choose "
+                    "a learner-friendly order based on this outline:\n"
+                    f"{outline}\n"
+                    "Return only a JSON list of integers, for example [2, 3, 4]. "
+                    "Do not add any other text or numbers."
+                ),
+            },
+            {"role": "user", "content": task},
+        ]
+        self.last_response = self.llm.generate(messages)
+
+        try:
+            steps = json.loads(self.last_response.content)
+        except json.JSONDecodeError as error:
+            raise ValueError(
+                "The model did not return a JSON list. Inspect its response "
+                "and run the planning cell again."
+            ) from error
+
+        allowed = set(UNIT1_LESSONS)
+        if (
+            not isinstance(steps, list)
+            or len(steps) != len(allowed)
+            or any(type(step) is not int for step in steps)
+            or set(steps) != allowed
+        ):
+            raise ValueError(
+                "The plan must contain each allowed lesson number 2, 3, and 4 "
+                "exactly once. No lookup has been run."
+            )
+        return steps
+
+
+class FreeCampusAgent:
+    """Plan a small task and process its approved course lookups."""
+
+    def __init__(
+        self,
+        planner: Planner,
+        tools: dict[str, Callable[[int], dict[str, object]]],
+    ):
+        self.planner = planner
+        self.tools = tools
+        self.last_plan: list[int] = []
+        self.execution_record: list[dict[str, object]] = []
+
+    def run(self, task: str) -> str:
+        """Make a plan, run its registered lookups, and format their results."""
+        self.last_plan = self.planner.create_plan(task)
+        lookup = self.tools["lookup_unit1_lesson"]
+        self.execution_record = []
+
+        for step_number, lesson_number in enumerate(self.last_plan, start=1):
+            result = lookup(lesson_number)
+            self.execution_record.append(
+                {
+                    "step": step_number,
+                    "lesson_number": lesson_number,
+                    "result": result,
+                }
+            )
+
+        return "\n".join(
+            f"{row['step']}. {row['result']['title']}: "
+            f"{row['result']['focus']}"
+            for row in self.execution_record
+        )
+```
+
+Here is what each new part does:
+
+| Part | What it does |
+|---|---|
+| `Planner.create_plan()` | Asks the model for an order, then checks the response format and allowed lesson numbers. |
+| `self.tools` | Holds the Python function this agent is allowed to run. |
+| `FreeCampusAgent.run()` | Gets a plan, calls the lookup once for each approved step, and saves the results. |
+| `execution_record` | Shows the requested order and the data returned by Python for each step. |
+
+The code processes the steps in the order the model returned. Python runs the lookup; the model does not execute the function. If the model returns invalid JSON or an unapproved number, the code stops before any lookup.
+
+## 5. Run the complete plan
+
+Ask for a review path through Lessons 2, 3, and 4. The live call creates the plan. The local Python lookup then gathers the information in that order.
+
+```python
+if llm is None:
+    print("Add OPENROUTER_API in Colab Secrets to run the live planning exercise.")
+else:
+    planner = Planner(llm)
+    freecampus_agent = FreeCampusAgent(
+        planner=planner,
+        tools={"lookup_unit1_lesson": lookup_unit1_lesson},
+    )
+    task = (
+        "Prepare a learner-friendly review path through Unit 1 Lessons 2, 3, "
+        "and 4. Use each lesson once."
+    )
+
+    recap = freecampus_agent.run(task)
+    print("Model that made the plan:", planner.last_response.model)
+    print("Plan from the model:", freecampus_agent.last_plan)
+    print("Python execution record:")
+    for row in freecampus_agent.execution_record:
+        print(row)
+    print("\nReview path from the lookup results:")
+    print(recap)
+```
+
+Inspect the plan and execution record separately. The plan shows the order the model suggested. The record shows which Python function ran for each step and what it returned. The formatted review path uses those returned values, rather than asking the model to restate them.
+
+## 6. What this first planner does not do
+
+This planner handles one narrow task with three known steps. It does not decide whether it needs a tool, search outside the notebook, change files, retry a failed step, reflect on the result, or create a new plan while it runs. It also does not prove that the proposed order is the best one. The Python check only confirms that the plan contains the three allowed lesson numbers.
+
+The course has now added a language model, conversation memory, a read-only tool, and a simple planner to FreeCampusAgent. Each capability is still small enough to inspect. Later work can ask whether the added planning step helps with a task that cannot be handled as one direct request.
+
+::: {.callout-tip}
+Explain, in your own words, which part suggested the plan, which part checked it, and which part performed each lookup.
+:::
+
+<details>
+<summary>Practice: read the plan and record</summary>
+
+After the live run, write down:
+
+1. What order did the model suggest?
+2. Which Python function ran for each step?
+3. What information in the record came from the course outline?
+4. What would happen if the model returned lesson number 5?
+
+</details>
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-add-a-planner-concept",
+  "title": "Checkpoint: explain a plan",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u01-add-a-planner-concept-1",
+      "prompt": "What does the planner do in this lesson?",
+      "options": [
+        "It proposes an order for the allowed lesson lookups.",
+        "It runs Python functions inside the language model.",
+        "It guarantees that every answer is correct.",
+        "It saves the notebook after the runtime ends."
+      ],
+      "answer_index": 0,
+      "explanation": "The planner asks the model for an ordered list. Python checks the list before using it."
+    },
+    {
+      "id": "u01-add-a-planner-concept-2",
+      "prompt": "Who performs the course lookup for each planned step?",
+      "options": [
+        "The model, without the Python program.",
+        "The registered Python function called by FreeCampusAgent.",
+        "The Colab Secrets panel.",
+        "The planner's text response by itself."
+      ],
+      "answer_index": 1,
+      "explanation": "The model proposes lesson numbers. FreeCampusAgent calls the Python lookup function for each approved number."
+    },
+    {
+      "id": "u01-add-a-planner-concept-3",
+      "prompt": "Why does the code check the plan before running a lookup?",
+      "options": [
+        "To confirm it contains only the allowed lesson numbers.",
+        "To teach the model new course material.",
+        "To make the plan permanent.",
+        "To avoid using Python."
+      ],
+      "answer_index": 0,
+      "explanation": "The check rejects malformed plans and numbers outside the three allowed lessons before a tool runs."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-add-a-planner-evidence",
+  "title": "Checkpoint: inspect the plan and record",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u01-add-a-planner-evidence-1",
+      "prompt": "Where can you see the order suggested by the model?",
+      "options": [
+        "In freecampus_agent.last_plan.",
+        "In the API key value.",
+        "In the course website sidebar only.",
+        "In the Python function's source code."
+      ],
+      "answer_index": 0,
+      "explanation": "The agent stores the validated order in last_plan for inspection."
+    },
+    {
+      "id": "u01-add-a-planner-evidence-2",
+      "prompt": "What does execution_record show?",
+      "options": [
+        "The Python lookup called for each step and the returned lesson data.",
+        "Every thought generated by the model.",
+        "A guarantee that the lesson content is up to date.",
+        "The API key and account balance."
+      ],
+      "answer_index": 0,
+      "explanation": "Each record entry includes the step number, lesson number, and lookup result."
+    },
+    {
+      "id": "u01-add-a-planner-evidence-3",
+      "prompt": "What happens if the model returns an invalid plan?",
+      "options": [
+        "The code raises an error before running a lookup.",
+        "Python silently changes it to lessons 2, 3, and 4.",
+        "The model gets permission to search the web.",
+        "The notebook makes up missing lesson details."
+      ],
+      "answer_index": 0,
+      "explanation": "The planner checks the JSON and the allowed lesson numbers before FreeCampusAgent uses the plan."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-add-a-planner-limits",
+  "title": "Checkpoint: understand the limits",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u01-add-a-planner-limits-1",
+      "prompt": "Does a valid plan prove that the order is the best one?",
+      "options": [
+        "Yes, the validation checks teaching quality.",
+        "No, it checks only the format and allowed lesson numbers.",
+        "Yes, because Python ran the lookups.",
+        "No, because the model did not answer in prose."
+      ],
+      "answer_index": 1,
+      "explanation": "The validation enforces the allowed steps. It does not judge whether their order is ideal."
+    },
+    {
+      "id": "u01-add-a-planner-limits-2",
+      "prompt": "What does this first planner do when a lookup fails?",
+      "options": [
+        "It automatically reflects and creates a new plan.",
+        "It stops with the error; retries and replanning are not added here.",
+        "It changes files to repair the lookup.",
+        "It searches the web for a replacement."
+      ],
+      "answer_index": 1,
+      "explanation": "This first version processes one plan. It does not include retries, reflection, or replanning."
+    },
+    {
+      "id": "u01-add-a-planner-limits-3",
+      "prompt": "Which statement best describes the plan and the actions?",
+      "options": [
+        "The model proposes lesson numbers; Python checks them and runs the lookups.",
+        "The model executes Python and verifies its own results.",
+        "The plan itself contains the lesson data, so no lookup is needed.",
+        "Python chooses a new lesson number whenever it wants."
+      ],
+      "answer_index": 0,
+      "explanation": "The planner supplies a proposal. The program validates the proposal and performs the registered read-only actions."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## Sources
+
+- [Chapter 6: Planning and Reflection, *An Illustrated Guide to AI Agents*](https://www.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch06.html).
+- [Chapter 6 companion notebooks and code](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/tree/main/chapter06).
+
+This lesson introduces the planning idea in our own small example. It does not reproduce the book's code.

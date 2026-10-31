@@ -46,6 +46,8 @@ SLUGS = (
     "separate-automation-workflows-and-agents",
     "model-the-agent-environment-loop",
     "add-conversation-memory",
+    "connect-agent-tools",
+    "add-a-planner",
     "challenge",
 )
 
