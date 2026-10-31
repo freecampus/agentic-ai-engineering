@@ -23,7 +23,7 @@ lesson_order: 20
 ::: {.lesson-meta}
 - **Level:** Foundations; explicit state and evidence, not reinforcement-learning training.
 - **Active time:** 105–150 minutes, including two trace labs and failure diagnosis.
-- **Prerequisites:** Lesson 1.1's authority/feedback/termination distinction; Python records, conditionals, and assertions.
+- **Prerequisites:** Lesson 1.1's environment/observation/action distinction; Python records, conditionals, and assertions.
 - **Measurable outcome:** Produce checked pre-state/action/post-state/observation traces for two worlds without giving a controller access to hidden truth.
 - **Evidence:** A transition table, one diagram, terminal-state tests, and a missing-observation incident record.
 - **Environment:** Python 3.10+; offline bundled package; no network, account, GPU, or paid inference.

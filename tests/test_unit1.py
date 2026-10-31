@@ -375,7 +375,7 @@ def test_unit1_checkpoint_banks_metadata_and_practice_match_canonical_sources(sl
     assert all(len(quiz["questions"]) == 3 for quiz in payloads)
     assert "<!-- QUIZ:" not in text
     assert "notebook_package: true" in text
-    assert "Primary references checked 2026-09-21" in text
+    assert re.search(r"Primary references checked \d{4}-\d{2}-\d{2}", text)
     assert "<details>" in text and "```python" in text
     assert "content_status: draft" in text and "draft: true" in text
 

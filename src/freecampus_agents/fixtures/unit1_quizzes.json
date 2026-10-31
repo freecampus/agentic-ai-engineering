@@ -2,130 +2,130 @@
   "separate-automation-workflows-and-agents": [
     {
       "id": "u01-separate-automation-workflows-and-agents-concept",
-      "title": "Checkpoint: explain the mechanism",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "title": "Checkpoint: understand the class",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
       "questions": [
         {
           "id": "u01-separate-automation-workflows-and-agents-concept-1",
-          "prompt": "A program always calls classify, then lookup, then format. What determines its stage sequence?",
+          "prompt": "What happens when Python creates FreeCampusAgent()?",
           "options": [
-            "The application code, so this is a fixed workflow.",
-            "The number of prompt names makes it multi-agent.",
-            "Any model invocation makes the entire sequence autonomous.",
-            "The final output determines the control structure retroactively."
+            "It sends a question to a language model.",
+            "It sets up the class attributes with empty values.",
+            "It runs a tool action.",
+            "It saves the conversation for next time."
           ],
-          "answer_index": 0,
-          "explanation": "Model calls can occupy prescribed stages. Inspect who chooses the next operation, not whether a model appears."
+          "answer_index": 1,
+          "explanation": "The constructor sets up llm, memory, tools, and planner as None. These are placeholders, not active features."
         },
         {
           "id": "u01-separate-automation-workflows-and-agents-concept-2",
-          "prompt": "Why can a deterministic controller still be called an agent under a classical definition?",
+          "prompt": "What does run(task) do in this version?",
           "options": [
-            "Deterministic code becomes probabilistic when called repeatedly.",
-            "It can perceive and act according to a policy without requiring an LLM.",
-            "Any function name containing agent grants independent authority.",
-            "Classical agents must call a paid language model."
+            "It sends the task directly to the model.",
+            "It executes an action from the task text.",
+            "It passes the task to _step and returns that method's result.",
+            "It stores the task in memory."
           ],
-          "answer_index": 1,
-          "explanation": "Definitions differ in scope. State your definition and describe the actual control mechanism."
+          "answer_index": 2,
+          "explanation": "run is the entry point. It delegates the work to _step, which currently returns a placeholder message."
         },
         {
           "id": "u01-separate-automation-workflows-and-agents-concept-3",
-          "prompt": "Which stopping arrangement is strongest for the supplied agent-shaped loop?",
+          "prompt": "What do the llm, memory, tools, and planner attributes mean right now?",
           "options": [
-            "Ask the policy to be brief and omit counters.",
-            "Stop only if the answer sounds confident.",
-            "Policy-selected finishing plus runtime-enforced decision and read limits.",
-            "Let each role silently reset the same allowance."
+            "They are empty placeholders for capabilities that are not connected yet.",
+            "They are four tools that run automatically.",
+            "They contain the student's last four questions.",
+            "They are names for parts of the environment."
           ],
-          "answer_index": 2,
-          "explanation": "A cooperative policy stop is not a hard bound. The host must enforce the limits independently."
+          "answer_index": 0,
+          "explanation": "Each attribute is None. The names mark places where later lessons can add capabilities."
         }
       ]
     },
     {
       "id": "u01-separate-automation-workflows-and-agents-evidence",
-      "title": "Checkpoint: interpret the evidence",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "title": "Checkpoint: read the first run",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
       "questions": [
         {
           "id": "u01-separate-automation-workflows-and-agents-evidence-1",
-          "prompt": "The workflow and single agent each made two decisions. What can you conclude?",
+          "prompt": "What text does the example print for the math task?",
           "options": [
-            "They must have the same control-flow structure.",
-            "Both need exactly two calls for every possible input.",
-            "Both outperform the zero-decision query.",
-            "Call counts alone do not distinguish their control authority."
+            "4",
+            "Executed action: What is 2 + 2?",
+            "Received: What is 2 + 2?",
+            "No output, because run returns None."
           ],
-          "answer_index": 3,
-          "explanation": "The fixed workflow schedules stages; the controller selects actions. Equal counts on one case hide that distinction."
+          "answer_index": 2,
+          "explanation": "run passes the task to _step, and _step returns the Received message."
         },
         {
           "id": "u01-separate-automation-workflows-and-agents-evidence-2",
-          "prompt": "An unknown-topic run uses one agent decision and zero reads. Why?",
+          "prompt": "Which method creates the Received: ... message?",
           "options": [
-            "The policy chooses escalation before requesting a read.",
-            "The tool ran but the trace erased it.",
-            "The user note authorized a hidden account lookup.",
-            "The final answer is necessarily a successful policy answer."
+            "__init__",
+            "_step",
+            "_execute_action",
+            "run"
           ],
-          "answer_index": 0,
-          "explanation": "Unknown labels are outside the public lookup contract. Escalation can terminate without a tool call."
+          "answer_index": 1,
+          "explanation": "_step contains the placeholder return statement that builds this message."
         },
         {
           "id": "u01-separate-automation-workflows-and-agents-evidence-3",
-          "prompt": "A failed shipping lookup records one read and then escalation. Which statement is accurate?",
+          "prompt": "Does run call _execute_action in this scaffold?",
           "options": [
-            "Failed reads are free and need not be counted.",
-            "The attempted read consumed allowance although the question was not answered.",
-            "Escalation proves the shipping answer was correct.",
-            "The model may now use an unlisted tool to recover."
+            "Yes, for every task.",
+            "Yes, but only when memory is empty.",
+            "No. _execute_action is defined, but nothing calls it yet.",
+            "No. The method is missing from the class."
           ],
-          "answer_index": 1,
-          "explanation": "Work counters include permitted attempts, not only useful results. Failure does not broaden authority."
+          "answer_index": 2,
+          "explanation": "The method exists as a placeholder, but run calls only _step."
         }
       ]
     },
     {
       "id": "u01-separate-automation-workflows-and-agents-failure",
-      "title": "Checkpoint: diagnose the failure",
-      "instructions": "Choose an answer, check the explanation, then select Next. Revisit the preceding evidence when needed.",
+      "title": "Checkpoint: find unfinished behavior",
+      "instructions": "Choose an answer, check the explanation, then select Next.",
       "questions": [
         {
           "id": "u01-separate-automation-workflows-and-agents-failure-1",
-          "prompt": "A replacement returns a hard-coded correct sentence today. Which test best exposes its defect?",
+          "prompt": "Why does this run print an acknowledgement instead of 4?",
           "options": [
-            "Rename the function to retrieval.",
-            "Check only that the result is a string.",
-            "Change the public policy and require the new text and source.",
-            "Remove the source requirement from the contract."
+            "There is no model connected, and _step only returns a placeholder message.",
+            "The task is too short for Python.",
+            "The class has no run method.",
+            "The task must be stored in memory first."
           ],
-          "answer_index": 2,
-          "explanation": "The contract requires current observed policy, so a source update tests the missing mechanism."
+          "answer_index": 0,
+          "explanation": "The class has no connected language model or decision process yet. Its current _step method returns a fixed acknowledgement."
         },
         {
           "id": "u01-separate-automation-workflows-and-agents-failure-2",
-          "prompt": "A model selects diagnostic reads but a runtime forbids writes. How should you classify it?",
+          "prompt": "If you call _execute_action(\"open a file\"), what happens now?",
           "options": [
-            "Entirely non-agentic because any deterministic guard removes autonomy.",
-            "Unrestricted autonomy because the model selects something.",
-            "A multi-agent system solely because there are two components.",
-            "An agent controller operating inside deterministic permission checks."
+            "Python opens the file.",
+            "The model decides whether to open it.",
+            "The method returns placeholder text; it does not open a file.",
+            "The class raises an error because the method is missing."
           ],
-          "answer_index": 3,
-          "explanation": "Classify boundaries separately. Action selection and effect authorization belong to different components."
+          "answer_index": 2,
+          "explanation": "The method is a placeholder. It returns a sentence and performs no real action."
         },
         {
           "id": "u01-separate-automation-workflows-and-agents-failure-3",
-          "prompt": "Five prompts execute in a fixed order and never choose actions. What evidence is missing for a multi-agent claim?",
+          "prompt": "How should we describe this first version?",
           "options": [
-            "Multiple controllers choosing actions from feedback and a coordination arrangement.",
-            "Five different human-readable job titles.",
-            "A diagram containing five boxes.",
-            "A larger model behind the same fixed calls."
+            "A finished agent that can answer general questions.",
+            "A class scaffold with methods whose main behaviors are not built yet.",
+            "A memory system with four saved conversations.",
+            "A tool-running assistant connected to the course outline."
           ],
-          "answer_index": 0,
-          "explanation": "Names and box counts do not establish independent control loops."
+          "answer_index": 1,
+          "explanation": "The class defines a structure, while its model, memory, tools, planning, and real actions are not connected yet."
         }
       ]
     }

@@ -23,7 +23,7 @@ lesson_order: 30
 ::: {.lesson-meta}
 - **Level:** Foundations; introductory policy checks, not production access-control engineering.
 - **Active time:** 105–150 minutes, including a contract lab and denial tests.
-- **Prerequisites:** Lessons 1.1–1.2; state transitions, observations, terminal outcomes, and ordinary Python exceptions.
+- **Prerequisites:** Lessons 1.1–1.2; observation/action traces, state transitions, terminal outcomes, and ordinary Python exceptions.
 - **Measurable outcome:** Validate a task contract and distinguish allow, deny, confirm, and stop before any fake effect runs.
 - **Evidence:** Contract JSON, a schema/semantics distinction, an authorization table, spy-call records, and a delayed-approval analysis.
 - **Environment:** Python 3.10+ and bundled course code; integer fixture time; no real messages, credentials, accounts, or network.
@@ -44,6 +44,10 @@ it.” That could mean quoting a public policy, drafting a reply, sending a mess
 or issuing a refund. An implementation cannot safely invent the missing authority.
 We will permit a public lookup and an evidence-backed answer, not an account
 change. A separate exercise will simulate approval for sending a synthetic draft.
+
+Earlier lessons identify what an agent observes and how actions affect its
+environment. Here we make the allowed actions and stopping conditions explicit.
+Later, a model’s proposed action can be checked against this task contract.
 
 Before coding, answer:
 

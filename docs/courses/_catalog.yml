@@ -110,15 +110,13 @@ courses:
         estimated_effort: 8–14 hours
         lessons:
           - id: choose-agent-architecture.separate-automation-workflows-and-agents
-            title: Separate Automation, Workflows, and Agents
+            title: What Is an Agent?
             order: 10
             status: planned
             path: courses/agentic-ai-engineering/units/choose-agent-architecture/separate-automation-workflows-and-agents.qmd
             summary:
-              Compare deterministic scripts, DAGs, state machines, LLM workflows, and feedback-driven
-              agents. Classify systems by who chooses the next action, what feedback is available,
-              and how termination is controlled.
-            evidence: classification table with disputed cases and defended criteria.
+              Introduce the FreeCampusAgent class scaffold, explain its methods, and run its first task.
+            evidence: class definition, returned message, and explanation of the placeholder behavior.
           - id: choose-agent-architecture.model-the-agent-environment-loop
             title: Model the Agent–Environment Loop
             order: 20

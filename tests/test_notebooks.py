@@ -276,7 +276,7 @@ def test_authored_worked_examples_and_hidden_solutions_execute_separately(
     if source in UNIT1_DRAFTS:
         expected = {
             "separate-automation-workflows-and-agents": (
-                "Classification replacement checks passed"
+                "Received: What is 2 + 2?"
             ),
             "model-the-agent-environment-loop": (
                 "Transition and observation checks passed"
