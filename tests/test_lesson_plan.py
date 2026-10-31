@@ -130,7 +130,7 @@ PLAN = synthetic_plan(COURSE)
 def test_checker_validates_the_complete_synthetic_course() -> None:
     records = checker.validate(PLAN, COURSE)
     assert len([r for r in records if r["kind"] == "unit"]) == 25
-    assert len([r for r in records if r["kind"] == "lesson"]) == 101
+    assert len([r for r in records if r["kind"] == "lesson"]) == 102
     assert len([r for r in records if r["kind"] == "capstone"]) == 1
     assert len([r for r in records if r["kind"] == "release"]) == 1
     assert checker.refresh_dashboard(PLAN, records, COURSE) == PLAN
@@ -272,8 +272,8 @@ def test_refresh_preserves_content_and_states_and_is_idempotent() -> None:
     assert checker.parse_records(refreshed) == records
     assert refreshed.split(checker.START)[0] == text.split(checker.START)[0]
     assert refreshed.split(checker.END)[1] == text.split(checker.END)[1]
-    assert "`not_done`: 100; `in_progress`: 1" in refreshed
-    assert "Lessons implemented: 0/101 (0.0%)" in refreshed
+    assert "`not_done`: 101; `in_progress`: 1" in refreshed
+    assert "Lessons implemented: 0/102 (0.0%)" in refreshed
     assert "Publication (separate catalog state): 0 available lessons" in refreshed
 
 
@@ -301,7 +301,7 @@ def test_gate_progress_changes_milestone_but_not_lesson_counts() -> None:
     records = checker.validate_records(text, COURSE)
     assert checker.unit_status(records[0], records[1:6]) == "in_progress"
     refreshed = checker.refresh_dashboard(text, records, COURSE)
-    assert "`not_done`: 101; `in_progress`: 0" in refreshed
+    assert "`not_done`: 102; `in_progress`: 0" in refreshed
     assert "Unit gates implemented: 0/106" in refreshed
 
 

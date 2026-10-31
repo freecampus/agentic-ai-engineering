@@ -156,7 +156,7 @@ UNIT1_DRAFTS = sorted(path for path in UNIT1.glob("*.qmd") if path.stem != "inde
 
 def test_draft_exports_are_explicit_and_never_target_the_public_site(tmp_path):
     assert len(UNIT0_DRAFTS) == 6
-    assert len(UNIT1_DRAFTS) == 5
+    assert len(UNIT1_DRAFTS) == 4
     assert not set(UNIT1_DRAFTS) & set(builder.public_qmd_files())
     assert set(UNIT1_DRAFTS) <= set(builder.public_qmd_files(include_drafts=True))
     assert not set(UNIT0_DRAFTS) & set(builder.public_qmd_files())
@@ -281,11 +281,8 @@ def test_authored_worked_examples_and_hidden_solutions_execute_separately(
             "model-the-agent-environment-loop": (
                 "This live request uses Colab Secrets"
             ),
-            "bound-autonomy-with-task-contracts": (
-                "Contract authorization checks passed"
-            ),
-            "choose-the-simplest-adequate-architecture": (
-                "Architecture selection checks passed"
+            "add-conversation-memory": (
+                "Conversation memory storage checks passed"
             ),
             "challenge": (
                 "De-agentification development and qualification checks passed"

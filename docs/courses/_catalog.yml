@@ -9,7 +9,7 @@ courses:
     prerequisite: Project-ready Python or equivalent readiness assessment
     estimated_effort: 240–360 hours plus optional extensions (draft estimate)
     planned_unit_count: 25
-    planned_lesson_count: 101
+    planned_lesson_count: 102
     planned_challenge_count: 25
     available_lesson_count: 0
     available_challenge_count: 0
@@ -98,15 +98,15 @@ courses:
           estimated_time: 90–180 minutes
       - number: 1
         id: choose-agent-architecture
-        title: Decide Whether a Problem Needs an Agent
+        title: Build an Agent One Part at a Time
         phase: I. Foundations
         status: planned
         overview: courses/agentic-ai-engineering/units/choose-agent-architecture/index.qmd
         prerequisite_unit_ids:
           - launch-agent-lab
         outcome:
-          Distinguish programs, workflows, agents, and multi-agent systems; define degrees
-          of autonomy; and select the simplest adequate architecture from evidence.
+          Build and inspect FreeCampusAgent by connecting a language model, conversation memory,
+          tools, and a simple planner; explain how each addition changes what the agent can do.
         estimated_effort: 8–14 hours
         lessons:
           - id: choose-agent-architecture.separate-automation-workflows-and-agents
@@ -127,26 +127,33 @@ courses:
               a small LLM wrapper to FreeCampusAgent for one model-backed answer.
             evidence: LLMResponse with the returned model and token-use fields, plus a model-backed
               FreeCampusAgent answer.
-          - id: choose-agent-architecture.bound-autonomy-with-task-contracts
-            title: Bound Autonomy with Task Contracts
+          - id: choose-agent-architecture.add-conversation-memory
+            title: Give FreeCampusAgent Conversation Memory
             order: 30
             status: planned
-            path: courses/agentic-ai-engineering/units/choose-agent-architecture/bound-autonomy-with-task-contracts.qmd
+            path: courses/agentic-ai-engineering/units/choose-agent-architecture/add-conversation-memory.qmd
             summary:
-              Translate user intent into measurable success, permissions, budgets, deadlines,
-              approval gates, escalation, and forbidden outcomes. Identify underspecified contracts
-              that invite unsafe or wasteful behavior.
-            evidence: validated task-contract schema and examples.
-          - id: choose-agent-architecture.choose-the-simplest-adequate-architecture
-            title: Choose the Simplest Adequate Architecture
+              Explain that a model request receives only the messages sent with it, then add
+              short-term conversation memory to FreeCampusAgent and inspect a follow-up request.
+            evidence: message history before and after two turns, plus a model-backed follow-up.
+          - id: choose-agent-architecture.connect-agent-tools
+            title: Give FreeCampusAgent a Tool
             order: 40
             status: planned
-            path: courses/agentic-ai-engineering/units/choose-agent-architecture/choose-the-simplest-adequate-architecture.qmd
+            path: courses/agentic-ai-engineering/units/choose-agent-architecture/connect-agent-tools.qmd
             summary:
-              Compare a rule, retrieval query, workflow, single agent, and multi-agent system
-              for the same scenario. Calculate the additional failure surface introduced by each
-              level of autonomy.
-            evidence: architecture decision record with rejection reasons.
+              Give FreeCampusAgent one bounded tool and follow the request, execution, and result
+              through the class.
+            evidence: a tool call, its Python result, and the reply that uses that result.
+          - id: choose-agent-architecture.add-a-planner
+            title: Add a Planner to FreeCampusAgent
+            order: 50
+            status: planned
+            path: courses/agentic-ai-engineering/units/choose-agent-architecture/add-a-planner.qmd
+            summary:
+              Add a simple planner that turns a task into ordered steps, then inspect how
+              FreeCampusAgent handles those steps.
+            evidence: a short plan, step-by-step execution record, and explanation of the limits.
         challenge:
           id: choose-agent-architecture.challenge
           title: De-Agentify an Overbuilt System

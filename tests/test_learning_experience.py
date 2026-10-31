@@ -52,7 +52,7 @@ def test_catalog_records_the_exact_planned_course() -> None:
     assert [len(u["lessons"]) for u in units] == [5] + [4] * 24
     assert course["planned_unit_count"] == len(units) == 25
     assert (
-        course["planned_lesson_count"] == sum(len(u["lessons"]) for u in units) == 101
+        course["planned_lesson_count"] == sum(len(u["lessons"]) for u in units) == 102
     )
     assert course["planned_challenge_count"] == len(units) == 25
     assert len(course["milestones"]) == 4
@@ -180,7 +180,7 @@ def test_publication_counts_completion_and_home_metadata_agree() -> None:
         "available_challenge_count",
     ]:
         assert home[key] == course[key]
-    assert "0 of 101 lessons and 0 of 25 unit challenges" in (
+    assert "0 of 102 lessons and 0 of 25 unit challenges" in (
         COURSE_ROOT / "index.qmd"
     ).read_text(encoding="utf-8")
 

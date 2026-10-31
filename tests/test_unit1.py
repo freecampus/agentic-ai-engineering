@@ -45,8 +45,7 @@ UNIT = Path("docs/courses/agentic-ai-engineering/units/choose-agent-architecture
 SLUGS = (
     "separate-automation-workflows-and-agents",
     "model-the-agent-environment-loop",
-    "bound-autonomy-with-task-contracts",
-    "choose-the-simplest-adequate-architecture",
+    "add-conversation-memory",
     "challenge",
 )
 

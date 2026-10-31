@@ -1,7 +1,6 @@
 ---
-title: Decide Whether a Problem Needs an Agent Overview
-description: Distinguish programs, workflows, agents, and multi-agent systems; define degrees
-  of autonomy; and select the simplest adequate architecture from evidence.
+title: Build an Agent One Part at a Time Overview
+description: Build FreeCampusAgent step by step, adding a language model, conversation memory, tools, and a planner.
 content_kind: unit-overview
 content_status: planned
 order: 0
@@ -13,8 +12,9 @@ colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-arch
 
 ::: {.callout-important}
 ## Curriculum preview—not a released unit
-The 4 lessons and challenge have authored review drafts, but remain planned for
-publication until independent teaching, execution, and accessibility gates pass.
+Lessons 1–3 and the challenge have review drafts; Lessons 4–5 are still planned.
+All remain planned for publication until independent teaching, execution, and
+accessibility gates pass.
 This overview is available for orientation; it does not award course progress.
 Its notebook is an orientation copy, not a completed instructional lab. Local
 maintainers can inspect the drafts with `poetry run makim docs.review`.
@@ -24,7 +24,7 @@ maintainers can inspect the drafts with `poetry run makim docs.review`.
 
 ## 1. What you will be able to do
 
-Distinguish programs, workflows, agents, and multi-agent systems; define degrees of autonomy; and select the simplest adequate architecture from evidence.
+Build and inspect FreeCampusAgent by connecting a language model, conversation memory, tools, and a simple planner; explain how each addition changes what the agent can do.
 
 **Phase:** I. Foundations
 **Overview:** 20–40 minutes
@@ -32,10 +32,8 @@ Distinguish programs, workflows, agents, and multi-agent systems; define degrees
 checks, and a 90–180 minute challenge. Estimates await a learner pilot.
 
 **Scenario:** Build FreeCampusAgent gradually. Begin with a small class
-scaffold, study how an agent receives information and acts, then define a task
-contract and compare the design with simpler alternatives. The final challenge
-applies the same architecture checks to a separate, synthetic customer-help
-system.
+scaffold, connect a language model, then add conversation memory, a tool, and a
+simple planner. In each lesson, inspect the code and the behavior it produces.
 
 ## 2. Before you begin
 
@@ -54,12 +52,11 @@ distinguish a permitted action from a requested one. No new agent framework,
 provider SDK, external tool integration, or reinforcement-learning background is
 needed. Keep one notebook per lesson and a folder for the final decision record.
 
-**Vocabulary:** control authority, workflow, policy, observation, environment
-state, terminal outcome, task contract, approval, architecture decision record.
-Each term is explained at its point of use. **Risk preview:** a correct-looking
-answer can conceal a stale source, a missing observation, an unauthorized request,
-or unnecessary work. These offline fixtures enforce narrow dispatch boundaries;
-they are not security sandboxes or evidence of live-model reliability.
+**Vocabulary:** agent, language model, message, conversation memory, tool, and
+planner. Each term is explained when it first appears. **Risk preview:** the
+model can still give a wrong answer, and each added message increases the amount
+of text sent in later requests. The message list stays in the running notebook;
+this unit does not save it after the session ends.
 
 ## 3. Planned lesson sequence
 
@@ -67,8 +64,9 @@ they are not security sandboxes or evidence of live-model reliability.
 |---|---|
 | 1. What Is an Agent? | FreeCampusAgent's class definition, first output, and explanation of its placeholder methods. |
 | 2. Connect an LLM to FreeCampusAgent | One inspected model response and a model-backed FreeCampusAgent answer. |
-| 3. Bound Autonomy with Task Contracts | Validated task-contract schema and examples. |
-| 4. Choose the Simplest Adequate Architecture | Architecture decision record with rejection reasons. |
+| 3. Give FreeCampusAgent Conversation Memory | Message history before and after two turns, plus a model-backed follow-up. |
+| 4. Give FreeCampusAgent a Tool | A tool call, its Python result, and the reply that uses that result. |
+| 5. Add a Planner to FreeCampusAgent | A short plan, step-by-step execution record, and explanation of the limits. |
 
 ### 1. What Is an Agent?
 
@@ -81,13 +79,17 @@ returned model ID and token-use fields, then connect one model call to
 FreeCampusAgent. This first version makes one call and does not use memory,
 tools, or planning.
 
-### 3. Bound Autonomy with Task Contracts
+### 3. Give FreeCampusAgent Conversation Memory
 
-Translate user intent into measurable success, permissions, budgets, deadlines, approval gates, escalation, and forbidden outcomes. Identify underspecified contracts that invite unsafe or wasteful behavior.
+Explain that each model request receives only the messages sent with it. Add a small conversation-memory object to FreeCampusAgent and inspect a follow-up request that includes earlier messages.
 
-### 4. Choose the Simplest Adequate Architecture
+### 4. Give FreeCampusAgent a Tool
 
-Compare a rule, retrieval query, workflow, single agent, and multi-agent system for the same scenario. Calculate the additional failure surface introduced by each level of autonomy.
+Connect one bounded tool to FreeCampusAgent. Follow how the model requests the tool, how Python runs it, and how its result returns to the model.
+
+### 5. Add a Planner to FreeCampusAgent
+
+Add a simple planner that turns a task into ordered steps, then inspect how FreeCampusAgent handles those steps.
 
 ## 4. Challenge preview: De-Agentify an Overbuilt System
 
@@ -110,11 +112,12 @@ unverified. Save a clean run and an architecture note before attempting the chal
 Finish with a retrospective on quality, failures, cost assumptions, and safety;
 identify latency as unmeasured rather than inventing a performance claim.
 
-1. After Lesson 1.1: stop with the FreeCampusAgent class, its first output, and an explanation of what is still a placeholder.
-2. After Lesson 1.2: stop with two checked traces and a missing-observation explanation.
-3. After Lesson 1.3: stop with a validated contract and allow/deny/confirm/stop evidence.
-4. After Lesson 1.4: stop with per-case comparisons and an architecture decision record, including no-go criteria.
-5. After the challenge: retain the original failures, simpler implementation,
+1. After Lesson 1: stop with the FreeCampusAgent class, its first output, and an explanation of what is still a placeholder.
+2. After Lesson 2: stop with an inspected response and one model-backed FreeCampusAgent answer.
+3. After Lesson 3: stop with the message list from a two-turn conversation and an explanation of what is sent to the model.
+4. After Lesson 4: stop with a tool call and its returned result.
+5. After Lesson 5: stop with a short plan and an explanation of how the agent processes its steps.
+6. After the challenge: retain the original failures, simpler implementation,
    qualification disclosure, synthetic cost comparison, and one revisit trigger.
 
 [Preview Unit 2: Treat Language Models as Probabilistic Components](../probabilistic-models/index.qmd) or [return to the complete course map](../../index.qmd).

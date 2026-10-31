@@ -6,7 +6,7 @@ description: What is available, what you need, and what progress means.
 ## Is the complete course available?
 
 No. The curriculum is in development. The [course map](../courses/agentic-ai-engineering/index.qmd)
-labels the 101 lessons and 25 challenges as planned. The smoke lab and unit outlines
+labels the 102 lessons and 25 challenges as planned. The smoke lab and unit outlines
 are useful preparation, not substitutes for the future lessons.
 
 ## Do I need to know Python?

@@ -41,15 +41,17 @@ units:
     challenge_id: launch-agent-lab.challenge
   - id: choose-agent-architecture
     outcome:
-      Distinguish programs, workflows, agents, and multi-agent systems; define degrees
-      of autonomy; and select the simplest adequate architecture from evidence.
+      Build and inspect FreeCampusAgent by connecting a language model, conversation memory,
+      tools, and a simple planner; explain how each addition changes what the agent can do.
     graduate_outcome_ids:
-      - architecture
+      - runtime
+      - evaluation
     lesson_ids:
       - choose-agent-architecture.separate-automation-workflows-and-agents
       - choose-agent-architecture.model-the-agent-environment-loop
-      - choose-agent-architecture.bound-autonomy-with-task-contracts
-      - choose-agent-architecture.choose-the-simplest-adequate-architecture
+      - choose-agent-architecture.add-conversation-memory
+      - choose-agent-architecture.connect-agent-tools
+      - choose-agent-architecture.add-a-planner
     challenge_id: choose-agent-architecture.challenge
   - id: probabilistic-models
     outcome:

@@ -1,0 +1,448 @@
+---
+title: Give FreeCampusAgent Conversation Memory
+description: See why a model request does not carry earlier turns by itself, then add a small conversation-memory module to FreeCampusAgent.
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: choose-agent-architecture
+unit_number: 1
+categories:
+- agentic-ai-engineering
+- choose-agent-architecture
+order: 30
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-architecture/add-conversation-memory.ipynb
+notebook_package: true
+execute:
+  echo: true
+lesson_id: choose-agent-architecture.add-conversation-memory
+lesson_order: 30
+---
+
+::: {.lesson-meta}
+- **Level:** Foundations.
+- **Active time:** 35–45 minutes.
+- **Prerequisites:** Unit 1, Lessons 1 and 2; the `OPENROUTER_API` secret saved in Colab.
+- **Outcome:** Explain why a new model request needs earlier messages supplied again, then connect a conversation-memory object to FreeCampusAgent.
+- **Evidence:** The message list before and after two turns, and a follow-up answer that receives the earlier exchange as context.
+- **Environment:** Google Colab with internet access; no GPU or additional Python package is needed.
+:::
+
+::: {.callout-note}
+## Review draft
+This proposed Lesson 3 continues the FreeCampusAgent built in Lessons 1 and 2. It uses the OpenRouter secret prepared in [Unit 0, Lesson 1](../launch-agent-lab/meet-a-tiny-agent.qmd#add-the-key-to-colab). Do not paste a real secret or private information into the notebook.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What does the model receive?
+
+In Lesson 2, each call sent a new list with one user message:
+
+```text
+messages = [{"role": "user", "content": task}]
+response = llm.generate(messages)
+```
+
+The `last_response` field kept the latest answer available on the Python object. It did not keep the earlier messages. When the code made a second call, it sent that call's message alone.
+
+A model API call uses the messages included in that request. If we want a follow-up question to use an earlier exchange, our program must keep the relevant messages and include them again. We will add that small piece of application state now.
+
+| Term | What it means in this lesson |
+|---|---|
+| **Conversation memory** | User and assistant messages kept by our Python object and sent with a later request. |
+| **Model response** | The answer to one request. It does not add itself to FreeCampusAgent's message history. |
+| **Long-term memory** | Information saved beyond the current Python session. We do not build that here. |
+
+This follows the first short-term memory step in Chapter 4 of *An Illustrated Guide to AI Agents*: keep conversation messages in a small `Memory` module, then pass those messages to the model. The later trimming, summaries, and retrieval examples are outside this lesson.
+
+## 2. Create a small conversation-memory module
+
+A message has a speaker, called its `role`, and the text, called its `content`. We will keep the message list in a separate `ConversationMemory` object.
+
+```python
+class ConversationMemory:
+    """Keep the user and assistant messages for the current conversation."""
+
+    def __init__(self):
+        self.messages = []
+
+    def add(self, role: str, content: str) -> None:
+        """Add one message to the conversation."""
+        self.messages.append({"role": role, "content": content})
+
+    def get_messages(self) -> list[dict[str, str]]:
+        """Return the messages that will be sent to the model."""
+        return self.messages
+```
+
+Read the class from top to bottom:
+
+| Part | What it does |
+|---|---|
+| `__init__` | Starts an empty message list for this conversation. |
+| `add(role, content)` | Adds one user or assistant message in the format the chat request uses. |
+| `get_messages()` | Gives FreeCampusAgent the messages to include in its next request. |
+
+Before connecting a model, check the storage behavior with a made-up label. This checks our Python list; it does not pretend to be a model.
+
+```python
+memory_check = ConversationMemory()
+memory_check.add("user", "My fictional project is called Cedar-7.")
+
+assert memory_check.get_messages() == [
+    {"role": "user", "content": "My fictional project is called Cedar-7."}
+]
+print("Conversation memory storage checks passed")
+```
+
+## 3. Reuse the model connection from Lesson 2
+
+Each Colab notebook starts with a fresh Python runtime, so this notebook needs its own copy of the small OpenRouter client from Lesson 2. This setup is the same: it reads `OPENROUTER_API` from Colab Secrets and sends the messages supplied by FreeCampusAgent.
+
+```python
+import json
+from dataclasses import dataclass
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
+
+try:
+    from google.colab import userdata
+except ModuleNotFoundError:
+    userdata = None
+
+
+@dataclass
+class LLMResponse:
+    """The answer and basic usage details returned by a language model."""
+
+    content: str
+    model: str | None
+    prompt_tokens: int | None
+    completion_tokens: int | None
+
+
+class LLM:
+    """Send chat messages to a model through OpenRouter."""
+
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "openrouter/free",
+        base_url: str = "https://openrouter.ai/api/v1",
+    ) -> None:
+        self.api_key = api_key
+        self.model = model
+        self.base_url = base_url.rstrip("/")
+
+    def generate(self, messages: list[dict[str, str]]) -> LLMResponse:
+        """Send the supplied messages once and return the answer and usage."""
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "max_tokens": 120,
+        }
+        request = Request(
+            f"{self.base_url}/chat/completions",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+
+        try:
+            with urlopen(request, timeout=45) as response:
+                data = json.load(response)
+        except HTTPError as error:
+            raise RuntimeError(
+                f"OpenRouter returned HTTP {error.code}. "
+                "Check the key, model route, or account limits."
+            ) from None
+
+        message = data["choices"][0]["message"]
+        usage = data.get("usage") or {}
+        return LLMResponse(
+            content=message.get("content") or "",
+            model=data.get("model", self.model),
+            prompt_tokens=usage.get("prompt_tokens"),
+            completion_tokens=usage.get("completion_tokens"),
+        )
+
+
+api_key = None
+llm = None
+
+if userdata is None:
+    print("This live memory exercise uses Colab Secrets. Run it in Colab.")
+else:
+    api_key = userdata.get("OPENROUTER_API")
+    if not api_key:
+        raise RuntimeError(
+            "Add OPENROUTER_API in Colab Secrets and allow notebook access."
+        )
+    llm = LLM(api_key=api_key)
+    print("Selected route:", llm.model)
+```
+
+## 4. Give FreeCampusAgent access to its conversation
+
+The model connection stays the same. We add `memory` to the constructor and make one change to `_step`: it sends the current message history instead of creating a one-message list for every call.
+
+```python
+class FreeCampusAgent:
+    """A minimal, modular, educational agent framework for the Agentic AI Engineering course of FreeCampus."""
+
+    def __init__(self, llm: LLM, memory: ConversationMemory):
+        self.llm = llm
+        self.memory = memory
+        self.tools = None    # Added in Unit 1, Lesson 4.
+        self.planner = None  # Added in Unit 1, Lesson 5.
+        self.last_response: LLMResponse | None = None
+
+    def run(self, task: str) -> str:
+        """Add the task, ask the model, then save its reply."""
+        self.memory.add("user", task)
+        self.last_response = self._step()
+        self.memory.add("assistant", self.last_response.content)
+        return self.last_response.content
+
+    def _step(self) -> LLMResponse:
+        """Send the current conversation to the language model."""
+        messages = self.memory.get_messages()
+        return self.llm.generate(messages)
+
+    def _execute_action(self, action: str) -> str:
+        """Reserve a place for action execution in a later lesson."""
+        return f"Executed action: {action}"
+```
+
+Here is the order when `run(task)` is called:
+
+1. `run` adds the learner's message to memory.
+2. `_step` gets the message list and sends it to the LLM.
+3. `run` adds the assistant's reply to memory.
+4. The method returns the reply text.
+
+The `tools` and `planner` attributes are still empty. This change gives the model earlier conversation messages; it does not let the model perform actions or make a plan.
+
+## 5. Run a two-turn conversation
+
+Use a made-up project name so there is no need to send personal information. The second request asks about the first message. Inspect the stored messages as well as the model's reply: the list shows what the program retained, while the answer can still be wrong.
+
+```python
+if llm is not None:
+    conversation_memory = ConversationMemory()
+    freecampus_agent = FreeCampusAgent(
+        llm=llm,
+        memory=conversation_memory,
+    )
+
+    first_answer = freecampus_agent.run(
+        "My fictional project is called Cedar-7."
+    )
+    print("First reply:", first_answer)
+    print("Messages after the first turn:")
+    print(conversation_memory.get_messages())
+
+    follow_up = (
+        "What name did I give my fictional project? "
+        "Answer briefly using the conversation so far."
+    )
+    print("Earlier messages available for the next turn:")
+    print(conversation_memory.get_messages())
+    second_answer = freecampus_agent.run(follow_up)
+
+    print("Follow-up answer:", second_answer)
+    print("Messages after the second turn:")
+    print(conversation_memory.get_messages())
+
+    latest_response = freecampus_agent.last_response
+    assert latest_response is not None
+    print("Model that answered:", latest_response.model)
+    print("Token use:", {
+        "prompt": latest_response.prompt_tokens,
+        "completion": latest_response.completion_tokens,
+    })
+else:
+    print("Add OPENROUTER_API in Colab to run the two model-backed turns.")
+```
+
+After the first turn, memory holds a user message and an assistant reply. Before the second request, `run` adds the follow-up question. `_step` sends all three messages. When the model replies, the assistant's new message is added too.
+
+No model training took place. `ConversationMemory` kept the earlier message and sent it again with the follow-up; this code does not ask the provider to retrieve conversation history. If the Colab runtime ends, this Python list disappears. This lesson does not save memory to a file or database.
+
+## 6. Check your understanding
+
+::: {.callout-tip}
+Explain this path in your own words:
+`run(task)` → `memory.add("user", task)` → `_step()` → `llm.generate(messages)` → `memory.add("assistant", reply)`.
+:::
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-add-conversation-memory-concept",
+  "title": "Checkpoint: explain conversation memory",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u01-add-conversation-memory-concept-1",
+      "prompt": "Why does FreeCampusAgent keep a conversation-memory object?",
+      "options": [
+        "The model automatically saves every past API call.",
+        "The program can send earlier messages again with a later request.",
+        "The object changes the model's trained weights.",
+        "The object gives the model permission to use tools."
+      ],
+      "answer_index": 1,
+      "explanation": "The message list is application state. FreeCampusAgent includes it in the next model request so the model can use the earlier turns as context."
+    },
+    {
+      "id": "u01-add-conversation-memory-concept-2",
+      "prompt": "What does get_messages() return?",
+      "options": [
+        "The model's hidden internal thoughts.",
+        "The messages held by ConversationMemory.",
+        "A permanent database backup.",
+        "The LLM's training data."
+      ],
+      "answer_index": 1,
+      "explanation": "get_messages returns the user and assistant messages saved in this ConversationMemory object."
+    },
+    {
+      "id": "u01-add-conversation-memory-concept-3",
+      "prompt": "What does this lesson add to FreeCampusAgent?",
+      "options": [
+        "Conversation messages passed back to the LLM on later turns.",
+        "A web-search tool that runs automatically.",
+        "A plan that the agent executes without checking.",
+        "Memory that survives a Colab runtime reset."
+      ],
+      "answer_index": 0,
+      "explanation": "This lesson adds short-term conversation history in the current Python process. Tools, planning, and persistent storage are not added here."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+<details>
+<summary>Practice: inspect what memory contains</summary>
+
+Run the two-turn example and answer these questions in your notes:
+
+1. Which message is added before the first model call?
+2. Which messages are already in the list before the follow-up call?
+3. Which message is added after the model replies?
+4. Does `last_response` hold the whole conversation or only the latest response?
+5. What happens to this memory when the Colab runtime ends?
+
+</details>
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-add-conversation-memory-evidence",
+  "title": "Checkpoint: inspect the message list",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u01-add-conversation-memory-evidence-1",
+      "prompt": "What is in memory after the first turn finishes?",
+      "options": [
+        "Only the model ID.",
+        "One user message followed by one assistant message.",
+        "The full notebook source code.",
+        "Only the API key."
+      ],
+      "answer_index": 1,
+      "explanation": "run adds the user task before the model call and the assistant reply after it."
+    },
+    {
+      "id": "u01-add-conversation-memory-evidence-2",
+      "prompt": "What does the second model request receive before it answers?",
+      "options": [
+        "The first user message, the first assistant reply, and the new user message.",
+        "Only the first assistant reply.",
+        "Every notebook cell from the previous lesson.",
+        "No messages because the runtime is new."
+      ],
+      "answer_index": 0,
+      "explanation": "The first turn is still in the memory list. run adds the follow-up question, and _step sends that list to the LLM."
+    },
+    {
+      "id": "u01-add-conversation-memory-evidence-3",
+      "prompt": "What does last_response contain after the second turn?",
+      "options": [
+        "The full message history.",
+        "Only the latest LLMResponse.",
+        "A permanent copy of every run.",
+        "The messages stored by a different agent."
+      ],
+      "answer_index": 1,
+      "explanation": "last_response points to the most recent response object. The ConversationMemory object holds the message history."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+::: {.callout-warning}
+The message list grows as the conversation continues, so each new request can include more text. This first version is deliberately small. We have not added trimming, summaries, search, or long-term storage.
+:::
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-add-conversation-memory-limits",
+  "title": "Checkpoint: identify the limits",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u01-add-conversation-memory-limits-1",
+      "prompt": "Where is this lesson's conversation history stored?",
+      "options": [
+        "In the current Python ConversationMemory object.",
+        "Inside the model's learned weights.",
+        "In the OpenRouter API key.",
+        "In a database that survives Colab resets."
+      ],
+      "answer_index": 0,
+      "explanation": "ConversationMemory is a Python object in the running notebook. It disappears when that runtime is discarded."
+    },
+    {
+      "id": "u01-add-conversation-memory-limits-2",
+      "prompt": "What may happen as more messages are added?",
+      "options": [
+        "The model automatically deletes old messages.",
+        "Every later request may contain more text.",
+        "The API key becomes part of the conversation.",
+        "The planner starts running."
+      ],
+      "answer_index": 1,
+      "explanation": "This simple version keeps every message. Longer histories use more context, so future designs may need trimming or summarization."
+    },
+    {
+      "id": "u01-add-conversation-memory-limits-3",
+      "prompt": "Does providing message history guarantee the model's answer is correct?",
+      "options": [
+        "Yes, because memory makes the answer factual.",
+        "Yes, as long as the model ID is printed.",
+        "No. It gives the model context, but the reply still needs to be checked.",
+        "No, because the message list is not sent to the model."
+      ],
+      "answer_index": 2,
+      "explanation": "Memory changes the input available to the model. It does not verify the answer."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## Sources
+
+- Maarten Grootendorst and Jay Alammar, [*An Illustrated Guide to AI Agents*, Chapter 4: Memory](https://learning.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch04.html). This lesson adapts the chapter's first short-term memory pattern: retain messages and supply them to a later model call. O'Reilly access may be required.
+- Companion materials: [Chapter 4 main notebook](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/blob/7f56242c4150df4c463210d8e6d9300988057b5e/chapter04/chapter04.ipynb) and [short-term memory notebook](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/blob/7f56242c4150df4c463210d8e6d9300988057b5e/chapter04/chapter04_short_term_memory.ipynb).
+- **Primary references checked 2026-10-31.**
