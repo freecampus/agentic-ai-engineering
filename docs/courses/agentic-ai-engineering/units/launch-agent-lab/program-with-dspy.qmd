@@ -367,8 +367,6 @@ OpenRouter key for the required exercise.
 - LiteLLM's [OpenRouter provider guide](https://docs.litellm.ai/docs/providers/openrouter).
 - OpenRouter's [free-model router](https://openrouter.ai/openrouter/free).
 
-**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
-Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
-depth through illustrations and a step-by-step TinyAgent build.
+For deeper study, consult the books and supplementary resources listed in this lesson’s Sources section. They offer further explanations, examples, and code.
 
 **Primary references checked 2026-10-30.**

@@ -490,11 +490,14 @@ After the live run, write down:
 
 Primary references checked 2026-10-31.
 
-- [Chapter 6: Planning and Reflection, *An Illustrated Guide to AI Agents*](https://www.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch06.html).
+- Chapter 6: “Planning and Reflection,” in *An Illustrated Guide to AI Agents* by Maarten Grootendorst and Jay Alammar.
 - [Chapter 6 companion notebooks and code](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/tree/main/chapter06).
+- Additional perspectives, not required for this exercise: Ghulam Mustafa,
+  *Mastering AI with Python: A Beginner’s Guide to Machine Learning, Deep
+  Learning, Generative AI, LLMs, and AI Agents*, Chapter 14.2, on planning;
+  Patrick A. Andrei, *Agentic AI Systems: The Complete Guide for Building
+  Production AI Agents*, Chapter 6, on planning and checkpoints.
 
 This lesson introduces the planning idea in our own small example. It does not reproduce the book's code.
 
-**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
-Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
-depth through illustrations and a step-by-step TinyAgent build.
+For deeper study, consult the books and supplementary resources listed in this lesson’s Sources section. They offer further explanations, examples, and code.

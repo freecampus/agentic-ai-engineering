@@ -363,6 +363,4 @@ Primary references checked 2026-10-30.
 - OpenRouter, [model catalog](https://openrouter.ai/models) and
   [pricing](https://openrouter.ai/pricing/). Availability and prices can change.
 
-**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
-Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
-depth through illustrations and a step-by-step TinyAgent build.
+For deeper study, consult the books and supplementary resources listed in this lesson’s Sources section. They offer further explanations, examples, and code.

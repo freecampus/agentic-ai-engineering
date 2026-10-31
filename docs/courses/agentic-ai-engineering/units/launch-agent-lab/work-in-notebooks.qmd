@@ -405,6 +405,4 @@ Fixtures are synthetic, original BSD-3-Clause course material. Primary reference
 checked 2026-09-19. Colab service availability and UI labels may change; local
 Jupyter is the no-hosted-service alternative.
 
-**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
-Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
-depth through illustrations and a step-by-step TinyAgent build.
+For deeper study, consult the books and supplementary resources listed in this lesson’s Sources section. They offer further explanations, examples, and code.
