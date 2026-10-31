@@ -398,3 +398,7 @@ Unit Challenge, available in the local review navigation.
 Original course code and synthetic fixtures use BSD-3-Clause. Primary references
 checked 2026-09-19. Actual tested versions and platform coverage belong in the
 review report and your launch card, not in a claim that “latest” always works.
+
+**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
+Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
+depth through illustrations and a step-by-step TinyAgent build.

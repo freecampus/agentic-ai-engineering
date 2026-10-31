@@ -31,7 +31,7 @@ checks, and a 90–180 minute challenge. Estimates will be recalibrated during a
 
 ## 2. Before you begin
 
-Complete the preceding unit, [Decide Whether a Problem Needs an Agent](../choose-agent-architecture/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
+Complete the preceding unit, [Build an Agent One Part at a Time](../choose-agent-architecture/index.qmd), when its lessons become available. This is a cumulative engineering sequence, not a set of independent tutorials.
 
 Use the [offline smoke lab](../../../../resources/agent-lab.qmd) to check the
 shared package. Work in a clean Colab/Jupyter notebook or a local Conda

@@ -68,7 +68,7 @@ def test_review_profile_is_separate_and_links_only_authored_sources():
     assert profile["website"]["draft-mode"] == "visible"
     assert profile["project"]["output-dir"] == "_review"
     sections = profile["website"]["sidebar"][0]["contents"]
-    assert [len(section["contents"]) for section in sections] == [7, 6]
+    assert [len(section["contents"]) for section in sections] == [7, 7]
     for section in sections:
         for item in section["contents"]:
             assert (

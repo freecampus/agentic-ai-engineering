@@ -55,7 +55,7 @@ website:
           contents:
             - href: courses/agentic-ai-engineering/units/launch-agent-lab/index.qmd
               text: Overview
-        - section: "Unit 1: Decide Whether a Problem Needs an Agent"
+        - section: "Unit 1: Build an Agent One Part at a Time"
           contents:
             - href: courses/agentic-ai-engineering/units/choose-agent-architecture/index.qmd
               text: Overview

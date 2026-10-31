@@ -16,13 +16,14 @@ website:
             - courses/agentic-ai-engineering/units/launch-agent-lab/build-local-workspace.qmd
             - href: courses/agentic-ai-engineering/units/launch-agent-lab/challenge.qmd
               text: Unit Challenge
-        - section: "Unit 1: Decide Whether a Problem Needs an Agent"
+        - section: "Unit 1: Build an Agent One Part at a Time"
           contents:
             - href: courses/agentic-ai-engineering/units/choose-agent-architecture/index.qmd
               text: Overview
             - courses/agentic-ai-engineering/units/choose-agent-architecture/separate-automation-workflows-and-agents.qmd
             - courses/agentic-ai-engineering/units/choose-agent-architecture/model-the-agent-environment-loop.qmd
-            - courses/agentic-ai-engineering/units/choose-agent-architecture/bound-autonomy-with-task-contracts.qmd
-            - courses/agentic-ai-engineering/units/choose-agent-architecture/choose-the-simplest-adequate-architecture.qmd
+            - courses/agentic-ai-engineering/units/choose-agent-architecture/add-conversation-memory.qmd
+            - courses/agentic-ai-engineering/units/choose-agent-architecture/connect-agent-tools.qmd
+            - courses/agentic-ai-engineering/units/choose-agent-architecture/add-a-planner.qmd
             - href: courses/agentic-ai-engineering/units/choose-agent-architecture/challenge.qmd
               text: Unit Challenge

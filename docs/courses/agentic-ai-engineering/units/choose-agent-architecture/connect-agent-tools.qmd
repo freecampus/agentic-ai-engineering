@@ -1,0 +1,555 @@
+---
+title: Give FreeCampusAgent a Tool
+description: Add one read-only course lookup tool and trace the model request, Python execution, tool result, and final answer.
+content_kind: lesson
+content_status: draft
+draft: true
+course_id: agentic-ai-engineering
+unit_id: choose-agent-architecture
+unit_number: 1
+categories:
+- agentic-ai-engineering
+- choose-agent-architecture
+order: 40
+colab_notebook: notebooks/courses/agentic-ai-engineering/units/choose-agent-architecture/connect-agent-tools.ipynb
+notebook_package: true
+execute:
+  echo: true
+lesson_id: choose-agent-architecture.connect-agent-tools
+lesson_order: 40
+---
+
+::: {.lesson-meta}
+- **Level:** Foundations.
+- **Active time:** 35–45 minutes, including two short model calls.
+- **Prerequisites:** Unit 1, Lessons 1–3; the `OPENROUTER_API` secret saved in Colab.
+- **Outcome:** Explain what a tool is, then connect one read-only tool to FreeCampusAgent.
+- **Evidence:** The model's tool request, the Python result, and the final reply that uses the result.
+- **Environment:** Google Colab with internet access; no GPU or additional Python package is needed.
+:::
+
+::: {.callout-note}
+## Review draft
+This proposed Lesson 4 adds one small capability to FreeCampusAgent. It uses the same OpenRouter secret as Lessons 2 and 3. The tool reads a short course outline stored in this notebook. It does not browse the web, edit files, or make changes outside the notebook.
+:::
+
+{{< include ../../../../_includes/colab-link.qmd >}}
+
+## 1. What is a tool?
+
+An LLM receives messages and returns text. By itself, it cannot read a file on your computer, look up a value in your Python program, or change something in another system. A **tool** gives the program a way to make one of those capabilities available to the model.
+
+A tool has two parts:
+
+1. A normal Python function that performs the job.
+2. A description and input format that tell the model when and how to request that function.
+
+The model does not run the Python function. It returns a structured request. FreeCampusAgent checks that request, runs the function we made available, and sends the result back to the model. The model can then write an answer using that result.
+
+```text
+question → model requests a tool → Python runs the function
+         → result goes back to the model → answer
+```
+
+This is the first, small tool cycle from Chapter 5 of *An Illustrated Guide to AI Agents*. The chapter moves from defining a tool to selecting it, calling it, and processing its result. We will follow those same steps with one read-only lookup.
+
+## 2. Make one small tool
+
+Our first tool looks up a lesson in the Unit 1 outline. The information is a small Python dictionary in this notebook. This keeps the example local and makes the tool's job easy to inspect.
+
+```python
+UNIT1_LESSONS = {
+    1: {
+        "title": "What Is an Agent?",
+        "focus": "Introduce the FreeCampusAgent class and run its first task.",
+    },
+    2: {
+        "title": "Connect an LLM to FreeCampusAgent",
+        "focus": "Send one message to a language model and inspect its response.",
+    },
+    3: {
+        "title": "Give FreeCampusAgent Conversation Memory",
+        "focus": "Keep earlier messages and include them in a later model request.",
+    },
+    4: {
+        "title": "Give FreeCampusAgent a Tool",
+        "focus": "Let the model request a course lookup and inspect the result.",
+    },
+    5: {
+        "title": "Add a Planner to FreeCampusAgent",
+        "focus": "Turn a task into ordered steps and inspect how the agent handles them.",
+    },
+}
+
+
+def lookup_unit1_lesson(lesson_number: int) -> dict[str, object]:
+    """Return the title and focus of one planned Unit 1 lesson."""
+    if type(lesson_number) is not int:
+        raise TypeError("lesson_number must be an integer")
+    if lesson_number not in UNIT1_LESSONS:
+        raise ValueError("lesson_number must be from 1 to 5")
+    return {"lesson_number": lesson_number, **UNIT1_LESSONS[lesson_number]}
+```
+
+This function is the tool's actual ability. It accepts one number, checks that the number is valid, and returns the matching lesson details. Run a small Python check before connecting the model. This checks the function only; it does not imitate an LLM.
+
+```python
+assert lookup_unit1_lesson(4)["title"] == "Give FreeCampusAgent a Tool"
+
+try:
+    lookup_unit1_lesson(6)
+except ValueError:
+    print("Lesson lookup validation passed")
+else:
+    raise AssertionError("The lookup should reject a lesson outside Unit 1")
+```
+
+## 3. Describe the tool to the model
+
+The Python function is not sent as source code. The request instead includes a small description and a schema: the tool's name, what it does, and the input the model should provide. The schema helps the model form a structured request. Python still checks the value before using it.
+
+```python
+TOOL_DEFINITIONS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "lookup_unit1_lesson",
+            "description": "Look up the title and focus of a Unit 1 lesson by its number.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "lesson_number": {
+                        "type": "integer",
+                        "enum": [1, 2, 3, 4, 5],
+                        "description": "The Unit 1 lesson number to look up.",
+                    }
+                },
+                "required": ["lesson_number"],
+                "additionalProperties": False,
+            },
+        },
+    }
+]
+```
+
+The model sees the tool's name and schema, not the `UNIT1_LESSONS` dictionary. That separation is useful: the model can request a lookup, but only the Python function has access to the data.
+
+## 4. Let the model request the tool
+
+We will extend the small OpenRouter client from Lesson 2. Its request now includes the tool definition, and its response record can also hold any tool requests returned by the model.
+
+```python
+import json
+from dataclasses import dataclass
+from typing import Any
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
+
+try:
+    from google.colab import userdata
+except ModuleNotFoundError:
+    userdata = None
+
+
+@dataclass
+class LLMResponse:
+    """The text, tool requests, and basic usage details from one model call."""
+
+    content: str
+    tool_calls: list[dict[str, Any]]
+    model: str | None
+    prompt_tokens: int | None
+    completion_tokens: int | None
+
+
+class LLM:
+    """Send chat messages to a model through OpenRouter."""
+
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "openrouter/free",
+        base_url: str = "https://openrouter.ai/api/v1",
+    ) -> None:
+        self.api_key = api_key
+        self.model = model
+        self.base_url = base_url.rstrip("/")
+
+    def generate(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+        tool_choice: str | dict[str, Any] | None = None,
+    ) -> LLMResponse:
+        """Send messages and, when supplied, available tool definitions."""
+        payload: dict[str, Any] = {
+            "model": self.model,
+            "messages": messages,
+            "max_tokens": 180,
+        }
+        if tools is not None:
+            payload["tools"] = tools
+            payload["parallel_tool_calls"] = False
+        if tool_choice is not None:
+            payload["tool_choice"] = tool_choice
+
+        request = Request(
+            f"{self.base_url}/chat/completions",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+
+        try:
+            with urlopen(request, timeout=45) as response:
+                data = json.load(response)
+        except HTTPError as error:
+            raise RuntimeError(
+                f"OpenRouter returned HTTP {error.code}. "
+                "Check the key, model route, or account limits."
+            ) from None
+
+        message = data["choices"][0]["message"]
+        usage = data.get("usage") or {}
+        return LLMResponse(
+            content=message.get("content") or "",
+            tool_calls=message.get("tool_calls") or [],
+            model=data.get("model", self.model),
+            prompt_tokens=usage.get("prompt_tokens"),
+            completion_tokens=usage.get("completion_tokens"),
+        )
+
+
+llm = None
+if userdata is None:
+    print("This live tool exercise uses Colab Secrets. Run it in Colab.")
+else:
+    api_key = userdata.get("OPENROUTER_API")
+    if not api_key:
+        raise RuntimeError(
+            "Add OPENROUTER_API in Colab Secrets and allow notebook access."
+        )
+    llm = LLM(api_key=api_key)
+    print("Selected route:", llm.model)
+```
+
+For the first run, the request names the one tool we want to demonstrate. That makes it easier to follow a complete tool cycle. OpenRouter's `openrouter/free` route currently filters for free models that support features requested by the call, including tool calling. The route can still change which model answers, so the lesson prints the returned model ID.
+
+## 5. Add tool execution to FreeCampusAgent
+
+The memory object from Lesson 3 still keeps the conversation messages. FreeCampusAgent will now also keep a list of Python functions it is allowed to run. When the model returns a tool request, `_execute_action` looks up the requested name in that list and calls the matching function.
+
+```python
+class ConversationMemory:
+    """Keep messages for the current conversation in this Python session."""
+
+    def __init__(self):
+        self.messages: list[dict[str, Any]] = []
+
+    def add(self, role: str, content: str) -> None:
+        self.messages.append({"role": role, "content": content})
+
+    def get_messages(self) -> list[dict[str, Any]]:
+        return self.messages
+
+
+class FreeCampusAgent:
+    """A minimal, modular, educational agent framework for the Agentic AI Engineering course of FreeCampus."""
+
+    def __init__(self, llm: LLM, memory: ConversationMemory):
+        self.llm = llm
+        self.memory = memory
+        self.tools = {"lookup_unit1_lesson": lookup_unit1_lesson}
+        self.last_tool_call: dict[str, Any] | None = None
+        self.last_tool_result: dict[str, object] | None = None
+        self.last_response: LLMResponse | None = None
+
+    def run(self, task: str) -> str:
+        """Ask the model, run its requested tool, and return the final answer."""
+        self.memory.add("user", task)
+        tool_response = self._step()
+
+        if not tool_response.tool_calls:
+            self.last_response = tool_response
+            self.memory.add("assistant", tool_response.content)
+            return tool_response.content
+        if len(tool_response.tool_calls) != 1:
+            raise RuntimeError("This first tool lesson handles one tool call at a time.")
+
+        tool_call = tool_response.tool_calls[0]
+        self.last_tool_call = tool_call
+        self.memory.messages.append(
+            {
+                "role": "assistant",
+                "content": tool_response.content or None,
+                "tool_calls": tool_response.tool_calls,
+            }
+        )
+
+        self.last_tool_result = self._execute_action(tool_call)
+        self.memory.messages.append(
+            {
+                "role": "tool",
+                "tool_call_id": tool_call["id"],
+                "content": json.dumps(self.last_tool_result, ensure_ascii=False),
+            }
+        )
+
+        final_response = self.llm.generate(
+            self._messages_for_model(),
+            tools=TOOL_DEFINITIONS,
+            tool_choice="none",
+        )
+        self.last_response = final_response
+        self.memory.add("assistant", final_response.content)
+        return final_response.content
+
+    def _step(self) -> LLMResponse:
+        """Ask the model to make the first, named tool request."""
+        return self.llm.generate(
+            self._messages_for_model(),
+            tools=TOOL_DEFINITIONS,
+            tool_choice={
+                "type": "function",
+                "function": {"name": "lookup_unit1_lesson"},
+            },
+        )
+
+    def _messages_for_model(self) -> list[dict[str, Any]]:
+        instruction = {
+            "role": "system",
+            "content": (
+                "Answer questions about the Unit 1 lesson outline. "
+                "Use the lookup result for exact lesson details. "
+                "Base your answer on the returned tool result."
+            ),
+        }
+        return [instruction, *self.memory.get_messages()]
+
+    def _execute_action(self, tool_call: dict[str, Any]) -> dict[str, object]:
+        """Run only a registered tool, using the arguments returned by the model."""
+        name = tool_call["function"]["name"]
+        if name not in self.tools:
+            raise ValueError(f"Tool is not available: {name}")
+
+        arguments = json.loads(tool_call["function"]["arguments"])
+        if not isinstance(arguments, dict):
+            raise ValueError("Tool arguments must be a JSON object")
+        return self.tools[name](**arguments)
+```
+
+Here is what each new part does:
+
+| Part | What it does |
+|---|---|
+| `TOOL_DEFINITIONS` | Describes the available tool and its input format to the model. |
+| `self.tools` | Lists the Python functions FreeCampusAgent is allowed to execute. |
+| `_step()` | Sends the messages and tool description, then receives the model's structured request. |
+| `_execute_action()` | Checks the requested name and runs its registered Python function. |
+| `run()` | Sends the tool result back to the model and returns the final answer. |
+
+The model can suggest a tool name and arguments. The Python code still decides what to run: `_execute_action()` rejects names that are not in `self.tools`, and the lookup function rejects invalid lesson numbers.
+
+## 6. Run the complete tool cycle
+
+Ask about Lesson 4. The first model call returns a structured tool request. Python runs the lookup. The second model call receives the tool result and writes a short answer.
+
+```python
+if llm is None:
+    print("Add OPENROUTER_API in Colab Secrets to run the live tool cycle.")
+else:
+    memory = ConversationMemory()
+    freecampus_agent = FreeCampusAgent(llm=llm, memory=memory)
+
+    answer = freecampus_agent.run(
+        "Using the Unit 1 lookup, tell me the title and focus of Lesson 4."
+    )
+
+    print("Model that answered:", freecampus_agent.last_response.model)
+    print("Tool request:", freecampus_agent.last_tool_call)
+    print("Python tool result:", freecampus_agent.last_tool_result)
+    print("Final answer:", answer)
+```
+
+Look at the tool request and the Python result separately. The first shows what the model asked for; the second shows what the function actually returned. The final answer is model-generated text based on that result, so compare it with the Python result rather than assuming it copied the details correctly.
+
+For this demonstration, `tool_choice` names the lookup directly so every learner can inspect the cycle. When you want the model to decide whether a tool is needed, change that field in `_step()` to `"auto"`. The model may then answer without a tool call. Tool use is a request the model can make, not a guarantee that it will make one.
+
+This first tool only reads a small dictionary. It has no external connection and changes nothing. Later lessons can add other capabilities one at a time; this lesson does not add a planner, web search, or tools that make changes.
+
+## 7. Check your understanding
+
+::: {.callout-tip}
+Explain the difference between the tool description, the model's tool request, the Python function, and the result sent back to the model.
+:::
+
+<details>
+<summary>Practice: inspect the request and result</summary>
+
+After the live run, write down:
+
+1. Which tool name did the model request?
+2. What argument did it send?
+3. What did the Python function return?
+4. What did the model say after receiving the result?
+5. Where did you check the title: the final answer or the Python result?
+
+</details>
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-connect-agent-tools-concept",
+  "title": "Checkpoint: explain a tool",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u01-connect-agent-tools-concept-1",
+      "prompt": "What does a tool add to FreeCampusAgent?",
+      "options": [
+        "A way to make the model execute Python by itself.",
+        "A new set of learned parameters inside the model.",
+        "A guarantee that the model's answer is correct.",
+        "A Python capability the program can run when the model requests it."
+      ],
+      "answer_index": 3,
+      "explanation": "The tool is a function provided by the program. The model can request it, but FreeCampusAgent's Python code runs it."
+    },
+    {
+      "id": "u01-connect-agent-tools-concept-2",
+      "prompt": "Who executes lookup_unit1_lesson?",
+      "options": [
+        "The language model's hidden Python runtime.",
+        "OpenRouter, without receiving any tool description.",
+        "FreeCampusAgent's Python code, after checking the requested tool name.",
+        "The Colab Secrets panel."
+      ],
+      "answer_index": 2,
+      "explanation": "The model returns a structured request. The notebook code checks its name and invokes the registered Python function."
+    },
+    {
+      "id": "u01-connect-agent-tools-concept-3",
+      "prompt": "Why does the tool result include the model's tool_call_id?",
+      "options": [
+        "To connect the returned result with the request it answers.",
+        "To turn the result into a permanent database record.",
+        "To prove that the model selected a correct answer.",
+        "To grant the model permission to run any Python code."
+      ],
+      "answer_index": 0,
+      "explanation": "The matching ID tells the chat API which tool request this result belongs to. It does not verify the final answer."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-connect-agent-tools-evidence",
+  "title": "Checkpoint: follow the tool cycle",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u01-connect-agent-tools-evidence-1",
+      "prompt": "What does TOOL_DEFINITIONS tell the model?",
+      "options": [
+        "The name, purpose, and input format of an available tool.",
+        "The full source code for every Python function in Colab.",
+        "The answer it must return, regardless of the tool result.",
+        "The learner's saved API key."
+      ],
+      "answer_index": 0,
+      "explanation": "The schema describes the tool's name and arguments. The Python function and its data stay in the program."
+    },
+    {
+      "id": "u01-connect-agent-tools-evidence-2",
+      "prompt": "What happens after the model returns a tool request?",
+      "options": [
+        "The model immediately runs the Python function itself.",
+        "FreeCampusAgent checks the name and Python runs the registered function.",
+        "The request is stored as long-term memory without execution.",
+        "The planner turns it into five new tools."
+      ],
+      "answer_index": 1,
+      "explanation": "The local Python program receives the request, finds the matching registered function, and runs it."
+    },
+    {
+      "id": "u01-connect-agent-tools-evidence-3",
+      "prompt": "What does the second model call receive?",
+      "options": [
+        "The original conversation, the tool request, and the Python result.",
+        "Only the API key and the tool's Python source code.",
+        "The model's training data and hidden reasoning.",
+        "No information from the first model call."
+      ],
+      "answer_index": 0,
+      "explanation": "The program keeps the conversation, appends the tool request and its result, then sends that history for the final answer."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+<script type="application/json" class="fcagentic-ojs-quiz-config">
+{
+  "id": "u01-connect-agent-tools-limits",
+  "title": "Checkpoint: understand this tool's limits",
+  "instructions": "Choose an answer, check the explanation, then select Next.",
+  "questions": [
+    {
+      "id": "u01-connect-agent-tools-limits-1",
+      "prompt": "What can lookup_unit1_lesson change?",
+      "options": [
+        "It can update the public course website.",
+        "It can browse any website the model names.",
+        "It can only return a lesson record from the local dictionary.",
+        "It can edit files in the learner's Drive."
+      ],
+      "answer_index": 2,
+      "explanation": "This lesson's function reads a fixed Python dictionary and returns a record. It has no write or network action."
+    },
+    {
+      "id": "u01-connect-agent-tools-limits-2",
+      "prompt": "Does a valid tool result guarantee a correct final answer?",
+      "options": [
+        "Yes. The model must copy every result exactly.",
+        "Yes, because the schema checks the final reply.",
+        "No. Check the final text against the Python result.",
+        "No. A model can never use a tool result."
+      ],
+      "answer_index": 2,
+      "explanation": "The Python result is inspectable data. The final text is still generated by the model and should be checked."
+    },
+    {
+      "id": "u01-connect-agent-tools-limits-3",
+      "prompt": "What does this lesson add to FreeCampusAgent?",
+      "options": [
+        "One read-only lookup function and the code to process its request and result.",
+        "A planner that automatically breaks every task into steps.",
+        "Web search and permission to edit local files.",
+        "Memory that persists after the Colab runtime ends."
+      ],
+      "answer_index": 0,
+      "explanation": "This lesson adds one bounded course lookup. Planning, web access, file editing, and permanent memory are not part of it."
+    }
+  ]
+}
+</script>
+
+{{< include ../../../../_includes/ojs-quiz.qmd >}}
+
+## Sources
+
+- Maarten Grootendorst and Jay Alammar, [*An Illustrated Guide to AI Agents*, Chapter 5: Tool Usage, Learning, and Protocols](https://learning.oreilly.com/library/view/an-illustrated-guide/9798341662681/ch05.html). This lesson follows the chapter's introductory sequence: define a tool, make it available to the model, execute the request in Python, and send the result back. O'Reilly access may be required.
+- Companion materials: [Chapter 5 in the book's GitHub repository](https://github.com/HandsOnLLM/An-Illustrated-Guide-To-AI-Agents/tree/main/chapter05).
+- OpenRouter, [Tool and Function Calling](https://openrouter.ai/docs/guides/features/tool-calling) and [Free Models Router](https://openrouter.ai/openrouter/free). These explain the request/result format and current feature routing for free models.
+- **Primary references checked 2026-10-31.**
+
+**Want to learn more?** Consider getting *An Illustrated Guide to AI Agents* by
+Maarten Grootendorst and Jay Alammar. The book explores agent concepts in greater
+depth through illustrations and a step-by-step TinyAgent build.

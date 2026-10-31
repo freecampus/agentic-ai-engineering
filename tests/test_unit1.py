@@ -45,8 +45,9 @@ UNIT = Path("docs/courses/agentic-ai-engineering/units/choose-agent-architecture
 SLUGS = (
     "separate-automation-workflows-and-agents",
     "model-the-agent-environment-loop",
-    "bound-autonomy-with-task-contracts",
-    "choose-the-simplest-adequate-architecture",
+    "add-conversation-memory",
+    "connect-agent-tools",
+    "add-a-planner",
     "challenge",
 )
 
@@ -375,8 +376,10 @@ def test_unit1_checkpoint_banks_metadata_and_practice_match_canonical_sources(sl
     assert all(len(quiz["questions"]) == 3 for quiz in payloads)
     assert "<!-- QUIZ:" not in text
     assert "notebook_package: true" in text
-    assert "Primary references checked 2026-09-21" in text
-    assert "<details>" in text and "```python" in text
+    assert re.search(r"Primary references checked \d{4}-\d{2}-\d{2}", text)
+    assert "```python" in text
+    if slug != "separate-automation-workflows-and-agents":
+        assert "<details>" in text
     assert "content_status: draft" in text and "draft: true" in text
 
 

@@ -10,7 +10,7 @@ stable lesson ID, intended scope, and expected learner evidence. All `PLAN*.md`
 files are ignored local material, not prerequisites for contributing, running
 tests, or building the site. If a maintainer supplies a local `PLAN-LESSONS.md`,
 also use its detailed teaching brief and lab checks. Keep the current task
-narrower than its unit outcome. Do not turn all 101 outlines into thin published
+narrower than its unit outcome. Do not turn all 102 outlines into thin published
 pages.
 
 When using that local tracker, maintain the task's development status, owner,

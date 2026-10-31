@@ -127,4 +127,4 @@ each break. Pause setup work on an unavailable registry rather than silently
 substituting a different environment. The challenge finishes with a comparison
 against direct arithmetic and an explicit list of unverified claims.
 
-[Preview Unit 1: Decide Whether a Problem Needs an Agent](../choose-agent-architecture/index.qmd) or [return to the complete course map](../../index.qmd).
+[Preview Unit 1: Build an Agent One Part at a Time](../choose-agent-architecture/index.qmd) or [return to the complete course map](../../index.qmd).

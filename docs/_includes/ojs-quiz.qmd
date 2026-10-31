@@ -5,7 +5,7 @@
   const scripts = Array.from(
     document.querySelectorAll("script.fcagentic-ojs-quiz-config")
   );
-  const script = scripts.find(
+  const script = [...scripts].reverse().find(
     (node) => node.dataset.fcagenticRendered !== "true"
   );
 

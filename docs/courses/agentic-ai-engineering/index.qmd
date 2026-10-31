@@ -4,7 +4,7 @@ description: Build, evaluate, defend, and operate agents—and learn when not to
 content_kind: course-overview
 content_status: available
 planned_unit_count: 25
-planned_lesson_count: 101
+planned_lesson_count: 102
 planned_challenge_count: 25
 available_lesson_count: 0
 available_challenge_count: 0
@@ -14,7 +14,7 @@ available_challenge_count: 0
 ## In development
 The curriculum is planned, not a completed course. Available now: unit previews,
 readiness guidance, project outlines, and an executable offline smoke lab.
-**0 of 101 lessons and 0 of 25 unit challenges are released.**
+**0 of 102 lessons and 0 of 25 unit challenges are released.**
 :::
 
 ## Build systems you can explain and defend
@@ -28,8 +28,8 @@ add autonomy only when evidence justifies it.
 
 ## Planned scope and pacing
 
-- **25 units:** Unit 0 has five lessons; Units 1–24 have four each.
-- **101 lessons and 25 challenges**, with three short checkpoints per substantial lesson.
+- **25 units:** Units 0–1 have five lessons each; Units 2–24 have four each.
+- **102 lessons and 25 challenges**, with three short checkpoints per substantial lesson.
 - **Four numbered milestone projects**, plus architecture and advanced checkpoints.
 - **One capstone**, developed through six stages.
 - **Draft effort:** 240–360 hours plus optional extensions. Activity estimates,
@@ -47,7 +47,7 @@ add autonomy only when evidence justifies it.
 | Unit | Engineering focus | Planned lessons | Status |
 |---|---|---:|---|
 | 0 | [Launch a Reproducible Agent Engineering Lab](units/launch-agent-lab/index.qmd) | 5 | Planned |
-| 1 | [Decide Whether a Problem Needs an Agent](units/choose-agent-architecture/index.qmd) | 4 | Planned |
+| 1 | [Build an Agent One Part at a Time](units/choose-agent-architecture/index.qmd) | 5 | Planned |
 | 2 | [Treat Language Models as Probabilistic Components](units/probabilistic-models/index.qmd) | 4 | Planned |
 | 3 | [Build a Minimal Agent Runtime](units/minimal-agent-runtime/index.qmd) | 4 | Planned |
 | 4 | [Reason, Search, Plan, and Verify](units/reason-plan-verify/index.qmd) | 4 | Planned |
