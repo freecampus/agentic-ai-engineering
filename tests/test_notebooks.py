@@ -275,15 +275,11 @@ def test_authored_worked_examples_and_hidden_solutions_execute_separately(
     }
     if source in UNIT1_DRAFTS:
         expected = {
-            "separate-automation-workflows-and-agents": (
-                "Received: What is 2 + 2?"
-            ),
+            "separate-automation-workflows-and-agents": ("Received: What is 2 + 2?"),
             "model-the-agent-environment-loop": (
                 "This live request uses Colab Secrets"
             ),
-            "add-conversation-memory": (
-                "Conversation memory storage checks passed"
-            ),
+            "add-conversation-memory": ("Conversation memory storage checks passed"),
             "connect-agent-tools": "Lesson lookup validation passed",
             "add-a-planner": "Planner input checks passed",
             "challenge": (
