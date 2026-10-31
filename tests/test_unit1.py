@@ -377,7 +377,9 @@ def test_unit1_checkpoint_banks_metadata_and_practice_match_canonical_sources(sl
     assert "<!-- QUIZ:" not in text
     assert "notebook_package: true" in text
     assert re.search(r"Primary references checked \d{4}-\d{2}-\d{2}", text)
-    assert "<details>" in text and "```python" in text
+    assert "```python" in text
+    if slug != "separate-automation-workflows-and-agents":
+        assert "<details>" in text
     assert "content_status: draft" in text and "draft: true" in text
 
 

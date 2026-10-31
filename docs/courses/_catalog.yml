@@ -116,7 +116,7 @@ courses:
             path: courses/agentic-ai-engineering/units/choose-agent-architecture/separate-automation-workflows-and-agents.qmd
             summary:
               Introduce FreeCampusAgent's class scaffold, explain its methods, and run its first task without a connected model or tools.
-            evidence: class definition, returned message, and explanation of the placeholder behavior.
+            evidence: FreeCampusAgent's class definition, first output, and explanation of its placeholder methods.
           - id: choose-agent-architecture.model-the-agent-environment-loop
             title: Connect an LLM to FreeCampusAgent
             order: 20
